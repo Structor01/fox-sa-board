@@ -1434,8 +1434,6 @@ def main():
     st.markdown(f'<p style="font-size: 1.1rem; color: #C0C0C0; font-weight: 400; margin-bottom: 2rem; text-align: left;">Comprehensive agribusiness dashboard for institutional investors</p>', unsafe_allow_html=True)
     
     # Controles fixados no topo
-    st.markdown('<div class="controls-header">Dashboard Controls</div>', unsafe_allow_html=True)
-    
     col1, col2, col3, col4 = st.columns([2, 2, 2, 2])
     
     with col1:
@@ -1474,11 +1472,10 @@ def main():
     
     with col4:
         # Botão de refresh/info
-        st.markdown('<div style="margin-top: 25px;"></div>', unsafe_allow_html=True)
         if st.button("🔄 Refresh Data", key="refresh_btn"):
             st.rerun()
     
-    st.markdown('<hr style="margin: 2rem 0; border: 1px solid #333333;">', unsafe_allow_html=True)
+    st.markdown('<hr style="margin: 1rem 0; border: 1px solid #333333;">', unsafe_allow_html=True)
     
     # Carregar dados
     dados_eda = carregar_dados_eda()
