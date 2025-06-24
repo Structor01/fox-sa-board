@@ -461,81 +461,29 @@ def calcular_indicadores(balanco, dre):
     
     return indicadores
 
-# Função para criar gráfico de barras super simples
+# Função para criar gráfico de barras mínimo absoluto
 def criar_grafico_receitas():
     empresas = ['Fox Grãos', 'Fox Log', 'Clube FX']
     receitas = [262000, 79500, 23000]
     
-    fig = px.bar(
-        x=empresas, 
-        y=receitas,
-        title="Revenue by Company",
-        color_discrete_sequence=['#c0c0c0', '#a0a0a0', '#808080']
-    )
+    # Gráfico básico sem customizações
+    fig = px.bar(x=empresas, y=receitas, title="Revenue by Company")
     
-    # Configuração super simples - apenas o essencial
-    fig.update_layout(
-        plot_bgcolor='black',
-        paper_bgcolor='black',
-        font_color='white',
-        font_size=12,
-        showlegend=False,
-        height=350,
-        title_font_size=18,
-        title_font_color='white'
-    )
-    
-    # Eixos simples
-    fig.update_xaxes(
-        showgrid=False,
-        showline=False,
-        tickfont_color='white'
-    )
-    fig.update_yaxes(
-        showgrid=False,
-        showline=False,
-        tickfont_color='white'
-    )
-    
-    # Texto nas barras
-    fig.update_traces(
-        texttemplate='R$ %{y:,.0f}k',
-        textposition='outside',
-        textfont_color='white'
-    )
+    # Apenas altura - sem outras configurações
+    fig.update_layout(height=350)
     
     return fig
 
-# Função para criar gráfico de pizza super simples
+# Função para criar gráfico de pizza mínimo absoluto
 def criar_grafico_commodities():
     commodities = ['Soja', 'Milho', 'Sorgo']
     volumes = [45000, 35000, 8000]
     
-    fig = px.pie(
-        values=volumes,
-        names=commodities,
-        title="Commodity Distribution",
-        color_discrete_sequence=['#c0c0c0', '#a0a0a0', '#808080']
-    )
+    # Gráfico básico sem customizações
+    fig = px.pie(values=volumes, names=commodities, title="Commodity Distribution")
     
-    # Configuração super simples - apenas o essencial
-    fig.update_layout(
-        plot_bgcolor='black',
-        paper_bgcolor='black',
-        font_color='white',
-        font_size=12,
-        height=350,
-        title_font_size=18,
-        title_font_color='white'
-    )
-    
-    # Pizza simples
-    fig.update_traces(
-        textposition='inside',
-        textinfo='percent+label',
-        textfont_color='black',
-        hole=0.3
-    )
+    # Apenas altura - sem outras configurações
+    fig.update_layout(height=350)
     
     return fig
 
