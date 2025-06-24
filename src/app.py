@@ -228,42 +228,6 @@ st.markdown("""
         color: #ffffff !important;
     }
     
-    /* Login container - Apple style */
-    .login-container-jobs {
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 3rem 2rem;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        margin-top: 8rem;
-        backdrop-filter: blur(20px);
-    }
-    
-    .login-header-jobs {
-        text-align: center;
-        color: #ffffff;
-        font-size: 2.5rem;
-        font-weight: 100;
-        margin-bottom: 2rem;
-        letter-spacing: -1px;
-    }
-    
-    /* Inputs - Apple design */
-    .stTextInput > div > div > input {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        color: #ffffff;
-        padding: 0.75rem;
-        font-size: 0.9rem;
-    }
-    
-    .stTextInput > div > div > input:focus {
-        border-color: rgba(255, 255, 255, 0.3);
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-    }
-    
     /* Rodapé - Minimalismo total */
     .footer-jobs {
         background: transparent;
@@ -357,73 +321,9 @@ st.markdown("""
         .company-header {
             font-size: 1.5rem;
         }
-        .login-container-jobs {
-            margin-top: 4rem;
-            padding: 2rem 1.5rem;
-        }
     }
 </style>
 """, unsafe_allow_html=True)
-
-# Configuração de tema minimalista Steve Jobs para gráficos
-def get_jobs_theme():
-    """Retorna configuração de tema minimalista inspirado em Steve Jobs"""
-    return {
-        'paper_bgcolor': 'rgba(0,0,0,0)',
-        'plot_bgcolor': 'rgba(0,0,0,0)',
-        'font': {
-            'color': '#ffffff',
-            'family': 'SF Pro Display, -apple-system, BlinkMacSystemFont, Helvetica Neue, Arial, sans-serif',
-            'size': 14
-        },
-        'title': {
-            'font': {
-                'color': '#ffffff',
-                'size': 24,
-                'family': 'SF Pro Display, -apple-system, BlinkMacSystemFont, Helvetica Neue, Arial, sans-serif'
-            },
-            'x': 0.5,
-            'xanchor': 'center',
-            'y': 0.95,
-            'yanchor': 'top'
-        },
-        'xaxis': {
-            'showgrid': False,
-            'showline': False,
-            'showticklabels': True,
-            'tickcolor': 'rgba(255,255,255,0.3)',
-            'tickfont': {'color': '#ffffff', 'size': 12},
-            'titlefont': {'color': '#ffffff', 'size': 14}
-        },
-        'yaxis': {
-            'showgrid': True,
-            'gridcolor': 'rgba(255,255,255,0.1)',
-            'showline': False,
-            'showticklabels': True,
-            'tickcolor': 'rgba(255,255,255,0.3)',
-            'tickfont': {'color': '#ffffff', 'size': 12},
-            'titlefont': {'color': '#ffffff', 'size': 14}
-        },
-        'legend': {
-            'font': {'color': '#ffffff', 'size': 12},
-            'bgcolor': 'rgba(0,0,0,0)',
-            'bordercolor': 'rgba(0,0,0,0)',
-            'borderwidth': 0
-        },
-        'margin': {'l': 40, 'r': 40, 't': 60, 'b': 40}
-    }
-
-# Paleta de cores minimalista Steve Jobs
-JOBS_COLORS = [
-    '#ffffff',  # Branco puro - principal
-    '#e5e5e7',  # Cinza muito claro
-    '#d1d1d6',  # Cinza claro
-    '#8e8e93',  # Cinza médio
-    '#636366',  # Cinza escuro
-    '#48484a',  # Cinza muito escuro
-    '#1c1c1e',  # Quase preto
-    '#000000'   # Preto puro
-]
 
 # Função para formatar valores monetários
 def formatar_valor(valor, sufixo="mil"):
@@ -461,26 +361,34 @@ def calcular_indicadores(balanco, dre):
     
     return indicadores
 
-# Função para criar gráfico de barras mínimo absoluto
+# Função para criar gráfico de barras ULTRA SIMPLES
 def criar_grafico_receitas():
     empresas = ['Fox Grãos', 'Fox Log', 'Clube FX']
     receitas = [262000, 79500, 23000]
     
-    # Gráfico básico sem customizações
-    fig = px.bar(x=empresas, y=receitas, title="Revenue by Company")
+    # Gráfico básico sem configurações que causam erro
+    fig = px.bar(
+        x=empresas, 
+        y=receitas,
+        title="Revenue by Company (R$ thousands)"
+    )
     
     # Apenas altura - sem outras configurações
     fig.update_layout(height=350)
     
     return fig
 
-# Função para criar gráfico de pizza mínimo absoluto
+# Função para criar gráfico de pizza ULTRA SIMPLES
 def criar_grafico_commodities():
     commodities = ['Soja', 'Milho', 'Sorgo']
     volumes = [45000, 35000, 8000]
     
-    # Gráfico básico sem customizações
-    fig = px.pie(values=volumes, names=commodities, title="Commodity Distribution")
+    # Gráfico básico sem configurações que causam erro
+    fig = px.pie(
+        values=volumes, 
+        names=commodities,
+        title="Commodity Distribution"
+    )
     
     # Apenas altura - sem outras configurações
     fig.update_layout(height=350)
@@ -598,10 +506,7 @@ def main():
     
     opcao = st.sidebar.selectbox("Selecione a visualização:", menu_options)
     
-    # Exibir informações do usuário no topo
-    col1, col2, col3 = st.columns([2, 1, 1])
-    with col3:
-        st.info(f"👤 Logado como: **{current_user['name']}**")
+    # REMOVIDO: Informações "Logado como" do topo da página principal
     
     # Carregar dados
     bal_graos, dre_graos, comm_graos = gerar_dados_fox_graos()
@@ -624,7 +529,7 @@ def main():
         with col4:
             st.metric("Margem EBITDA", "11.2%", "0.5pp")
         
-        # Gráficos
+        # Gráficos ULTRA SIMPLES
         col1, col2 = st.columns(2)
         
         with col1:
@@ -781,14 +686,13 @@ def main():
         st.markdown("### 📦 Volume por Commodity e Empresa")
         st.dataframe(commodity_volumes, use_container_width=True)
         
-        # Gráfico de margens
+        # Gráfico de margens ULTRA SIMPLES
         fig_margens = px.bar(
             x=['Soja', 'Milho', 'Sorgo'],
             y=[150, 120, 110],
-            title="Margem por Tonelada - Fox Grãos (R$/ton)",
-            color=['Soja', 'Milho', 'Sorgo'],
-            color_discrete_sequence=['#8B4513', '#FFD700', '#CD853F']
+            title="Margem por Tonelada - Fox Grãos (R$/ton)"
         )
+        fig_margens.update_layout(height=350)
         st.plotly_chart(fig_margens, use_container_width=True)
         
         # Análise de preços
@@ -827,7 +731,7 @@ def main():
         
         st.dataframe(indicadores_df, use_container_width=True)
         
-        # Gráficos de indicadores
+        # Gráficos de indicadores ULTRA SIMPLES
         col1, col2 = st.columns(2)
         
         with col1:
@@ -845,6 +749,7 @@ def main():
                 title="Comparativo de Margens (%)",
                 barmode='group'
             )
+            fig_margens.update_layout(height=350)
             st.plotly_chart(fig_margens, use_container_width=True)
         
         with col2:
@@ -861,6 +766,7 @@ def main():
                 title="Liquidez e Endividamento",
                 barmode='group'
             )
+            fig_liquidez.update_layout(height=350)
             st.plotly_chart(fig_liquidez, use_container_width=True)
     
     elif opcao == "⚙️ Administração":
@@ -897,28 +803,11 @@ def main():
         
         with col1:
             st.checkbox("Forçar logout após inatividade", value=True)
-            st.checkbox("Log de todas as ações", value=True)
+            st.checkbox("Backup automático", value=True)
         
         with col2:
-            st.checkbox("Notificar logins suspeitos", value=False)
-            st.checkbox("Backup automático", value=True)
-    
-    # Rodapé minimalista Steve Jobs
-    st.markdown('<div class="footer-jobs">', unsafe_allow_html=True)
-    
-    # Informações de segurança minimalistas
-    security_info = f"Secure Session • {current_user['name']} ({current_user['role'].title()}) • "
-    
-    if check_permission("admin"):
-        security_info += "Full Access"
-    elif check_permission("manager"):
-        security_info += "Management Access"
-    else:
-        security_info += "View Access"
-    
-    st.markdown(security_info)
-    st.markdown("FOX SA Investment Board • Demo Data")
-    st.markdown('</div>', unsafe_allow_html=True)
+            st.selectbox("Nível de log", ["Info", "Debug", "Warning", "Error"])
+            st.selectbox("Frequência backup", ["Diário", "Semanal", "Mensal"])
 
 if __name__ == "__main__":
     main()

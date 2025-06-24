@@ -74,8 +74,24 @@ def show_login_page():
     .login-ultra-minimal {
         max-width: 280px;
         margin: 0 auto;
-        padding: 3rem 0;
+        padding: 1rem 0;
         text-align: center;
+    }
+    
+    /* Remover espaço superior */
+    .main .block-container {
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+        margin-top: 0rem !important;
+    }
+    
+    .stApp > header {
+        display: none !important;
+    }
+    
+    .appview-container .main .block-container {
+        padding-top: 0rem !important;
+        max-width: 100% !important;
     }
     
     .login-title-minimal {
