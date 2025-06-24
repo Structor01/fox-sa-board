@@ -1416,19 +1416,11 @@ def aplicar_css_premium():
 def main():
     """Função principal do dashboard premium"""
     configurar_pagina()
-    
-    if not check_authentication():
-        show_login_page()
-        return
-    
     aplicar_css_premium()
     
     # Header principal premium
     st.markdown(f'<div class="page-header">FOX SA Investment Board</div>', unsafe_allow_html=True)
-    st.markdown(f'<p style="font-size: 1.1rem; color: {CORES_PROFISSIONAIS["text_secondary"]}; font-weight: 400; margin-bottom: 2rem; text-align: left;">Comprehensive agribusiness dashboard for institutional investors</p>', unsafe_allow_html=True)
-    
-    # Sidebar com informações do usuário
-    show_user_info()
+    st.markdown(f'<p style="font-size: 1.1rem; color: #C0C0C0; font-weight: 400; margin-bottom: 2rem; text-align: left;">Comprehensive agribusiness dashboard for institutional investors</p>', unsafe_allow_html=True)
     
     # Controles da sidebar
     ano_selecionado, tipo_visualizacao = criar_sidebar_controles_premium()
@@ -1440,22 +1432,16 @@ def main():
     # Menu de navegação
     st.sidebar.markdown('<div class="sidebar-header">Navigation</div>', unsafe_allow_html=True)
     
-    menu_options = ["Consolidated View"]
-    
-    if check_permission("viewer"):
-        menu_options.extend([
-            "Geographic Map",
-            "LTV Analysis", 
-            "Commodity Analysis",
-            "Logistics Overview",
-            "Advisory Services"
-        ])
-    
-    if check_permission("manager"):
-        menu_options.append("Financial Analysis")
-    
-    if check_permission("admin"):
-        menu_options.append("Administration")
+    menu_options = [
+        "Consolidated View",
+        "Geographic Map",
+        "LTV Analysis", 
+        "Commodity Analysis",
+        "Logistics Overview",
+        "Advisory Services",
+        "Financial Analysis",
+        "Administration"
+    ]
     
     opcao = st.sidebar.selectbox("Select view:", menu_options)
     
@@ -1481,16 +1467,10 @@ def main():
         st.info("Advisory services analysis page - Coming soon!")
     
     elif opcao == "Financial Analysis":
-        if not check_permission("manager"):
-            st.error("Access denied! This section requires Manager permission or higher.")
-            return
         st.markdown('<div class="page-header">Financial Analysis</div>', unsafe_allow_html=True)
         st.info("Financial analysis page - Coming soon!")
     
     elif opcao == "Administration":
-        if not check_permission("admin"):
-            st.error("Access denied! This section requires Administrator permission.")
-            return
         st.markdown('<div class="page-header">Administration</div>', unsafe_allow_html=True)
         st.info("Administration page - Coming soon!")
 
