@@ -182,12 +182,12 @@ def criar_heatmap_performance_premium(performance_data):
     ))
     
     fig.update_layout(
-        title="Monthly Performance Heatmap",
         height=350,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(color=CORES_PROFISSIONAIS['text_primary'], family='Inter'),
         title=dict(
+            text="Monthly Performance Heatmap",
             font=dict(size=20, color=CORES_PROFISSIONAIS['text_primary'], weight='bold'), 
             x=0.02, 
             y=0.95
@@ -226,12 +226,12 @@ def criar_grafico_commodities_premium(commodities_data, ano_selecionado):
     )])
     
     fig.update_layout(
-        title=f"Commodity Volume Distribution - {ano_selecionado}",
         height=450,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(color=CORES_PROFISSIONAIS['text_primary'], family='Inter'),
         title=dict(
+            text=f"Commodity Volume Distribution - {ano_selecionado}",
             font=dict(size=20, color=CORES_PROFISSIONAIS['text_primary'], weight='bold'), 
             x=0.02, 
             y=0.95
@@ -270,12 +270,12 @@ def criar_grafico_receita_barras_premium(dados_temporais, ano_selecionado):
     ])
     
     fig.update_layout(
-        title=f"Total Revenue by Company - {ano_selecionado}",
         height=450,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(color=CORES_PROFISSIONAIS['text_primary'], family='Inter'),
         title=dict(
+            text=f"Total Revenue by Company - {ano_selecionado}",
             font=dict(size=20, color=CORES_PROFISSIONAIS['text_primary'], weight='bold'), 
             x=0.02, 
             y=0.95
