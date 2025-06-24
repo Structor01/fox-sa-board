@@ -628,12 +628,160 @@ def aplicar_css_premium():
             margin-bottom: 0.5rem !important;
         }}
         
-        .css-1d391kg .stSelectbox > div > div {{
-            background: {CORES_PROFISSIONAIS['surface']} !important;
+         .css-1d391kg .stSelectbox > div > div {
+            background: {CORES_PROFISSIONAIS['background']} !important;
             border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
             border-radius: 8px !important;
             color: {CORES_PROFISSIONAIS['text_primary']} !important;
-        }}
+        }
+        
+        /* Inputs e selectboxes pretos */
+        .stSelectbox > div > div {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            border-radius: 8px !important;
+            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+        }
+        
+        .stSelectbox > div > div > div {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+        }
+        
+        .stSelectbox > div > div:hover {
+            border-color: {CORES_PROFISSIONAIS['primary']} !important;
+        }
+        
+        /* Dropdown options */
+        .stSelectbox > div > div > div > div {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+        }
+        
+        /* Text inputs */
+        .stTextInput > div > div > input {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            border-radius: 8px !important;
+            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+        }
+        
+        .stTextInput > div > div > input:focus {
+            border-color: {CORES_PROFISSIONAIS['primary']} !important;
+            box-shadow: 0 0 0 1px {CORES_PROFISSIONAIS['primary']} !important;
+        }
+        
+        /* Number inputs */
+        .stNumberInput > div > div > input {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            border-radius: 8px !important;
+            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+        }
+        
+        .stNumberInput > div > div > input:focus {
+            border-color: {CORES_PROFISSIONAIS['primary']} !important;
+            box-shadow: 0 0 0 1px {CORES_PROFISSIONAIS['primary']} !important;
+        }
+        
+        /* Botões pretos */
+        .stButton > button {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            border-radius: 8px !important;
+            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+            font-weight: 500 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .stButton > button:hover {
+            background: {CORES_PROFISSIONAIS['surface']} !important;
+            border-color: {CORES_PROFISSIONAIS['primary']} !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .stButton > button:active {
+            transform: translateY(0) !important;
+        }
+        
+        /* Botão de login específico */
+        .stForm button {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            border-radius: 8px !important;
+            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+            font-weight: 500 !important;
+            width: 100% !important;
+            padding: 0.75rem !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .stForm button:hover {
+            background: {CORES_PROFISSIONAIS['surface']} !important;
+            border-color: {CORES_PROFISSIONAIS['primary']} !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* Checkboxes e radio buttons */
+        .stCheckbox > label > div {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        }
+        
+        .stRadio > label > div {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        }
+        
+        /* Sliders */
+        .stSlider > div > div > div > div {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+        }
+        
+        /* Date inputs */
+        .stDateInput > div > div > input {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            border-radius: 8px !important;
+            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+        }
+        
+        /* Time inputs */
+        .stTimeInput > div > div > input {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            border-radius: 8px !important;
+            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+        }
+        
+        /* File uploader */
+        .stFileUploader > div > div {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            border-radius: 8px !important;
+        }
+        
+        /* Multiselect */
+        .stMultiSelect > div > div {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            border-radius: 8px !important;
+        }
+        
+        /* Textarea */
+        .stTextArea > div > div > textarea {
+            background: {CORES_PROFISSIONAIS['background']} !important;
+            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            border-radius: 8px !important;
+            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+        }
+        
+        .stTextArea > div > div > textarea:focus {
+            border-color: {CORES_PROFISSIONAIS['primary']} !important;
+            box-shadow: 0 0 0 1px {CORES_PROFISSIONAIS['primary']} !important;
+        }
         
         .stDataFrame {{
             background: {CORES_PROFISSIONAIS['surface']};
