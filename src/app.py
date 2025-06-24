@@ -520,13 +520,29 @@ def pagina_analise_commodities_premium(dados_eda, ano_selecionado):
 
 def aplicar_css_premium():
     """CSS premium com design minimalista preto e prata"""
+    
+    # Definir cores localmente para interpolação
+    cores = {
+        'primary': '#C0C0C0',      # Prata
+        'secondary': '#808080',     # Cinza médio
+        'accent': '#A0A0A0',       # Prata escuro
+        'background': '#000000',    # Preto
+        'surface': '#1A1A1A',      # Preto suave
+        'text_primary': '#FFFFFF',  # Branco
+        'text_secondary': '#C0C0C0', # Prata
+        'border': '#333333',       # Cinza escuro
+        'success': '#90EE90',      # Verde suave
+        'warning': '#FFD700',      # Dourado
+        'error': '#FF6B6B'         # Vermelho suave
+    }
+    
     st.markdown(f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
         .stApp {{
-            background: linear-gradient(135deg, {CORES_PROFISSIONAIS['background']} 0%, {CORES_PROFISSIONAIS['surface']} 100%);
-            color: {CORES_PROFISSIONAIS['text_primary']};
+            background: linear-gradient(135deg, {cores['background']} 0%, {cores['surface']} 100%);
+            color: {cores['text_primary']};
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }}
         
@@ -539,35 +555,35 @@ def aplicar_css_premium():
         .page-header {{
             font-size: 2.5rem;
             font-weight: 700;
-            color: {CORES_PROFISSIONAIS['text_primary']};
+            color: {cores['text_primary']};
             margin: 0 0 2rem 0;
             text-align: left;
             letter-spacing: -1px;
-            border-bottom: 3px solid {CORES_PROFISSIONAIS['primary']};
+            border-bottom: 3px solid {cores['primary']};
             padding-bottom: 1rem;
         }}
         
         .section-header-premium {{
             font-size: 1.5rem;
             font-weight: 600;
-            color: {CORES_PROFISSIONAIS['text_primary']};
+            color: {cores['text_primary']};
             margin: 2rem 0 1rem 0;
             padding-bottom: 0.5rem;
-            border-bottom: 1px solid {CORES_PROFISSIONAIS['border']};
+            border-bottom: 1px solid {cores['border']};
         }}
         
         .sidebar-header {{
             font-size: 1.2rem;
             font-weight: 600;
-            color: {CORES_PROFISSIONAIS['text_primary']};
+            color: {cores['text_primary']};
             margin-bottom: 1.5rem;
             padding-bottom: 0.5rem;
-            border-bottom: 1px solid {CORES_PROFISSIONAIS['border']};
+            border-bottom: 1px solid {cores['border']};
         }}
         
         .metric-card-premium {{
-            background: linear-gradient(135deg, {CORES_PROFISSIONAIS['surface']} 0%, #2A2A2A 100%);
-            border: 1px solid {CORES_PROFISSIONAIS['border']};
+            background: linear-gradient(135deg, {cores['surface']} 0%, #2A2A2A 100%);
+            border: 1px solid {cores['border']};
             border-radius: 12px;
             padding: 2rem 1.5rem;
             margin: 0.5rem 0;
@@ -580,7 +596,7 @@ def aplicar_css_premium():
         .metric-card-premium:hover {{
             transform: translateY(-4px);
             box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
-            border-color: {CORES_PROFISSIONAIS['primary']};
+            border-color: {cores['primary']};
         }}
         
         .metric-card-premium::before {{
@@ -590,11 +606,11 @@ def aplicar_css_premium():
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, {CORES_PROFISSIONAIS['primary']}, {CORES_PROFISSIONAIS['secondary']});
+            background: linear-gradient(90deg, {cores['primary']}, {cores['secondary']});
         }}
         
         .metric-label {{
-            color: {CORES_PROFISSIONAIS['text_secondary']};
+            color: {cores['text_secondary']};
             font-size: 0.875rem;
             font-weight: 500;
             text-transform: uppercase;
@@ -603,7 +619,7 @@ def aplicar_css_premium():
         }}
         
         .metric-value {{
-            color: {CORES_PROFISSIONAIS['text_primary']};
+            color: {cores['text_primary']};
             font-size: 2.25rem;
             font-weight: 700;
             line-height: 1;
@@ -617,175 +633,175 @@ def aplicar_css_premium():
         }}
         
         .css-1d391kg {{
-            background: linear-gradient(180deg, {CORES_PROFISSIONAIS['surface']} 0%, {CORES_PROFISSIONAIS['background']} 100%);
-            border-right: 1px solid {CORES_PROFISSIONAIS['border']};
+            background: linear-gradient(180deg, {cores['surface']} 0%, {cores['background']} 100%);
+            border-right: 1px solid {cores['border']};
         }}
         
         .css-1d391kg .stSelectbox label {{
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+            color: {cores['text_primary']} !important;
             font-weight: 500 !important;
             font-size: 0.875rem !important;
             margin-bottom: 0.5rem !important;
         }}
         
-         .css-1d391kg .stSelectbox > div > div {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+         .css-1d391kg .stSelectbox > div > div {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
-        }
+            color: {cores['text_primary']} !important;
+        }}
         
         /* Inputs e selectboxes pretos */
-        .stSelectbox > div > div {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        .stSelectbox > div > div {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
-        }
+            color: {cores['text_primary']} !important;
+        }}
         
-        .stSelectbox > div > div > div {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
-        }
+        .stSelectbox > div > div > div {{
+            background: {cores['background']} !important;
+            color: {cores['text_primary']} !important;
+        }}
         
-        .stSelectbox > div > div:hover {
-            border-color: {CORES_PROFISSIONAIS['primary']} !important;
-        }
+        .stSelectbox > div > div:hover {{
+            border-color: {cores['primary']} !important;
+        }}
         
         /* Dropdown options */
-        .stSelectbox > div > div > div > div {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
-        }
+        .stSelectbox > div > div > div > div {{
+            background: {cores['background']} !important;
+            color: {cores['text_primary']} !important;
+        }}
         
         /* Text inputs */
-        .stTextInput > div > div > input {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        .stTextInput > div > div > input {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
-        }
+            color: {cores['text_primary']} !important;
+        }}
         
-        .stTextInput > div > div > input:focus {
-            border-color: {CORES_PROFISSIONAIS['primary']} !important;
-            box-shadow: 0 0 0 1px {CORES_PROFISSIONAIS['primary']} !important;
-        }
+        .stTextInput > div > div > input:focus {{
+            border-color: {cores['primary']} !important;
+            box-shadow: 0 0 0 1px {cores['primary']} !important;
+        }}
         
         /* Number inputs */
-        .stNumberInput > div > div > input {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        .stNumberInput > div > div > input {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
-        }
+            color: {cores['text_primary']} !important;
+        }}
         
-        .stNumberInput > div > div > input:focus {
-            border-color: {CORES_PROFISSIONAIS['primary']} !important;
-            box-shadow: 0 0 0 1px {CORES_PROFISSIONAIS['primary']} !important;
-        }
+        .stNumberInput > div > div > input:focus {{
+            border-color: {cores['primary']} !important;
+            box-shadow: 0 0 0 1px {cores['primary']} !important;
+        }}
         
         /* Botões pretos */
-        .stButton > button {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        .stButton > button {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+            color: {cores['text_primary']} !important;
             font-weight: 500 !important;
             transition: all 0.3s ease !important;
-        }
+        }}
         
-        .stButton > button:hover {
-            background: {CORES_PROFISSIONAIS['surface']} !important;
-            border-color: {CORES_PROFISSIONAIS['primary']} !important;
+        .stButton > button:hover {{
+            background: {cores['surface']} !important;
+            border-color: {cores['primary']} !important;
             transform: translateY(-1px) !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-        }
+        }}
         
-        .stButton > button:active {
+        .stButton > button:active {{
             transform: translateY(0) !important;
-        }
+        }}
         
         /* Botão de login específico */
-        .stForm button {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        .stForm button {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+            color: {cores['text_primary']} !important;
             font-weight: 500 !important;
             width: 100% !important;
             padding: 0.75rem !important;
             transition: all 0.3s ease !important;
-        }
+        }}
         
-        .stForm button:hover {
-            background: {CORES_PROFISSIONAIS['surface']} !important;
-            border-color: {CORES_PROFISSIONAIS['primary']} !important;
+        .stForm button:hover {{
+            background: {cores['surface']} !important;
+            border-color: {cores['primary']} !important;
             transform: translateY(-1px) !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-        }
+        }}
         
         /* Checkboxes e radio buttons */
-        .stCheckbox > label > div {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
-        }
+        .stCheckbox > label > div {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
+        }}
         
-        .stRadio > label > div {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
-        }
+        .stRadio > label > div {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
+        }}
         
         /* Sliders */
-        .stSlider > div > div > div > div {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-        }
+        .stSlider > div > div > div > div {{
+            background: {cores['background']} !important;
+        }}
         
         /* Date inputs */
-        .stDateInput > div > div > input {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        .stDateInput > div > div > input {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
-        }
+            color: {cores['text_primary']} !important;
+        }}
         
         /* Time inputs */
-        .stTimeInput > div > div > input {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        .stTimeInput > div > div > input {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
-        }
+            color: {cores['text_primary']} !important;
+        }}
         
         /* File uploader */
-        .stFileUploader > div > div {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        .stFileUploader > div > div {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-        }
+        }}
         
         /* Multiselect */
-        .stMultiSelect > div > div {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        .stMultiSelect > div > div {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-        }
+        }}
         
         /* Textarea */
-        .stTextArea > div > div > textarea {
-            background: {CORES_PROFISSIONAIS['background']} !important;
-            border: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+        .stTextArea > div > div > textarea {{
+            background: {cores['background']} !important;
+            border: 1px solid {cores['border']} !important;
             border-radius: 8px !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
-        }
+            color: {cores['text_primary']} !important;
+        }}
         
-        .stTextArea > div > div > textarea:focus {
-            border-color: {CORES_PROFISSIONAIS['primary']} !important;
-            box-shadow: 0 0 0 1px {CORES_PROFISSIONAIS['primary']} !important;
-        }
+        .stTextArea > div > div > textarea:focus {{
+            border-color: {cores['primary']} !important;
+            box-shadow: 0 0 0 1px {cores['primary']} !important;
+        }}
         
         .stDataFrame {{
-            background: {CORES_PROFISSIONAIS['surface']};
-            border: 1px solid {CORES_PROFISSIONAIS['border']};
+            background: {cores['surface']};
+            border: 1px solid {cores['border']};
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -793,24 +809,24 @@ def aplicar_css_premium():
         
         .stDataFrame table {{
             background: transparent !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+            color: {cores['text_primary']} !important;
         }}
         
         .stDataFrame th {{
-            background: {CORES_PROFISSIONAIS['border']} !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
+            background: {cores['border']} !important;
+            color: {cores['text_primary']} !important;
             font-weight: 600 !important;
             font-size: 0.875rem !important;
             text-transform: uppercase !important;
             letter-spacing: 1px !important;
-            border-bottom: 1px solid {CORES_PROFISSIONAIS['surface']} !important;
+            border-bottom: 1px solid {cores['surface']} !important;
             padding: 1rem !important;
         }}
         
         .stDataFrame td {{
             background: transparent !important;
-            color: {CORES_PROFISSIONAIS['text_primary']} !important;
-            border-bottom: 1px solid {CORES_PROFISSIONAIS['border']} !important;
+            color: {cores['text_primary']} !important;
+            border-bottom: 1px solid {cores['border']} !important;
             font-size: 0.875rem !important;
             padding: 0.75rem 1rem !important;
         }}
@@ -838,16 +854,16 @@ def aplicar_css_premium():
         }}
         
         ::-webkit-scrollbar-track {{
-            background: {CORES_PROFISSIONAIS['background']};
+            background: {cores['background']};
         }}
         
         ::-webkit-scrollbar-thumb {{
-            background: {CORES_PROFISSIONAIS['border']};
+            background: {cores['border']};
             border-radius: 4px;
         }}
         
         ::-webkit-scrollbar-thumb:hover {{
-            background: {CORES_PROFISSIONAIS['primary']};
+            background: {cores['primary']};
         }}
     </style>
     """, unsafe_allow_html=True)
