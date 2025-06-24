@@ -168,11 +168,6 @@ def criar_heatmap_performance_premium(performance_data):
         y=df_pivot.index,
         colorscale=colorscale,
         showscale=True,
-        colorbar=dict(
-            title="Performance %",
-            titlefont=dict(color='#FFFFFF', size=12),
-            tickfont=dict(color='#FFFFFF', size=10)
-        ),
         text=np.round(df_pivot.values, 1),
         texttemplate="%{text}%",
         textfont=dict(color='white', size=11, family='Inter')
