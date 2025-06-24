@@ -461,7 +461,7 @@ def calcular_indicadores(balanco, dre):
     
     return indicadores
 
-# Função para criar gráfico de barras minimalista Steve Jobs
+# Função para criar gráfico de barras super simples
 def criar_grafico_receitas():
     empresas = ['Fox Grãos', 'Fox Log', 'Clube FX']
     receitas = [262000, 79500, 23000]
@@ -470,51 +470,43 @@ def criar_grafico_receitas():
         x=empresas, 
         y=receitas,
         title="Revenue by Company",
-        color_discrete_sequence=[JOBS_COLORS[0], JOBS_COLORS[2], JOBS_COLORS[4]]
+        color_discrete_sequence=['#c0c0c0', '#a0a0a0', '#808080']
     )
     
-    # Aplicar tema minimalista Steve Jobs diretamente sem usar get_jobs_theme()
+    # Configuração super simples - apenas o essencial
     fig.update_layout(
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font_family="SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif",
-        font_color='#ffffff',
+        plot_bgcolor='black',
+        paper_bgcolor='black',
+        font_color='white',
         font_size=12,
-        showlegend=False, 
+        showlegend=False,
         height=350,
-        title_font_size=20,
-        title_font_color='#ffffff',
-        margin=dict(l=40, r=40, t=60, b=40),
-        xaxis=dict(
-            showgrid=False,
-            showline=False,
-            zeroline=False,
-            tickfont=dict(color='#ffffff', size=11)
-        ),
-        yaxis=dict(
-            showgrid=False,
-            showline=False,
-            zeroline=False,
-            tickfont=dict(color='#ffffff', size=11)
-        )
+        title_font_size=18,
+        title_font_color='white'
     )
     
-    # Estilo minimalista das barras
+    # Eixos simples
+    fig.update_xaxes(
+        showgrid=False,
+        showline=False,
+        tickfont_color='white'
+    )
+    fig.update_yaxes(
+        showgrid=False,
+        showline=False,
+        tickfont_color='white'
+    )
+    
+    # Texto nas barras
     fig.update_traces(
         texttemplate='R$ %{y:,.0f}k',
         textposition='outside',
-        textfont_color='#ffffff',
-        textfont_size=12,
-        marker_line_width=0
+        textfont_color='white'
     )
-    
-    # Remover elementos desnecessários (filosofia Jobs)
-    fig.update_xaxes(title_text="")
-    fig.update_yaxes(title_text="")
     
     return fig
 
-# Função para criar gráfico de commodities minimalista Steve Jobs
+# Função para criar gráfico de pizza super simples
 def criar_grafico_commodities():
     commodities = ['Soja', 'Milho', 'Sorgo']
     volumes = [45000, 35000, 8000]
@@ -523,31 +515,26 @@ def criar_grafico_commodities():
         values=volumes,
         names=commodities,
         title="Commodity Distribution",
-        color_discrete_sequence=[JOBS_COLORS[0], JOBS_COLORS[2], JOBS_COLORS[4]]
+        color_discrete_sequence=['#c0c0c0', '#a0a0a0', '#808080']
     )
     
-    # Aplicar tema minimalista Steve Jobs diretamente sem usar get_jobs_theme()
+    # Configuração super simples - apenas o essencial
     fig.update_layout(
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font_family="SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif",
-        font_color='#ffffff',
+        plot_bgcolor='black',
+        paper_bgcolor='black',
+        font_color='white',
         font_size=12,
         height=350,
-        title_font_size=20,
-        title_font_color='#ffffff',
-        margin=dict(l=40, r=40, t=60, b=40)
+        title_font_size=18,
+        title_font_color='white'
     )
     
-    # Estilo minimalista da pizza
+    # Pizza simples
     fig.update_traces(
         textposition='inside',
         textinfo='percent+label',
-        textfont_color='#000000',
-        textfont_size=11,
-        marker_line_color='rgba(0,0,0,0.2)',
-        marker_line_width=1,
-        hole=0.3  # Donut style - mais elegante
+        textfont_color='black',
+        hole=0.3
     )
     
     return fig
