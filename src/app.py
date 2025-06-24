@@ -473,14 +473,30 @@ def criar_grafico_receitas():
         color_discrete_sequence=[JOBS_COLORS[0], JOBS_COLORS[2], JOBS_COLORS[4]]
     )
     
-    # Aplicar tema minimalista Steve Jobs diretamente
-    theme = get_jobs_theme()
-    fig.update_layout(**theme)
+    # Aplicar tema minimalista Steve Jobs diretamente sem usar get_jobs_theme()
     fig.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font_family="SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif",
+        font_color='#ffffff',
+        font_size=12,
         showlegend=False, 
         height=350,
         title_font_size=20,
-        title_font_color='#ffffff'
+        title_font_color='#ffffff',
+        margin=dict(l=40, r=40, t=60, b=40),
+        xaxis=dict(
+            showgrid=False,
+            showline=False,
+            zeroline=False,
+            tickfont=dict(color='#ffffff', size=11)
+        ),
+        yaxis=dict(
+            showgrid=False,
+            showline=False,
+            zeroline=False,
+            tickfont=dict(color='#ffffff', size=11)
+        )
     )
     
     # Estilo minimalista das barras
@@ -510,13 +526,17 @@ def criar_grafico_commodities():
         color_discrete_sequence=[JOBS_COLORS[0], JOBS_COLORS[2], JOBS_COLORS[4]]
     )
     
-    # Aplicar tema minimalista Steve Jobs diretamente
-    theme = get_jobs_theme()
-    fig.update_layout(**theme)
+    # Aplicar tema minimalista Steve Jobs diretamente sem usar get_jobs_theme()
     fig.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font_family="SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif",
+        font_color='#ffffff',
+        font_size=12,
         height=350,
         title_font_size=20,
-        title_font_color='#ffffff'
+        title_font_color='#ffffff',
+        margin=dict(l=40, r=40, t=60, b=40)
     )
     
     # Estilo minimalista da pizza

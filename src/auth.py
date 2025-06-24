@@ -65,36 +65,94 @@ def logout():
     st.rerun()
 
 def show_login_page():
-    """Exibe a página de login minimalista Steve Jobs"""
+    """Tela de login ultra minimalista Steve Jobs"""
     
-    # Container principal minimalista
-    st.markdown('<div class="login-container-jobs">', unsafe_allow_html=True)
-    
-    # Header minimalista
-    st.markdown('<h1 class="login-header-jobs">FOX SA</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.9rem; font-weight: 300; margin-bottom: 3rem;">Investment Board</p>', unsafe_allow_html=True)
-    
-    # Credenciais simples
+    # CSS ultra minimalista para login
     st.markdown("""
-    <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.1);">
-        <div style="color: rgba(255,255,255,0.8); font-weight: 400; margin-bottom: 1rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Demo Access</div>
-        <div style="font-size: 0.85rem; line-height: 1.6;">
-            <div style="color: #ffffff; margin-bottom: 0.5rem;"><strong>admin</strong> / admin</div>
-            <div style="color: #ffffff; margin-bottom: 0.5rem;"><strong>fox.admin</strong> / fox2024</div>
-            <div style="color: #ffffff; margin-bottom: 0.5rem;"><strong>gestor</strong> / gestor123</div>
-            <div style="color: #ffffff;"><strong>viewer</strong> / viewer123</div>
-        </div>
-    </div>
+    <style>
+    /* Login ultra minimalista */
+    .login-ultra-minimal {
+        max-width: 280px;
+        margin: 0 auto;
+        padding: 3rem 0;
+        text-align: center;
+    }
+    
+    .login-title-minimal {
+        font-size: 3rem;
+        font-weight: 100;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+        letter-spacing: -2px;
+    }
+    
+    .login-subtitle-minimal {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 3rem;
+        font-weight: 300;
+    }
+    
+    /* Campos ultra minimalistas */
+    .stTextInput > div > div > input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 4px !important;
+        color: #ffffff !important;
+        font-size: 0.95rem !important;
+        padding: 0.75rem 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .stTextInput > div > div > input:focus {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    /* Botão ultra minimalista */
+    .stButton > button {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border: none !important;
+        border-radius: 4px !important;
+        padding: 0.75rem 2rem !important;
+        font-weight: 500 !important;
+        font-size: 0.9rem !important;
+        width: 100% !important;
+        margin-top: 1rem !important;
+        transition: all 0.15s ease !important;
+    }
+    
+    .stButton > button:hover {
+        background: rgba(255, 255, 255, 0.9) !important;
+        transform: translateY(-1px) !important;
+    }
+    
+    /* Esconder labels */
+    .stTextInput label {
+        display: none !important;
+    }
+    
+    /* Esconder elementos do form */
+    .stForm {
+        border: none !important;
+        background: transparent !important;
+    }
+    </style>
     """, unsafe_allow_html=True)
     
-    # Formulário minimalista
-    with st.form("login_form"):
-        username = st.text_input("Username", placeholder="Enter username")
-        password = st.text_input("Password", type="password", placeholder="Enter password")
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            login_button = st.form_submit_button("Sign In", use_container_width=True)
+    # Container ultra minimalista
+    st.markdown('<div class="login-ultra-minimal">', unsafe_allow_html=True)
+    
+    # Título ultra minimalista
+    st.markdown('<h1 class="login-title-minimal">FOX SA</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="login-subtitle-minimal">Investment Board</p>', unsafe_allow_html=True)
+    
+    # Formulário ultra minimalista
+    with st.form("login_minimal", clear_on_submit=False):
+        username = st.text_input("", placeholder="Username", key="user_min")
+        password = st.text_input("", placeholder="Password", type="password", key="pass_min")
+        login_button = st.form_submit_button("Sign In")
     
     # Processar login
     if login_button:
@@ -103,7 +161,6 @@ def show_login_page():
             if user_data:
                 st.session_state["authenticated"] = True
                 st.session_state["user_data"] = user_data
-                st.success(f"Welcome, {user_data['name']}")
                 st.rerun()
             else:
                 st.error("Invalid credentials")
@@ -112,10 +169,10 @@ def show_login_page():
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Rodapé minimalista
+    # Credenciais discretas no canto
     st.markdown("""
-    <div style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.7rem; margin-top: 3rem; font-weight: 300;">
-        Secure Authentication System
+    <div style="position: fixed; bottom: 15px; left: 15px; font-size: 0.65rem; color: rgba(255,255,255,0.25); line-height: 1.3;">
+    admin/admin<br>gestor/gestor123
     </div>
     """, unsafe_allow_html=True)
 
