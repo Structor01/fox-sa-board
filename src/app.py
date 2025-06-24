@@ -170,11 +170,8 @@ def criar_heatmap_performance_premium(performance_data):
         showscale=True,
         colorbar=dict(
             title="Performance %",
-            titlefont=dict(color=CORES_PROFISSIONAIS['text_primary'], size=12),
-            tickfont=dict(color=CORES_PROFISSIONAIS['text_primary'], size=10),
-            bgcolor='rgba(26, 26, 26, 0.8)',
-            bordercolor=CORES_PROFISSIONAIS['border'],
-            borderwidth=1
+            titlefont=dict(color='#FFFFFF', size=12),
+            tickfont=dict(color='#FFFFFF', size=10)
         ),
         text=np.round(df_pivot.values, 1),
         texttemplate="%{text}%",
@@ -185,19 +182,19 @@ def criar_heatmap_performance_premium(performance_data):
         height=350,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color=CORES_PROFISSIONAIS['text_primary'], family='Inter'),
+        font=dict(color='#FFFFFF', family='Inter'),
         title=dict(
             text="Monthly Performance Heatmap",
-            font=dict(size=20, color=CORES_PROFISSIONAIS['text_primary'], weight='bold'), 
+            font=dict(size=20, color='#FFFFFF', weight='bold'), 
             x=0.02, 
             y=0.95
         ),
         xaxis=dict(
-            color=CORES_PROFISSIONAIS['text_secondary'],
+            color='#C0C0C0',
             tickfont=dict(size=11)
         ),
         yaxis=dict(
-            color=CORES_PROFISSIONAIS['text_secondary'],
+            color='#C0C0C0',
             tickfont=dict(size=11)
         ),
         margin=dict(l=20, r=20, t=60, b=20)
@@ -215,9 +212,7 @@ def criar_grafico_commodities_premium(commodities_data, ano_selecionado):
         values=df_agrupado['volume_comercializado'],
         hole=0.4,
         marker=dict(
-            colors=[CORES_PROFISSIONAIS['primary'], 
-                   CORES_PROFISSIONAIS['secondary'], 
-                   CORES_PROFISSIONAIS['accent']],
+            colors=['#C0C0C0', '#808080', '#A0A0A0'],
             line=dict(color='#000000', width=2)
         ),
         textfont=dict(color='white', size=12, family='Inter'),
@@ -229,19 +224,16 @@ def criar_grafico_commodities_premium(commodities_data, ano_selecionado):
         height=450,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color=CORES_PROFISSIONAIS['text_primary'], family='Inter'),
+        font=dict(color='#FFFFFF', family='Inter'),
         title=dict(
             text=f"Commodity Volume Distribution - {ano_selecionado}",
-            font=dict(size=20, color=CORES_PROFISSIONAIS['text_primary'], weight='bold'), 
+            font=dict(size=20, color='#FFFFFF', weight='bold'), 
             x=0.02, 
             y=0.95
         ),
         showlegend=True,
         legend=dict(
-            font=dict(color=CORES_PROFISSIONAIS['text_primary'], size=12),
-            bgcolor='rgba(26, 26, 26, 0.8)',
-            bordercolor=CORES_PROFISSIONAIS['border'],
-            borderwidth=1
+            font=dict(color='#FFFFFF', size=12)
         ),
         margin=dict(l=20, r=20, t=60, b=20)
     )
@@ -258,14 +250,12 @@ def criar_grafico_receita_barras_premium(dados_temporais, ano_selecionado):
             x=df_agrupado['empresa'],
             y=df_agrupado['receita'],
             marker=dict(
-                color=[CORES_PROFISSIONAIS['primary'], 
-                      CORES_PROFISSIONAIS['secondary'], 
-                      CORES_PROFISSIONAIS['accent']],
+                color=['#C0C0C0', '#808080', '#A0A0A0'],
                 line=dict(color='#000000', width=1)
             ),
             text=df_agrupado['receita'].apply(lambda x: f'R$ {x:,.0f}k'),
             textposition='outside',
-            textfont=dict(color=CORES_PROFISSIONAIS['text_primary'], size=11, family='Inter')
+            textfont=dict(color='#FFFFFF', size=11, family='Inter')
         )
     ])
     
@@ -273,26 +263,26 @@ def criar_grafico_receita_barras_premium(dados_temporais, ano_selecionado):
         height=450,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color=CORES_PROFISSIONAIS['text_primary'], family='Inter'),
+        font=dict(color='#FFFFFF', family='Inter'),
         title=dict(
             text=f"Total Revenue by Company - {ano_selecionado}",
-            font=dict(size=20, color=CORES_PROFISSIONAIS['text_primary'], weight='bold'), 
+            font=dict(size=20, color='#FFFFFF', weight='bold'), 
             x=0.02, 
             y=0.95
         ),
         xaxis=dict(
             showgrid=False, 
             showline=True,
-            linecolor=CORES_PROFISSIONAIS['border'],
-            color=CORES_PROFISSIONAIS['text_secondary'],
+            linecolor='#333333',
+            color='#C0C0C0',
             tickfont=dict(size=11)
         ),
         yaxis=dict(
             showgrid=True, 
             gridcolor='rgba(192, 192, 192, 0.1)', 
             showline=True,
-            linecolor=CORES_PROFISSIONAIS['border'],
-            color=CORES_PROFISSIONAIS['text_secondary'],
+            linecolor='#333333',
+            color='#C0C0C0',
             tickfont=dict(size=11)
         ),
         showlegend=False,
