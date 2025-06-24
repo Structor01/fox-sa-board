@@ -1069,10 +1069,26 @@ def aplicar_css_premium():
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }}
         
+        /* Esconder sidebar completamente */
+        .css-1d391kg {{
+            display: none !important;
+        }}
+        
+        .css-1rs6os {{
+            display: none !important;
+        }}
+        
+        section[data-testid="stSidebar"] {{
+            display: none !important;
+        }}
+        
+        /* Ajustar container principal para ocupar toda a largura */
         .main .block-container {{
             padding-top: 2rem;
             padding-bottom: 2rem;
-            max-width: 1400px;
+            max-width: 100% !important;
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
         }}
         
         .page-header {{
@@ -1084,6 +1100,19 @@ def aplicar_css_premium():
             letter-spacing: -1px;
             border-bottom: 3px solid {cores['primary']};
             padding-bottom: 1rem;
+        }}
+        
+        .controls-header {{
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: {cores['text_primary']};
+            margin: 1rem 0 1.5rem 0;
+            padding: 1rem;
+            background: {cores['surface']};
+            border: 1px solid {cores['border']};
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }}
         
         .section-header-premium {{
@@ -1404,28 +1433,56 @@ def main():
     st.markdown(f'<div class="page-header">FOX SA Investment Board</div>', unsafe_allow_html=True)
     st.markdown(f'<p style="font-size: 1.1rem; color: #C0C0C0; font-weight: 400; margin-bottom: 2rem; text-align: left;">Comprehensive agribusiness dashboard for institutional investors</p>', unsafe_allow_html=True)
     
-    # Controles da sidebar
-    ano_selecionado, tipo_visualizacao = criar_sidebar_controles_premium()
+    # Controles fixados no topo
+    st.markdown('<div class="controls-header">Dashboard Controls</div>', unsafe_allow_html=True)
+    
+    col1, col2, col3, col4 = st.columns([2, 2, 2, 2])
+    
+    with col1:
+        # Menu de navegação
+        menu_options = [
+            "Consolidated View",
+            "Geographic Map", 
+            "LTV Analysis",
+            "Commodity Analysis",
+            "Logistics Overview",
+            "Advisory Services",
+            "Financial Analysis",
+            "Administration"
+        ]
+        opcao = st.selectbox("📊 Select View:", menu_options, key="main_menu")
+    
+    with col2:
+        # Seletor de ano
+        anos_disponiveis = list(range(2019, 2025))
+        ano_selecionado = st.selectbox(
+            "📅 Select Year:",
+            anos_disponiveis,
+            index=len(anos_disponiveis)-1,
+            key="year_selector"
+        )
+    
+    with col3:
+        # Seletor de visualização
+        tipos_visualizacao = ["Standard", "Detailed", "Executive"]
+        tipo_selecionado = st.selectbox(
+            "👁️ View Type:",
+            tipos_visualizacao,
+            index=0,
+            key="view_type"
+        )
+    
+    with col4:
+        # Botão de refresh/info
+        st.markdown('<div style="margin-top: 25px;"></div>', unsafe_allow_html=True)
+        if st.button("🔄 Refresh Data", key="refresh_btn"):
+            st.rerun()
+    
+    st.markdown('<hr style="margin: 2rem 0; border: 1px solid #333333;">', unsafe_allow_html=True)
     
     # Carregar dados
     dados_eda = carregar_dados_eda()
     dados_financeiros = carregar_dados_financeiros()
-    
-    # Menu de navegação
-    st.sidebar.markdown('<div class="sidebar-header">Navigation</div>', unsafe_allow_html=True)
-    
-    menu_options = [
-        "Consolidated View",
-        "Geographic Map",
-        "LTV Analysis", 
-        "Commodity Analysis",
-        "Logistics Overview",
-        "Advisory Services",
-        "Financial Analysis",
-        "Administration"
-    ]
-    
-    opcao = st.sidebar.selectbox("Select view:", menu_options)
     
     # Roteamento de páginas
     if opcao == "Consolidated View":
