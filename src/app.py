@@ -7,6 +7,15 @@ import numpy as np
 from datetime import datetime, timedelta
 import json
 
+# Importar sistema de autenticação
+from auth import (
+    check_authentication, 
+    show_login_page, 
+    show_user_info, 
+    get_current_user,
+    check_permission
+)
+
 # Importar dados simulados
 from gerar_dados_fox import (
     gerar_dados_fox_graos, 
@@ -193,15 +202,48 @@ def exibir_dre(dre, empresa):
 
 # Função principal
 def main():
+    # Verificar autenticação
+    if not check_authentication():
+        show_login_page()
+        return
+    
     # Título principal
     st.markdown('<h1 class="main-header">🌾 FOX SA - Board de Gestão</h1>', unsafe_allow_html=True)
     
-    # Sidebar
+    # Sidebar com informações do usuário
+    show_user_info()
+    
+    # Sidebar de navegação
     st.sidebar.title("📋 Navegação")
-    opcao = st.sidebar.selectbox(
-        "Selecione a visualização:",
-        ["🏠 Visão Consolidada", "🌾 Fox Grãos", "🚛 Fox Log", "💼 Clube FX", "📊 Análise por Commodity", "📈 Indicadores Comparativos"]
-    )
+    
+    # Obter dados do usuário atual
+    current_user = get_current_user()
+    
+    # Opções de menu baseadas no perfil do usuário
+    menu_options = ["🏠 Visão Consolidada"]
+    
+    # Adicionar opções baseadas em permissões
+    if check_permission("viewer"):
+        menu_options.extend([
+            "🌾 Fox Grãos", 
+            "🚛 Fox Log", 
+            "💼 Clube FX", 
+            "📊 Análise por Commodity"
+        ])
+    
+    if check_permission("manager"):
+        menu_options.append("📈 Indicadores Comparativos")
+    
+    # Adicionar seção de administração para admins
+    if check_permission("admin"):
+        menu_options.append("⚙️ Administração")
+    
+    opcao = st.sidebar.selectbox("Selecione a visualização:", menu_options)
+    
+    # Exibir informações do usuário no topo
+    col1, col2, col3 = st.columns([2, 1, 1])
+    with col3:
+        st.info(f"👤 Logado como: **{current_user['name']}**")
     
     # Carregar dados
     bal_graos, dre_graos, comm_graos = gerar_dados_fox_graos()
@@ -403,6 +445,11 @@ def main():
         st.dataframe(precos_data, use_container_width=True)
     
     elif opcao == "📈 Indicadores Comparativos":
+        if not check_permission("manager"):
+            st.error("🚫 Acesso negado! Esta seção requer permissão de Gestor ou superior.")
+            st.info("Entre em contato com o administrador para solicitar acesso.")
+            return
+            
         st.markdown('<h2 class="company-header">📈 Indicadores Financeiros Comparativos</h2>', unsafe_allow_html=True)
         
         # Calcular indicadores para cada empresa
@@ -458,9 +505,61 @@ def main():
             )
             st.plotly_chart(fig_liquidez, use_container_width=True)
     
-    # Footer
+    elif opcao == "⚙️ Administração":
+        if not check_permission("admin"):
+            st.error("🚫 Acesso negado! Esta seção requer permissão de Administrador.")
+            return
+            
+        st.markdown('<h2 class="company-header">⚙️ Painel de Administração</h2>', unsafe_allow_html=True)
+        
+        # Informações do sistema
+        st.markdown("### 📊 Informações do Sistema")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("Usuários Cadastrados", "4")
+        with col2:
+            st.metric("Sessões Ativas", "1")
+        with col3:
+            st.metric("Última Atualização", "Agora")
+        
+        # Logs de acesso
+        st.markdown("### 📝 Logs de Acesso Recentes")
+        logs_data = pd.DataFrame({
+            'Timestamp': ['2024-06-24 14:05:00', '2024-06-24 14:03:00', '2024-06-24 14:00:00'],
+            'Usuário': [current_user['username'], 'gestor', 'viewer'],
+            'Ação': ['Login', 'Visualizou Fox Grãos', 'Login'],
+            'IP': ['192.168.1.100', '192.168.1.101', '192.168.1.102']
+        })
+        st.dataframe(logs_data, use_container_width=True)
+        
+        # Configurações de segurança
+        st.markdown("### 🔐 Configurações de Segurança")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.checkbox("Forçar logout após inatividade", value=True)
+            st.checkbox("Log de todas as ações", value=True)
+        
+        with col2:
+            st.checkbox("Notificar logins suspeitos", value=False)
+            st.checkbox("Backup automático", value=True)
+    
+    # Rodapé com informações de segurança
     st.markdown("---")
-    st.markdown("**FOX SA** - Board de Gestão | Dados simulados para demonstração")
+    
+    # Informações de segurança baseadas no perfil
+    security_info = f"🔐 **Sessão Segura** | Usuário: {current_user['name']} ({current_user['role'].title()}) | "
+    
+    if check_permission("admin"):
+        security_info += "Acesso Total"
+    elif check_permission("manager"):
+        security_info += "Acesso Gerencial"
+    else:
+        security_info += "Acesso Visualização"
+    
+    st.markdown(security_info)
+    st.markdown("**FOX SA** - Board de Gestão | Sistema com Autenticação | Dados simulados para demonstração")
 
 if __name__ == "__main__":
     main()
