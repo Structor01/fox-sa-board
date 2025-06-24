@@ -16,6 +16,12 @@ O **FOX SA Board de Gestão** é uma aplicação web interativa desenvolvida em 
 
 ## ✨ Funcionalidades
 
+### 🔐 Sistema de Autenticação
+- **Login Seguro** com hash SHA256
+- **Controle de Acesso** baseado em perfis (Admin, Manager, Viewer)
+- **Tela de Login** profissional com credenciais de demonstração
+- **Sessão Persistente** com logout seguro
+
 ### 📈 Dashboard Executivo
 - **Visão Consolidada** do grupo com métricas principais
 - **Análise Individual** por empresa
@@ -61,6 +67,22 @@ streamlit run src/app.py
 ```
 http://localhost:8501
 ```
+
+## 🔐 Credenciais de Acesso
+
+O sistema possui 4 usuários de demonstração com diferentes níveis de acesso:
+
+| Usuário | Senha | Perfil | Permissões |
+|---------|-------|--------|------------|
+| `admin` | `admin` | Administrador | Acesso total + painel de administração |
+| `fox.admin` | `fox2024` | FOX Admin | Acesso total + painel de administração |
+| `gestor` | `gestor123` | Gestor | Acesso a relatórios e indicadores |
+| `viewer` | `viewer123` | Visualizador | Acesso somente leitura |
+
+### Níveis de Permissão:
+- **👁️ Viewer**: Visualização básica das empresas e commodities
+- **👨‍💼 Manager**: Acesso a indicadores financeiros comparativos
+- **👑 Admin**: Acesso total + painel de administração e logs
 
 ## 📁 Estrutura do Projeto
 
