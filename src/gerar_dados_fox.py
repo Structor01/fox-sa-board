@@ -6,11 +6,196 @@ import json
 # Configurações gerais
 np.random.seed(42)  # Para reprodutibilidade
 data_atual = datetime.now()
-meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
-# Dados simulados realistas para FOX GRÃOS
+class FOXDataGenerator:
+    """
+    Gerador de dados estruturado seguindo princípios de EDA
+    Baseado na metodologia do blog post Streamlit
+    """
+    
+    def __init__(self):
+        self.anos = list(range(2019, 2025))
+        self.meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 
+                     'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+        self.commodities = ['Soja', 'Milho', 'Sorgo']
+        self.empresas = ['Fox Grãos', 'Fox Log', 'Clube FX']
+        
+    def gerar_dados_temporais(self):
+        """
+        Gera dados temporais para análise de tendências
+        Similar ao dataset de população do blog post
+        """
+        dados_temporais = []
+        
+        for ano in self.anos:
+            for mes_idx, mes in enumerate(self.meses):
+                # Fox Grãos - Receita mensal com sazonalidade
+                receita_base_graos = 22000  # R$ mil/mês
+                sazonalidade_graos = 1 + 0.3 * np.sin(2 * np.pi * mes_idx / 12)  # Pico na safra
+                crescimento_graos = 1 + 0.08 * (ano - 2019)  # 8% ao ano
+                receita_graos = receita_base_graos * sazonalidade_graos * crescimento_graos
+                
+                # Fox Log - Receita mensal
+                receita_base_log = 6600  # R$ mil/mês
+                sazonalidade_log = 1 + 0.2 * np.sin(2 * np.pi * mes_idx / 12)
+                crescimento_log = 1 + 0.05 * (ano - 2019)  # 5% ao ano
+                receita_log = receita_base_log * sazonalidade_log * crescimento_log
+                
+                # Clube FX - Receita mensal
+                receita_base_fx = 1900  # R$ mil/mês
+                crescimento_fx = 1 + 0.12 * (ano - 2019)  # 12% ao ano
+                receita_fx = receita_base_fx * crescimento_fx
+                
+                # Adicionar ruído realista
+                receita_graos *= (1 + np.random.normal(0, 0.05))
+                receita_log *= (1 + np.random.normal(0, 0.08))
+                receita_fx *= (1 + np.random.normal(0, 0.06))
+                
+                dados_temporais.extend([
+                    {
+                        'empresa': 'Fox Grãos',
+                        'ano': ano,
+                        'mes': mes,
+                        'mes_num': mes_idx + 1,
+                        'receita': round(receita_graos, 0),
+                        'data': f"{ano}-{mes_idx+1:02d}-01"
+                    },
+                    {
+                        'empresa': 'Fox Log',
+                        'ano': ano,
+                        'mes': mes,
+                        'mes_num': mes_idx + 1,
+                        'receita': round(receita_log, 0),
+                        'data': f"{ano}-{mes_idx+1:02d}-01"
+                    },
+                    {
+                        'empresa': 'Clube FX',
+                        'ano': ano,
+                        'mes': mes,
+                        'mes_num': mes_idx + 1,
+                        'receita': round(receita_fx, 0),
+                        'data': f"{ano}-{mes_idx+1:02d}-01"
+                    }
+                ])
+        
+        return pd.DataFrame(dados_temporais)
+    
+    def gerar_dados_commodities_temporais(self):
+        """
+        Gera dados de commodities ao longo do tempo
+        """
+        dados_commodities = []
+        
+        for ano in self.anos:
+            for mes_idx, mes in enumerate(self.meses):
+                for commodity in self.commodities:
+                    # Preços base por commodity
+                    precos_base = {'Soja': 4200, 'Milho': 2800, 'Sorgo': 2600}
+                    
+                    # Tendência de preços
+                    tendencia = 1 + 0.06 * (ano - 2019)  # 6% ao ano
+                    sazonalidade = 1 + 0.15 * np.sin(2 * np.pi * mes_idx / 12)
+                    volatilidade = 1 + np.random.normal(0, 0.12)
+                    
+                    preco = precos_base[commodity] * tendencia * sazonalidade * volatilidade
+                    
+                    # Volume comercializado
+                    volumes_base = {'Soja': 3800, 'Milho': 2900, 'Sorgo': 670}  # ton/mês
+                    volume_sazonalidade = 1 + 0.4 * np.sin(2 * np.pi * (mes_idx + 3) / 12)  # Pico pós-safra
+                    volume = volumes_base[commodity] * volume_sazonalidade * (1 + np.random.normal(0, 0.1))
+                    
+                    dados_commodities.append({
+                        'commodity': commodity,
+                        'ano': ano,
+                        'mes': mes,
+                        'mes_num': mes_idx + 1,
+                        'preco_medio': round(preco, 2),
+                        'volume_comercializado': round(volume, 0),
+                        'receita': round(preco * volume / 1000, 0),  # R$ mil
+                        'data': f"{ano}-{mes_idx+1:02d}-01"
+                    })
+        
+        return pd.DataFrame(dados_commodities)
+    
+    def gerar_metricas_performance(self):
+        """
+        Gera métricas de performance para heatmap
+        Similar ao exemplo do blog post
+        """
+        performance_data = []
+        
+        for ano in [2023, 2024]:
+            for mes_idx, mes in enumerate(self.meses):
+                for empresa in self.empresas:
+                    # Performance base por empresa
+                    performance_base = {
+                        'Fox Grãos': 85,
+                        'Fox Log': 78,
+                        'Clube FX': 92
+                    }
+                    
+                    # Variação sazonal e aleatória
+                    sazonalidade = 5 * np.sin(2 * np.pi * mes_idx / 12)
+                    ruido = np.random.normal(0, 8)
+                    
+                    performance = performance_base[empresa] + sazonalidade + ruido
+                    performance = max(60, min(100, performance))  # Limitar entre 60-100
+                    
+                    performance_data.append({
+                        'empresa': empresa,
+                        'ano': ano,
+                        'mes': mes,
+                        'mes_num': mes_idx + 1,
+                        'performance': round(performance, 1),
+                        'data': f"{ano}-{mes_idx+1:02d}-01"
+                    })
+        
+        return pd.DataFrame(performance_data)
+    
+    def gerar_dados_migracao_estados(self):
+        """
+        Gera dados de 'migração' de commodities entre regiões
+        Adaptação do conceito de migração populacional
+        """
+        estados = ['MT', 'GO', 'MS', 'PR', 'RS', 'BA', 'MG', 'SP']
+        dados_migracao = []
+        
+        for estado in estados:
+            for commodity in self.commodities:
+                # Volume base por estado e commodity
+                volumes_base = {
+                    'MT': {'Soja': 15000, 'Milho': 8000, 'Sorgo': 1200},
+                    'GO': {'Soja': 12000, 'Milho': 6500, 'Sorgo': 2000},
+                    'MS': {'Soja': 8000, 'Milho': 4500, 'Sorgo': 800},
+                    'PR': {'Soja': 10000, 'Milho': 7000, 'Sorgo': 600},
+                    'RS': {'Soja': 9000, 'Milho': 3000, 'Sorgo': 400},
+                    'BA': {'Soja': 3000, 'Milho': 2000, 'Sorgo': 1500},
+                    'MG': {'Soja': 4000, 'Milho': 3500, 'Sorgo': 900},
+                    'SP': {'Soja': 2000, 'Milho': 2500, 'Sorgo': 300}
+                }
+                
+                volume = volumes_base[estado][commodity]
+                
+                # Simular entrada e saída (similar a inbound/outbound migration)
+                entrada = volume * np.random.uniform(0.8, 1.2)
+                saida = volume * np.random.uniform(0.7, 1.1)
+                saldo = entrada - saida
+                
+                dados_migracao.append({
+                    'estado': estado,
+                    'commodity': commodity,
+                    'volume_entrada': round(entrada, 0),
+                    'volume_saida': round(saida, 0),
+                    'saldo_liquido': round(saldo, 0),
+                    'tipo_fluxo': 'Entrada' if saldo > 0 else 'Saída'
+                })
+        
+        return pd.DataFrame(dados_migracao)
+
+# Funções de compatibilidade com o código existente
 def gerar_dados_fox_graos():
-    """Gera dados simulados para Fox Grãos - Comercialização e Logística de Grãos"""
+    """Mantém compatibilidade com código existente"""
+    generator = FOXDataGenerator()
     
     # Balanço Patrimonial (em milhares de R$)
     balanco_fox_graos = {
@@ -18,19 +203,19 @@ def gerar_dados_fox_graos():
             'Ativo Circulante': {
                 'Caixa e Equivalentes': 15000,
                 'Contas a Receber': 45000,
-                'Estoques': 85000,  # Alto devido ao estoque de grãos
+                'Estoques': 85000,
                 'Outros Ativos Circulantes': 8000
             },
             'Ativo Não Circulante': {
                 'Realizável a Longo Prazo': 12000,
                 'Investimentos': 5000,
-                'Imobilizado': 120000,  # Silos, armazéns, equipamentos
+                'Imobilizado': 120000,
                 'Intangível': 3000
             }
         },
         'PASSIVO': {
             'Passivo Circulante': {
-                'Fornecedores': 35000,  # Pagamentos a produtores
+                'Fornecedores': 35000,
                 'Empréstimos e Financiamentos': 25000,
                 'Salários e Encargos': 4500,
                 'Tributos a Pagar': 6500,
@@ -48,7 +233,6 @@ def gerar_dados_fox_graos():
         }
     }
     
-    # DRE Anual (em milhares de R$)
     dre_fox_graos = {
         'Receita Operacional Bruta': 280000,
         'Deduções da Receita': -18000,
@@ -69,7 +253,6 @@ def gerar_dados_fox_graos():
         'Lucro Líquido': 9000
     }
     
-    # Dados por commodity (volumes em toneladas, valores em R$/ton)
     commodities_fox_graos = {
         'Soja': {
             'Volume_Comercializado_Anual': 45000,
@@ -99,23 +282,20 @@ def gerar_dados_fox_graos():
     
     return balanco_fox_graos, dre_fox_graos, commodities_fox_graos
 
-# Dados simulados realistas para FOX LOG
 def gerar_dados_fox_log():
-    """Gera dados simulados para Fox Log - Transporte de Grãos e Insumos"""
-    
-    # Balanço Patrimonial (em milhares de R$)
+    """Mantém compatibilidade com código existente"""
     balanco_fox_log = {
         'ATIVO': {
             'Ativo Circulante': {
                 'Caixa e Equivalentes': 8000,
                 'Contas a Receber': 18000,
-                'Estoques': 3000,  # Peças e combustível
+                'Estoques': 3000,
                 'Outros Ativos Circulantes': 2000
             },
             'Ativo Não Circulante': {
                 'Realizável a Longo Prazo': 5000,
                 'Investimentos': 2000,
-                'Imobilizado': 95000,  # Frota de caminhões
+                'Imobilizado': 95000,
                 'Intangível': 1000
             }
         },
@@ -128,7 +308,7 @@ def gerar_dados_fox_log():
                 'Outras Obrigações': 4000
             },
             'Passivo Não Circulante': {
-                'Empréstimos de Longo Prazo': 45000,  # Financiamento da frota
+                'Empréstimos de Longo Prazo': 45000,
                 'Provisões': 2000
             },
             'Patrimônio Líquido': {
@@ -139,7 +319,6 @@ def gerar_dados_fox_log():
         }
     }
     
-    # DRE Anual (em milhares de R$)
     dre_fox_log = {
         'Receita Operacional Bruta': 85000,
         'Deduções da Receita': -5500,
@@ -152,7 +331,7 @@ def gerar_dados_fox_log():
             'Outras Despesas Operacionais': -1500
         },
         'EBITDA': 9000,
-        'Depreciação e Amortização': -12000,  # Alta depreciação da frota
+        'Depreciação e Amortização': -12000,
         'EBIT': -3000,
         'Resultado Financeiro': -2000,
         'Lucro Antes do IR': -5000,
@@ -160,7 +339,6 @@ def gerar_dados_fox_log():
         'Lucro Líquido': -5000
     }
     
-    # Dados operacionais da frota
     operacional_fox_log = {
         'Frota': {
             'Total_Veiculos': 45,
@@ -180,24 +358,21 @@ def gerar_dados_fox_log():
     
     return balanco_fox_log, dre_fox_log, operacional_fox_log
 
-# Dados simulados realistas para CLUBE FX
 def gerar_dados_clube_fx():
-    """Gera dados simulados para Clube FX - Consultoria de Comercialização"""
-    
-    # Balanço Patrimonial (em milhares de R$)
+    """Mantém compatibilidade com código existente"""
     balanco_clube_fx = {
         'ATIVO': {
             'Ativo Circulante': {
                 'Caixa e Equivalentes': 5000,
                 'Contas a Receber': 8000,
-                'Estoques': 0,  # Empresa de serviços
+                'Estoques': 0,
                 'Outros Ativos Circulantes': 1000
             },
             'Ativo Não Circulante': {
                 'Realizável a Longo Prazo': 2000,
                 'Investimentos': 3000,
-                'Imobilizado': 8000,  # Escritórios e equipamentos
-                'Intangível': 5000  # Software e sistemas
+                'Imobilizado': 8000,
+                'Intangível': 5000
             }
         },
         'PASSIVO': {
@@ -220,7 +395,6 @@ def gerar_dados_clube_fx():
         }
     }
     
-    # DRE Anual (em milhares de R$)
     dre_clube_fx = {
         'Receita Operacional Bruta': 25000,
         'Deduções da Receita': -2000,
@@ -241,11 +415,10 @@ def gerar_dados_clube_fx():
         'Lucro Líquido': 2800
     }
     
-    # Dados operacionais de consultoria
     operacional_clube_fx = {
         'Clientes': {
             'Total_Clientes_Ativos': 85,
-            'Receita_Media_Por_Cliente': 270,  # R$ mil/ano
+            'Receita_Media_Por_Cliente': 270,
             'Taxa_Retencao': 0.82,
             'Horas_Consultoria_Mes': 1200,
             'Valor_Hora_Media': 180
@@ -259,16 +432,12 @@ def gerar_dados_clube_fx():
     
     return balanco_clube_fx, dre_clube_fx, operacional_clube_fx
 
-# Gerar dados consolidados
 def gerar_dados_consolidados():
-    """Gera dados consolidados do Grupo FOX SA"""
-    
-    # Obter dados individuais
+    """Mantém compatibilidade com código existente"""
     bal_graos, dre_graos, _ = gerar_dados_fox_graos()
     bal_log, dre_log, _ = gerar_dados_fox_log()
     bal_fx, dre_fx, _ = gerar_dados_clube_fx()
     
-    # Consolidar Balanço Patrimonial
     def somar_balanco(item_graos, item_log, item_fx):
         if isinstance(item_graos, dict):
             resultado = {}
@@ -280,9 +449,8 @@ def gerar_dados_consolidados():
     
     balanco_consolidado = somar_balanco(bal_graos, bal_log, bal_fx)
     
-    # Consolidar DRE
     dre_consolidado = {
-        'Receita Operacional Bruta': 390000,  # 280k + 85k + 25k
+        'Receita Operacional Bruta': 390000,
         'Deduções da Receita': -25500,
         'Receita Operacional Líquida': 364500,
         'Custo dos Produtos/Serviços Vendidos': -276000,
@@ -303,21 +471,35 @@ def gerar_dados_consolidados():
     
     return balanco_consolidado, dre_consolidado
 
+# Funções para análise exploratória de dados (EDA)
+def obter_dados_para_eda():
+    """
+    Retorna todos os datasets estruturados para EDA
+    """
+    generator = FOXDataGenerator()
+    
+    return {
+        'dados_temporais': generator.gerar_dados_temporais(),
+        'commodities_temporais': generator.gerar_dados_commodities_temporais(),
+        'performance_mensal': generator.gerar_metricas_performance(),
+        'migracao_commodities': generator.gerar_dados_migracao_estados()
+    }
+
 if __name__ == "__main__":
-    # Gerar todos os dados
-    print("Gerando dados simulados para FOX SA...")
+    print("Gerando dados estruturados para EDA...")
     
-    # Dados individuais
-    bal_graos, dre_graos, comm_graos = gerar_dados_fox_graos()
-    bal_log, dre_log, op_log = gerar_dados_fox_log()
-    bal_fx, dre_fx, op_fx = gerar_dados_clube_fx()
+    # Gerar dados para análise exploratória
+    dados_eda = obter_dados_para_eda()
     
-    # Dados consolidados
-    bal_consolidado, dre_consolidado = gerar_dados_consolidados()
+    print("Datasets gerados:")
+    for nome, df in dados_eda.items():
+        print(f"- {nome}: {df.shape[0]} registros, {df.shape[1]} colunas")
     
-    print("Dados gerados com sucesso!")
-    print(f"Fox Grãos - Receita Líquida: R$ {dre_graos['Receita Operacional Líquida']:,} mil")
-    print(f"Fox Log - Receita Líquida: R$ {dre_log['Receita Operacional Líquida']:,} mil")
-    print(f"Clube FX - Receita Líquida: R$ {dre_fx['Receita Operacional Líquida']:,} mil")
-    print(f"Consolidado - Receita Líquida: R$ {dre_consolidado['Receita Operacional Líquida']:,} mil")
+    # Exemplo de análise
+    print("\nExemplo de análise temporal:")
+    df_temporal = dados_eda['dados_temporais']
+    receita_2024 = df_temporal[df_temporal['ano'] == 2024].groupby('empresa')['receita'].sum()
+    print(receita_2024)
+    
+    print("\nDados gerados com sucesso seguindo princípios de EDA!")
 
