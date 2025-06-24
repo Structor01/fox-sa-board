@@ -26,218 +26,262 @@ from gerar_dados_fox import (
 
 # Configuração da página
 st.set_page_config(
-    page_title="FOX SA - Board de Gestão",
+    page_title="FOX SA - Investment Board",
     page_icon="🌾",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# CSS minimalista inspirado em Steve Jobs
+# CSS moderno inspirado no dashboard de exemplo
 st.markdown("""
 <style>
-    /* Reset e configurações globais - Simplicidade extrema */
+    /* Importar fontes modernas */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Reset e configurações globais */
     .stApp {
-        background: #000000;
+        background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
         color: #ffffff;
-        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
     
-    /* Header principal - Tipografia perfeita */
+    /* Container principal */
+    .main .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        max-width: 1200px;
+    }
+    
+    /* Header principal moderno */
     .main-header {
-        font-size: 3.2rem;
-        font-weight: 100;
+        font-size: 2.5rem;
+        font-weight: 700;
         color: #ffffff;
-        text-align: center;
-        margin: 3rem 0;
-        letter-spacing: -1px;
-        line-height: 1.1;
-    }
-    
-    /* Headers de seção - Minimalismo */
-    .company-header {
-        font-size: 1.8rem;
-        font-weight: 200;
-        color: #ffffff;
-        margin: 3rem 0 2rem 0;
-        padding: 0;
-        border: none;
+        text-align: left;
+        margin: 0 0 0.5rem 0;
         letter-spacing: -0.5px;
+        line-height: 1.2;
     }
     
-    /* Cards de métricas - Simplicidade */
-    .metric-card-jobs {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        transition: all 0.2s ease;
-    }
-    
-    .metric-card-jobs:hover {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.2);
-    }
-    
-    /* Sidebar - Minimalismo total */
-    .css-1d391kg {
-        background: #000000;
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    /* Botões - Design Apple */
-    .stButton > button {
-        background: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 6px;
-        padding: 0.75rem 1.5rem;
+    .main-subtitle {
+        font-size: 1.1rem;
+        color: #8b949e;
         font-weight: 400;
-        font-size: 0.9rem;
-        transition: all 0.2s ease;
-        letter-spacing: 0;
-    }
-    
-    .stButton > button:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-    
-    /* Métricas - Estilo Apple com contraste perfeito */
-    .stMetric {
-        background: transparent;
-        border: none;
-        padding: 1rem 0;
+        margin-bottom: 2rem;
         text-align: left;
     }
     
+    /* Cards de métricas modernos */
+    .metric-card-modern {
+        background: linear-gradient(135deg, #21262d 0%, #30363d 100%);
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 0.5rem 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .metric-card-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        border-color: #58a6ff;
+    }
+    
+    .metric-card-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #58a6ff, #7c3aed, #f97316);
+    }
+    
+    /* Métricas com estilo moderno */
+    .stMetric {
+        background: transparent;
+        border: none;
+        padding: 0;
+    }
+    
     .stMetric label {
-        color: #ffffff !important;
-        font-size: 0.8rem !important;
-        font-weight: 400 !important;
+        color: #8b949e !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
         text-transform: uppercase !important;
-        letter-spacing: 1px !important;
+        letter-spacing: 0.5px !important;
         margin-bottom: 0.5rem !important;
     }
     
     .stMetric div[data-testid="metric-container"] > div:first-child {
         color: #ffffff !important;
-        font-size: 2.2rem !important;
-        font-weight: 200 !important;
+        font-size: 2rem !important;
+        font-weight: 700 !important;
         line-height: 1.1 !important;
+        margin-bottom: 0.25rem !important;
     }
     
     .stMetric div[data-testid="metric-container"] > div:nth-child(2) {
-        color: #ffffff !important;
-        font-size: 0.9rem !important;
+        color: #7c3aed !important;
+        font-size: 0.875rem !important;
+        font-weight: 600 !important;
     }
     
-    /* Tabelas - Minimalismo com contraste perfeito */
+    /* Sidebar moderna */
+    .css-1d391kg {
+        background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+        border-right: 1px solid #30363d;
+    }
+    
+    .css-1d391kg .stSelectbox label {
+        color: #f0f6fc !important;
+        font-weight: 500 !important;
+        font-size: 0.875rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .css-1d391kg .stSelectbox > div > div {
+        background: #21262d !important;
+        border: 1px solid #30363d !important;
+        border-radius: 8px !important;
+        color: #f0f6fc !important;
+    }
+    
+    /* Botões modernos */
+    .stButton > button {
+        background: linear-gradient(135deg, #58a6ff 0%, #7c3aed 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(88, 166, 255, 0.25);
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(88, 166, 255, 0.4);
+    }
+    
+    /* Tabelas modernas */
     .stDataFrame {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 6px;
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 12px;
         overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
     
     .stDataFrame table {
         background: transparent !important;
-        color: #ffffff !important;
+        color: #f0f6fc !important;
     }
     
     .stDataFrame th {
-        background: rgba(255, 255, 255, 0.1) !important;
-        color: #ffffff !important;
-        font-weight: 500 !important;
-        font-size: 0.9rem !important;
+        background: #30363d !important;
+        color: #f0f6fc !important;
+        font-weight: 600 !important;
+        font-size: 0.875rem !important;
         text-transform: uppercase !important;
-        letter-spacing: 1px !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        letter-spacing: 0.5px !important;
+        border-bottom: 1px solid #21262d !important;
         padding: 1rem !important;
     }
     
     .stDataFrame td {
         background: transparent !important;
-        color: #ffffff !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-        font-size: 1rem !important;
-        padding: 0.8rem 1rem !important;
+        color: #f0f6fc !important;
+        border-bottom: 1px solid #30363d !important;
+        font-size: 0.875rem !important;
+        padding: 0.75rem 1rem !important;
     }
     
-    /* Selectbox - Apple style com contraste perfeito */
-    .stSelectbox > div > div {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 6px;
+    .stDataFrame tr:hover td {
+        background: rgba(88, 166, 255, 0.1) !important;
+    }
+    
+    /* Headers de seção */
+    .section-header {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #f0f6fc;
+        margin: 2rem 0 1rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #30363d;
+    }
+    
+    /* Tags de commodity modernas */
+    .commodity-tag-modern {
+        background: linear-gradient(135deg, #58a6ff 0%, #7c3aed 100%);
         color: #ffffff;
-    }
-    
-    .stSelectbox label {
-        color: #ffffff !important;
-        font-weight: 500 !important;
-        font-size: 0.9rem !important;
-    }
-    
-    /* Sidebar - Minimalismo total com contraste */
-    .css-1d391kg {
-        background: #000000;
-        border-right: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .css-1d391kg .stMarkdown {
-        color: #ffffff !important;
-    }
-    
-    .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3 {
-        color: #ffffff !important;
-    }
-    
-    .css-1d391kg p {
-        color: #ffffff !important;
-    }
-    
-    /* Tags de commodity - Minimalismo */
-    .commodity-tag-jobs {
-        background: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
-        padding: 0.3rem 0.8rem;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        margin: 0.2rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin: 0.25rem;
         display: inline-block;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        font-weight: 400;
-        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(88, 166, 255, 0.25);
+        transition: all 0.3s ease;
     }
     
-    /* Informações de usuário - Simplicidade com contraste perfeito */
-    .user-info-jobs {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 6px;
-        padding: 1rem;
-        margin: 1rem 0;
-        text-align: left;
+    .commodity-tag-modern:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(88, 166, 255, 0.4);
     }
     
-    .user-info-jobs h1, .user-info-jobs h2, .user-info-jobs h3, .user-info-jobs h4 {
-        color: #ffffff !important;
+    /* Gráficos com fundo moderno */
+    .js-plotly-plot {
+        background: #21262d !important;
+        border-radius: 12px !important;
+        border: 1px solid #30363d !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
     }
     
-    .user-info-jobs p, .user-info-jobs span, .user-info-jobs div {
-        color: #ffffff !important;
+    /* Alertas modernos */
+    .stAlert {
+        background: linear-gradient(135deg, #21262d 0%, #30363d 100%) !important;
+        border: 1px solid #30363d !important;
+        border-radius: 12px !important;
+        color: #f0f6fc !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
     }
     
-    /* Rodapé - Minimalismo total */
-    .footer-jobs {
+    .stSuccess {
+        background: linear-gradient(135deg, #238636 0%, #2ea043 100%) !important;
+        border: 1px solid #2ea043 !important;
+    }
+    
+    .stError {
+        background: linear-gradient(135deg, #da3633 0%, #f85149 100%) !important;
+        border: 1px solid #f85149 !important;
+    }
+    
+    /* Tabs modernas */
+    .stTabs [data-baseweb="tab-list"] {
+        background: #21262d;
+        border-radius: 8px;
+        padding: 0.25rem;
+        border: 1px solid #30363d;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
         background: transparent;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 2rem 0;
-        margin-top: 4rem;
-        text-align: center;
-        color: rgba(255, 255, 255, 0.6);
-        font-weight: 300;
-        font-size: 0.8rem;
+        color: #8b949e;
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #58a6ff 0%, #7c3aed 100%);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(88, 166, 255, 0.25);
     }
     
     /* Esconder elementos desnecessários */
@@ -246,81 +290,43 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {visibility: hidden;}
     
-    /* ESTILOS GLOBAIS PARA CONTRASTE PERFEITO */
-    .stApp, .stApp * {
-        color: #ffffff !important;
-    }
-    
-    /* Forçar texto branco em todos os elementos */
-    h1, h2, h3, h4, h5, h6 {
-        color: #ffffff !important;
-    }
-    
-    p, span, div, label {
-        color: #ffffff !important;
-    }
-    
-    /* Elementos específicos do Streamlit */
-    .stMarkdown {
-        color: #ffffff !important;
-    }
-    
-    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
-        color: #ffffff !important;
-    }
-    
-    .stMarkdown p {
-        color: #ffffff !important;
-    }
-    
-    /* Sidebar específica */
-    .css-1d391kg * {
-        color: #ffffff !important;
-    }
-    
-    /* Alertas e mensagens */
-    .stAlert {
-        background: rgba(255, 255, 255, 0.1) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        color: #ffffff !important;
-    }
-    
-    .stSuccess {
-        background: rgba(0, 255, 0, 0.1) !important;
-        border: 1px solid rgba(0, 255, 0, 0.3) !important;
-        color: #ffffff !important;
-    }
-    
-    .stError {
-        background: rgba(255, 0, 0, 0.1) !important;
-        border: 1px solid rgba(255, 0, 0, 0.3) !important;
-        color: #ffffff !important;
-    }
-    
-    .stWarning {
-        background: rgba(255, 255, 0, 0.1) !important;
-        border: 1px solid rgba(255, 255, 0, 0.3) !important;
-        color: #ffffff !important;
-    }
-    
-    /* Animação suave - Subtil como Apple */
+    /* Animações suaves */
     .stApp > div {
-        animation: fadeIn 0.3s ease-out;
+        animation: fadeIn 0.5s ease-out;
     }
     
     @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
-    /* Responsividade - Mobile first */
+    /* Responsividade */
     @media (max-width: 768px) {
         .main-header {
-            font-size: 2.5rem;
+            font-size: 2rem;
         }
-        .company-header {
-            font-size: 1.5rem;
+        .metric-card-modern {
+            margin: 0.25rem 0;
+            padding: 1rem;
         }
+    }
+    
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #161b22;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #30363d;
+        border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #58a6ff;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -361,43 +367,129 @@ def calcular_indicadores(balanco, dre):
     
     return indicadores
 
-# Função para criar gráfico de barras ULTRA SIMPLES
+# Função para criar gráfico de barras moderno
 def criar_grafico_receitas():
     empresas = ['Fox Grãos', 'Fox Log', 'Clube FX']
     receitas = [262000, 79500, 23000]
     
-    # Gráfico básico sem configurações que causam erro
     fig = px.bar(
         x=empresas, 
         y=receitas,
-        title="Revenue by Company (R$ thousands)"
+        title="Revenue by Company (R$ thousands)",
+        color=empresas,
+        color_discrete_sequence=['#58a6ff', '#7c3aed', '#f97316']
     )
     
-    # Apenas altura - sem outras configurações
-    fig.update_layout(height=350)
+    fig.update_layout(
+        height=400,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#f0f6fc', family='Inter'),
+        title=dict(
+            font=dict(size=18, color='#f0f6fc'),
+            x=0.02,
+            y=0.95
+        ),
+        xaxis=dict(
+            showgrid=False,
+            showline=False,
+            color='#8b949e'
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor='rgba(139, 148, 158, 0.1)',
+            showline=False,
+            color='#8b949e'
+        ),
+        showlegend=False,
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
     
     return fig
 
-# Função para criar gráfico de pizza ULTRA SIMPLES
+# Função para criar gráfico de pizza moderno
 def criar_grafico_commodities():
     commodities = ['Soja', 'Milho', 'Sorgo']
     volumes = [45000, 35000, 8000]
     
-    # Gráfico básico sem configurações que causam erro
     fig = px.pie(
         values=volumes, 
         names=commodities,
-        title="Commodity Distribution"
+        title="Commodity Distribution",
+        color_discrete_sequence=['#58a6ff', '#7c3aed', '#f97316']
     )
     
-    # Apenas altura - sem outras configurações
-    fig.update_layout(height=350)
+    fig.update_layout(
+        height=400,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#f0f6fc', family='Inter'),
+        title=dict(
+            font=dict(size=18, color='#f0f6fc'),
+            x=0.02,
+            y=0.95
+        ),
+        showlegend=True,
+        legend=dict(
+            orientation="v",
+            yanchor="middle",
+            y=0.5,
+            xanchor="left",
+            x=1.05,
+            font=dict(color='#f0f6fc')
+        ),
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
+    
+    return fig
+
+# Função para criar gráfico de heatmap moderno
+def criar_heatmap_performance():
+    # Dados simulados de performance mensal
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun']
+    empresas = ['Fox Grãos', 'Fox Log', 'Clube FX']
+    
+    # Matriz de performance (valores simulados)
+    performance = [
+        [85, 92, 78, 88, 95, 90],  # Fox Grãos
+        [78, 85, 82, 79, 88, 85],  # Fox Log
+        [92, 88, 95, 90, 85, 92]   # Clube FX
+    ]
+    
+    fig = go.Figure(data=go.Heatmap(
+        z=performance,
+        x=meses,
+        y=empresas,
+        colorscale='Blues',
+        showscale=True,
+        colorbar=dict(
+            title="Performance %",
+            titlefont=dict(color='#f0f6fc'),
+            tickfont=dict(color='#f0f6fc')
+        )
+    ))
+    
+    fig.update_layout(
+        title="Monthly Performance Heatmap",
+        height=300,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#f0f6fc', family='Inter'),
+        title=dict(
+            font=dict(size=18, color='#f0f6fc'),
+            x=0.02,
+            y=0.95
+        ),
+        xaxis=dict(color='#8b949e'),
+        yaxis=dict(color='#8b949e'),
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
     
     return fig
 
 # Função para exibir balanço patrimonial
 def exibir_balanco(balanco, empresa):
-    st.markdown(f"### 📊 Balanço Patrimonial - {empresa}")
+    st.markdown(f'<h3 class="section-header">📊 Balanço Patrimonial - {empresa}</h3>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
@@ -440,7 +532,7 @@ def exibir_balanco(balanco, empresa):
 
 # Função para exibir DRE
 def exibir_dre(dre, empresa):
-    st.markdown(f"### 📈 Demonstração do Resultado - {empresa}")
+    st.markdown(f'<h3 class="section-header">📈 Demonstração do Resultado - {empresa}</h3>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 1])
     
@@ -472,21 +564,21 @@ def main():
         show_login_page()
         return
     
-    # Título principal minimalista Steve Jobs
-    st.markdown('<h1 class="main-header">FOX SA</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 1.1rem; font-weight: 300; margin-bottom: 3rem; letter-spacing: 1px;">Investment Board</p>', unsafe_allow_html=True)
+    # Header principal moderno
+    st.markdown('<h1 class="main-header">🌾 FOX SA Investment Board</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="main-subtitle">Comprehensive financial dashboard for agribusiness management</p>', unsafe_allow_html=True)
     
     # Sidebar com informações do usuário
     show_user_info()
     
     # Sidebar de navegação
-    st.sidebar.title("📋 Navegação")
+    st.sidebar.title("📋 Navigation")
     
     # Obter dados do usuário atual
     current_user = get_current_user()
     
     # Opções de menu baseadas no perfil do usuário
-    menu_options = ["🏠 Visão Consolidada"]
+    menu_options = ["🏠 Consolidated View"]
     
     # Adicionar opções baseadas em permissões
     if check_permission("viewer"):
@@ -494,19 +586,17 @@ def main():
             "🌾 Fox Grãos", 
             "🚛 Fox Log", 
             "💼 Clube FX", 
-            "📊 Análise por Commodity"
+            "📊 Commodity Analysis"
         ])
     
     if check_permission("manager"):
-        menu_options.append("📈 Indicadores Comparativos")
+        menu_options.append("📈 Comparative Indicators")
     
     # Adicionar seção de administração para admins
     if check_permission("admin"):
-        menu_options.append("⚙️ Administração")
+        menu_options.append("⚙️ Administration")
     
-    opcao = st.sidebar.selectbox("Selecione a visualização:", menu_options)
-    
-    # REMOVIDO: Informações "Logado como" do topo da página principal
+    opcao = st.sidebar.selectbox("Select view:", menu_options)
     
     # Carregar dados
     bal_graos, dre_graos, comm_graos = gerar_dados_fox_graos()
@@ -514,22 +604,35 @@ def main():
     bal_fx, dre_fx, op_fx = gerar_dados_clube_fx()
     bal_consolidado, dre_consolidado = gerar_dados_consolidados()
     
-    if opcao == "🏠 Visão Consolidada":
-        st.markdown('<h2 class="company-header">📊 Visão Consolidada do Grupo</h2>', unsafe_allow_html=True)
+    if opcao == "🏠 Consolidated View":
+        st.markdown('<h2 class="section-header">📊 Group Overview</h2>', unsafe_allow_html=True)
         
-        # Métricas principais
+        # Métricas principais em cards modernos
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Receita Líquida", "R$ 364.500 mil", "12.5%")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Net Revenue", "R$ 364.5M", "12.5%")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col2:
-            st.metric("EBITDA", "R$ 41.000 mil", "8.2%")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("EBITDA", "R$ 41.0M", "8.2%")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col3:
-            st.metric("Lucro Líquido", "R$ 6.800 mil", "-15.3%")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Net Profit", "R$ 6.8M", "-15.3%")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col4:
-            st.metric("Margem EBITDA", "11.2%", "0.5pp")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("EBITDA Margin", "11.2%", "0.5pp")
+            st.markdown('</div>', unsafe_allow_html=True)
         
-        # Gráficos ULTRA SIMPLES
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Gráficos modernos
         col1, col2 = st.columns(2)
         
         with col1:
@@ -540,59 +643,75 @@ def main():
             fig_commodities = criar_grafico_commodities()
             st.plotly_chart(fig_commodities, use_container_width=True)
         
+        # Heatmap de performance
+        st.markdown('<h3 class="section-header">📈 Performance Overview</h3>', unsafe_allow_html=True)
+        fig_heatmap = criar_heatmap_performance()
+        st.plotly_chart(fig_heatmap, use_container_width=True)
+        
         # Demonstrações consolidadas
         st.markdown("---")
         
-        tab1, tab2 = st.tabs(["📊 Balanço Consolidado", "📈 DRE Consolidada"])
+        tab1, tab2 = st.tabs(["📊 Consolidated Balance Sheet", "📈 Consolidated P&L"])
         
         with tab1:
-            exibir_balanco(bal_consolidado, "Grupo FOX SA")
+            exibir_balanco(bal_consolidado, "FOX SA Group")
         
         with tab2:
-            exibir_dre(dre_consolidado, "Grupo FOX SA")
+            exibir_dre(dre_consolidado, "FOX SA Group")
     
     elif opcao == "🌾 Fox Grãos":
-        st.markdown('<h2 class="company-header">🌾 Fox Grãos - Comercialização e Logística</h2>', unsafe_allow_html=True)
+        st.markdown('<h2 class="section-header">🌾 Fox Grãos - Grain Trading & Logistics</h2>', unsafe_allow_html=True)
         
-        # Tags de commodities minimalistas
+        # Tags de commodities modernas
         st.markdown("""
-        <div style="margin: 2rem 0;">
-            <span class="commodity-tag-jobs">Soja</span>
-            <span class="commodity-tag-jobs">Milho</span>
-            <span class="commodity-tag-jobs">Sorgo</span>
+        <div style="margin: 1.5rem 0;">
+            <span class="commodity-tag-modern">Soja</span>
+            <span class="commodity-tag-modern">Milho</span>
+            <span class="commodity-tag-modern">Sorgo</span>
         </div>
         """, unsafe_allow_html=True)
-        
-        st.markdown("---")
         
         # Métricas operacionais
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Volume Total", "88.000 ton/ano")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Total Volume", "88,000 tons/year")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col2:
-            st.metric("Receita Líquida", "R$ 262.000 mil")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Net Revenue", "R$ 262.0M")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col3:
-            st.metric("Margem Bruta", "19.8%")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Gross Margin", "19.8%")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col4:
-            st.metric("Capacidade Armazenagem", "40.000 ton")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Storage Capacity", "40,000 tons")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
         
         # Dados por commodity
-        st.markdown("### 📦 Performance por Commodity")
+        st.markdown('<h3 class="section-header">📦 Commodity Performance</h3>', unsafe_allow_html=True)
         
         commodity_data = pd.DataFrame({
             'Commodity': ['Soja', 'Milho', 'Sorgo'],
-            'Volume (ton)': [45000, 35000, 8000],
-            'Preço Médio Compra (R$/ton)': [4200, 2800, 2600],
-            'Preço Médio Venda (R$/ton)': [4350, 2920, 2710],
-            'Margem (R$/ton)': [150, 120, 110],
-            'Estoque Atual (ton)': [12000, 8000, 2000]
+            'Volume (tons)': [45000, 35000, 8000],
+            'Avg Buy Price (R$/ton)': [4200, 2800, 2600],
+            'Avg Sell Price (R$/ton)': [4350, 2920, 2710],
+            'Margin (R$/ton)': [150, 120, 110],
+            'Current Stock (tons)': [12000, 8000, 2000]
         })
         
         st.dataframe(commodity_data, use_container_width=True)
         
         # Demonstrações financeiras
-        tab1, tab2 = st.tabs(["📊 Balanço Patrimonial", "📈 DRE"])
+        tab1, tab2 = st.tabs(["📊 Balance Sheet", "📈 P&L Statement"])
         
         with tab1:
             exibir_balanco(bal_graos, "Fox Grãos")
@@ -601,34 +720,47 @@ def main():
             exibir_dre(dre_graos, "Fox Grãos")
     
     elif opcao == "🚛 Fox Log":
-        st.markdown('<h2 class="company-header">🚛 Fox Log - Transporte de Grãos e Insumos</h2>', unsafe_allow_html=True)
+        st.markdown('<h2 class="section-header">🚛 Fox Log - Grain & Input Transportation</h2>', unsafe_allow_html=True)
         
         # Métricas operacionais
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Frota Total", "45 veículos")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Fleet Size", "45 vehicles")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col2:
-            st.metric("Km/mês", "180.000 km")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Monthly KM", "180,000 km")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col3:
-            st.metric("Taxa Ocupação", "78%")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Utilization Rate", "78%")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col4:
-            st.metric("Receita Líquida", "R$ 79.500 mil")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Net Revenue", "R$ 79.5M")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
         
         # Dados de transporte por commodity
-        st.markdown("### 🚛 Transporte por Commodity")
+        st.markdown('<h3 class="section-header">🚛 Transportation by Commodity</h3>', unsafe_allow_html=True)
         
         transporte_data = pd.DataFrame({
-            'Commodity': ['Soja', 'Milho', 'Sorgo', 'Insumos'],
-            'Volume Mensal (ton)': [8500, 6200, 1800, 2500],
-            'Receita por Ton (R$)': [85, 90, 88, 120],
-            'Receita Mensal (R$ mil)': [722.5, 558, 158.4, 300]
+            'Commodity': ['Soja', 'Milho', 'Sorgo', 'Inputs'],
+            'Monthly Volume (tons)': [8500, 6200, 1800, 2500],
+            'Revenue per Ton (R$)': [85, 90, 88, 120],
+            'Monthly Revenue (R$ thousands)': [722.5, 558, 158.4, 300]
         })
         
         st.dataframe(transporte_data, use_container_width=True)
         
         # Demonstrações financeiras
-        tab1, tab2 = st.tabs(["📊 Balanço Patrimonial", "📈 DRE"])
+        tab1, tab2 = st.tabs(["📊 Balance Sheet", "📈 P&L Statement"])
         
         with tab1:
             exibir_balanco(bal_log, "Fox Log")
@@ -637,34 +769,47 @@ def main():
             exibir_dre(dre_log, "Fox Log")
     
     elif opcao == "💼 Clube FX":
-        st.markdown('<h2 class="company-header">💼 Clube FX - Consultoria de Comercialização</h2>', unsafe_allow_html=True)
+        st.markdown('<h2 class="section-header">💼 Clube FX - Trading Consultancy</h2>', unsafe_allow_html=True)
         
         # Métricas operacionais
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Clientes Ativos", "85")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Active Clients", "85")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col2:
-            st.metric("Receita/Cliente", "R$ 270 mil/ano")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Revenue/Client", "R$ 270k/year")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col3:
-            st.metric("Taxa Retenção", "82%")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Retention Rate", "82%")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col4:
-            st.metric("Valor Hora", "R$ 180")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Hourly Rate", "R$ 180")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
         
         # Dados de assessoria por commodity
-        st.markdown("### 💡 Assessoria por Commodity")
+        st.markdown('<h3 class="section-header">💡 Advisory by Commodity</h3>', unsafe_allow_html=True)
         
         assessoria_data = pd.DataFrame({
             'Commodity': ['Soja', 'Milho', 'Sorgo'],
-            'Volume Assessorado (ton/ano)': [125000, 95000, 25000],
-            'Comissão Média (R$/ton)': [12, 15, 14],
-            'Receita Anual (R$ mil)': [1500, 1425, 350]
+            'Volume Advised (tons/year)': [125000, 95000, 25000],
+            'Avg Commission (R$/ton)': [12, 15, 14],
+            'Annual Revenue (R$ thousands)': [1500, 1425, 350]
         })
         
         st.dataframe(assessoria_data, use_container_width=True)
         
         # Demonstrações financeiras
-        tab1, tab2 = st.tabs(["📊 Balanço Patrimonial", "📈 DRE"])
+        tab1, tab2 = st.tabs(["📊 Balance Sheet", "📈 P&L Statement"])
         
         with tab1:
             exibir_balanco(bal_fx, "Clube FX")
@@ -672,47 +817,74 @@ def main():
         with tab2:
             exibir_dre(dre_fx, "Clube FX")
     
-    elif opcao == "📊 Análise por Commodity":
-        st.markdown('<h2 class="company-header">📊 Análise por Commodity</h2>', unsafe_allow_html=True)
+    elif opcao == "📊 Commodity Analysis":
+        st.markdown('<h2 class="section-header">📊 Commodity Analysis</h2>', unsafe_allow_html=True)
         
         # Comparativo de volumes
         commodity_volumes = pd.DataFrame({
             'Commodity': ['Soja', 'Milho', 'Sorgo'],
-            'Fox Grãos (ton)': [45000, 35000, 8000],
-            'Fox Log (ton/mês)': [8500, 6200, 1800],
-            'Clube FX Assessoria (ton)': [125000, 95000, 25000]
+            'Fox Grãos (tons)': [45000, 35000, 8000],
+            'Fox Log (tons/month)': [8500, 6200, 1800],
+            'Clube FX Advisory (tons)': [125000, 95000, 25000]
         })
         
-        st.markdown("### 📦 Volume por Commodity e Empresa")
+        st.markdown('<h3 class="section-header">📦 Volume by Commodity and Company</h3>', unsafe_allow_html=True)
         st.dataframe(commodity_volumes, use_container_width=True)
         
-        # Gráfico de margens ULTRA SIMPLES
+        # Gráfico de margens moderno
         fig_margens = px.bar(
             x=['Soja', 'Milho', 'Sorgo'],
             y=[150, 120, 110],
-            title="Margem por Tonelada - Fox Grãos (R$/ton)"
+            title="Margin per Ton - Fox Grãos (R$/ton)",
+            color=['Soja', 'Milho', 'Sorgo'],
+            color_discrete_sequence=['#58a6ff', '#7c3aed', '#f97316']
         )
-        fig_margens.update_layout(height=350)
+        
+        fig_margens.update_layout(
+            height=400,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#f0f6fc', family='Inter'),
+            title=dict(
+                font=dict(size=18, color='#f0f6fc'),
+                x=0.02,
+                y=0.95
+            ),
+            xaxis=dict(
+                showgrid=False,
+                showline=False,
+                color='#8b949e'
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor='rgba(139, 148, 158, 0.1)',
+                showline=False,
+                color='#8b949e'
+            ),
+            showlegend=False,
+            margin=dict(l=20, r=20, t=60, b=20)
+        )
+        
         st.plotly_chart(fig_margens, use_container_width=True)
         
         # Análise de preços
-        st.markdown("### 💰 Análise de Preços")
+        st.markdown('<h3 class="section-header">💰 Price Analysis</h3>', unsafe_allow_html=True)
         precos_data = pd.DataFrame({
             'Commodity': ['Soja', 'Milho', 'Sorgo'],
-            'Preço Compra (R$/ton)': [4200, 2800, 2600],
-            'Preço Venda (R$/ton)': [4350, 2920, 2710],
+            'Buy Price (R$/ton)': [4200, 2800, 2600],
+            'Sell Price (R$/ton)': [4350, 2920, 2710],
             'Spread (%)': [3.6, 4.3, 4.2]
         })
         
         st.dataframe(precos_data, use_container_width=True)
     
-    elif opcao == "📈 Indicadores Comparativos":
+    elif opcao == "📈 Comparative Indicators":
         if not check_permission("manager"):
-            st.error("🚫 Acesso negado! Esta seção requer permissão de Gestor ou superior.")
-            st.info("Entre em contato com o administrador para solicitar acesso.")
+            st.error("🚫 Access denied! This section requires Manager permission or higher.")
+            st.info("Contact the administrator to request access.")
             return
             
-        st.markdown('<h2 class="company-header">📈 Indicadores Financeiros Comparativos</h2>', unsafe_allow_html=True)
+        st.markdown('<h2 class="section-header">📈 Comparative Financial Indicators</h2>', unsafe_allow_html=True)
         
         # Calcular indicadores para cada empresa
         ind_graos = calcular_indicadores(bal_graos, dre_graos)
@@ -722,92 +894,154 @@ def main():
         
         # Criar DataFrame comparativo
         indicadores_df = pd.DataFrame({
-            'Indicador': list(ind_graos.keys()),
+            'Indicator': list(ind_graos.keys()),
             'Fox Grãos': [f"{v:.2f}" for v in ind_graos.values()],
             'Fox Log': [f"{v:.2f}" for v in ind_log.values()],
             'Clube FX': [f"{v:.2f}" for v in ind_fx.values()],
-            'Consolidado': [f"{v:.2f}" for v in ind_consolidado.values()]
+            'Consolidated': [f"{v:.2f}" for v in ind_consolidado.values()]
         })
         
         st.dataframe(indicadores_df, use_container_width=True)
         
-        # Gráficos de indicadores ULTRA SIMPLES
+        # Gráficos de indicadores modernos
         col1, col2 = st.columns(2)
         
         with col1:
             # Gráfico de margens
             margens_data = pd.DataFrame({
-                'Empresa': ['Fox Grãos', 'Fox Log', 'Clube FX'],
-                'Margem Bruta': [ind_graos['Margem Bruta (%)'], ind_log['Margem Bruta (%)'], ind_fx['Margem Bruta (%)']],
-                'Margem EBITDA': [ind_graos['Margem EBITDA (%)'], ind_log['Margem EBITDA (%)'], ind_fx['Margem EBITDA (%)']],
-                'Margem Líquida': [ind_graos['Margem Líquida (%)'], ind_log['Margem Líquida (%)'], ind_fx['Margem Líquida (%)']]
+                'Company': ['Fox Grãos', 'Fox Log', 'Clube FX'],
+                'Gross Margin': [ind_graos['Margem Bruta (%)'], ind_log['Margem Bruta (%)'], ind_fx['Margem Bruta (%)']],
+                'EBITDA Margin': [ind_graos['Margem EBITDA (%)'], ind_log['Margem EBITDA (%)'], ind_fx['Margem EBITDA (%)']],
+                'Net Margin': [ind_graos['Margem Líquida (%)'], ind_log['Margem Líquida (%)'], ind_fx['Margem Líquida (%)']]
             })
             
             fig_margens = px.bar(
-                margens_data.melt(id_vars='Empresa', var_name='Tipo', value_name='Margem'),
-                x='Empresa', y='Margem', color='Tipo',
-                title="Comparativo de Margens (%)",
-                barmode='group'
+                margens_data.melt(id_vars='Company', var_name='Type', value_name='Margin'),
+                x='Company', y='Margin', color='Type',
+                title="Margin Comparison (%)",
+                barmode='group',
+                color_discrete_sequence=['#58a6ff', '#7c3aed', '#f97316']
             )
-            fig_margens.update_layout(height=350)
+            
+            fig_margens.update_layout(
+                height=400,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='#f0f6fc', family='Inter'),
+                title=dict(
+                    font=dict(size=18, color='#f0f6fc'),
+                    x=0.02,
+                    y=0.95
+                ),
+                xaxis=dict(
+                    showgrid=False,
+                    showline=False,
+                    color='#8b949e'
+                ),
+                yaxis=dict(
+                    showgrid=True,
+                    gridcolor='rgba(139, 148, 158, 0.1)',
+                    showline=False,
+                    color='#8b949e'
+                ),
+                legend=dict(font=dict(color='#f0f6fc')),
+                margin=dict(l=20, r=20, t=60, b=20)
+            )
+            
             st.plotly_chart(fig_margens, use_container_width=True)
         
         with col2:
             # Gráfico de liquidez e endividamento
             liquidez_data = pd.DataFrame({
-                'Empresa': ['Fox Grãos', 'Fox Log', 'Clube FX'],
-                'Liquidez Corrente': [ind_graos['Liquidez Corrente'], ind_log['Liquidez Corrente'], ind_fx['Liquidez Corrente']],
-                'Endividamento Total': [ind_graos['Endividamento Total'], ind_log['Endividamento Total'], ind_fx['Endividamento Total']]
+                'Company': ['Fox Grãos', 'Fox Log', 'Clube FX'],
+                'Current Ratio': [ind_graos['Liquidez Corrente'], ind_log['Liquidez Corrente'], ind_fx['Liquidez Corrente']],
+                'Total Debt': [ind_graos['Endividamento Total'], ind_log['Endividamento Total'], ind_fx['Endividamento Total']]
             })
             
             fig_liquidez = px.bar(
-                liquidez_data.melt(id_vars='Empresa', var_name='Indicador', value_name='Valor'),
-                x='Empresa', y='Valor', color='Indicador',
-                title="Liquidez e Endividamento",
-                barmode='group'
+                liquidez_data.melt(id_vars='Company', var_name='Indicator', value_name='Value'),
+                x='Company', y='Value', color='Indicator',
+                title="Liquidity and Debt",
+                barmode='group',
+                color_discrete_sequence=['#58a6ff', '#f97316']
             )
-            fig_liquidez.update_layout(height=350)
+            
+            fig_liquidez.update_layout(
+                height=400,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='#f0f6fc', family='Inter'),
+                title=dict(
+                    font=dict(size=18, color='#f0f6fc'),
+                    x=0.02,
+                    y=0.95
+                ),
+                xaxis=dict(
+                    showgrid=False,
+                    showline=False,
+                    color='#8b949e'
+                ),
+                yaxis=dict(
+                    showgrid=True,
+                    gridcolor='rgba(139, 148, 158, 0.1)',
+                    showline=False,
+                    color='#8b949e'
+                ),
+                legend=dict(font=dict(color='#f0f6fc')),
+                margin=dict(l=20, r=20, t=60, b=20)
+            )
+            
             st.plotly_chart(fig_liquidez, use_container_width=True)
     
-    elif opcao == "⚙️ Administração":
+    elif opcao == "⚙️ Administration":
         if not check_permission("admin"):
-            st.error("🚫 Acesso negado! Esta seção requer permissão de Administrador.")
+            st.error("🚫 Access denied! This section requires Administrator permission.")
             return
             
-        st.markdown('<h2 class="company-header">⚙️ Painel de Administração</h2>', unsafe_allow_html=True)
+        st.markdown('<h2 class="section-header">⚙️ Administration Panel</h2>', unsafe_allow_html=True)
         
         # Informações do sistema
-        st.markdown("### 📊 Informações do Sistema")
+        st.markdown('<h3 class="section-header">📊 System Information</h3>', unsafe_allow_html=True)
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            st.metric("Usuários Cadastrados", "4")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Registered Users", "4")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col2:
-            st.metric("Sessões Ativas", "1")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Active Sessions", "1")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         with col3:
-            st.metric("Última Atualização", "Agora")
+            st.markdown('<div class="metric-card-modern">', unsafe_allow_html=True)
+            st.metric("Last Update", "Now")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
         
         # Logs de acesso
-        st.markdown("### 📝 Logs de Acesso Recentes")
+        st.markdown('<h3 class="section-header">📝 Recent Access Logs</h3>', unsafe_allow_html=True)
         logs_data = pd.DataFrame({
-            'Timestamp': ['2024-06-24 14:05:00', '2024-06-24 14:03:00', '2024-06-24 14:00:00'],
-            'Usuário': [current_user['username'], 'gestor', 'viewer'],
-            'Ação': ['Login', 'Visualizou Fox Grãos', 'Login'],
+            'Timestamp': ['2024-06-24 15:45:00', '2024-06-24 15:43:00', '2024-06-24 15:40:00'],
+            'User': [current_user['username'], 'gestor', 'viewer'],
+            'Action': ['Login', 'Viewed Fox Grãos', 'Login'],
             'IP': ['192.168.1.100', '192.168.1.101', '192.168.1.102']
         })
         st.dataframe(logs_data, use_container_width=True)
         
         # Configurações de segurança
-        st.markdown("### 🔐 Configurações de Segurança")
+        st.markdown('<h3 class="section-header">🔐 Security Settings</h3>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         
         with col1:
-            st.checkbox("Forçar logout após inatividade", value=True)
-            st.checkbox("Backup automático", value=True)
+            st.checkbox("Force logout after inactivity", value=True)
+            st.checkbox("Automatic backup", value=True)
         
         with col2:
-            st.selectbox("Nível de log", ["Info", "Debug", "Warning", "Error"])
-            st.selectbox("Frequência backup", ["Diário", "Semanal", "Mensal"])
+            st.selectbox("Log level", ["Info", "Debug", "Warning", "Error"])
+            st.selectbox("Backup frequency", ["Daily", "Weekly", "Monthly"])
 
 if __name__ == "__main__":
     main()
