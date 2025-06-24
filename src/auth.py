@@ -65,77 +65,36 @@ def logout():
     st.rerun()
 
 def show_login_page():
-    """Exibe a página de login"""
+    """Exibe a página de login premium"""
     
-    # CSS customizado para a página de login
+    # Container principal premium
+    st.markdown('<div class="login-container-premium">', unsafe_allow_html=True)
+    
+    # Header premium
+    st.markdown('<h1 class="login-header-premium">🌾 FOX SA</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align: center; color: #c0c0c0; font-size: 1.1rem; font-weight: 300; letter-spacing: 1px; margin-bottom: 2rem;">INVESTMENT BOARD - EXCLUSIVE ACCESS</p>', unsafe_allow_html=True)
+    
+    # Informações de credenciais premium
     st.markdown("""
-    <style>
-        .login-container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 2rem;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-top: 5rem;
-        }
-        .login-header {
-            text-align: center;
-            color: #2E8B57;
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 2rem;
-        }
-        .login-subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 2rem;
-        }
-        .credentials-info {
-            background-color: #e8f5e8;
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #2E8B57;
-        }
-        .credentials-title {
-            font-weight: bold;
-            color: #2E8B57;
-            margin-bottom: 0.5rem;
-        }
-        .credential-item {
-            font-size: 0.9rem;
-            margin: 0.2rem 0;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Container principal
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
-    
-    # Header
-    st.markdown('<h1 class="login-header">🌾 FOX SA</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="login-subtitle">Board de Gestão - Acesso Restrito</p>', unsafe_allow_html=True)
-    
-    # Informações de credenciais para demonstração
-    st.markdown("""
-    <div class="credentials-info">
-        <div class="credentials-title">👤 Credenciais de Demonstração:</div>
-        <div class="credential-item"><strong>Admin:</strong> admin / admin</div>
-        <div class="credential-item"><strong>FOX Admin:</strong> fox.admin / fox2024</div>
-        <div class="credential-item"><strong>Gestor:</strong> gestor / gestor123</div>
-        <div class="credential-item"><strong>Viewer:</strong> viewer / viewer123</div>
+    <div style="background: linear-gradient(145deg, #2a2a2a, #1a1a1a); padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem; border: 1px solid rgba(192, 192, 192, 0.2);">
+        <div style="color: #c0c0c0; font-weight: 300; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; text-align: center;">👤 Demo Credentials</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem;">
+            <div style="color: #ffffff;"><strong>ADMIN:</strong> admin / admin</div>
+            <div style="color: #ffffff;"><strong>FOX ADMIN:</strong> fox.admin / fox2024</div>
+            <div style="color: #ffffff;"><strong>MANAGER:</strong> gestor / gestor123</div>
+            <div style="color: #ffffff;"><strong>VIEWER:</strong> viewer / viewer123</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Formulário de login
+    # Formulário de login premium
     with st.form("login_form"):
-        username = st.text_input("👤 Usuário", placeholder="Digite seu usuário")
-        password = st.text_input("🔒 Senha", type="password", placeholder="Digite sua senha")
+        username = st.text_input("👤 USERNAME", placeholder="Enter your username")
+        password = st.text_input("🔒 PASSWORD", type="password", placeholder="Enter your password")
         
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            login_button = st.form_submit_button("🚀 Entrar", use_container_width=True)
+            login_button = st.form_submit_button("🚀 ACCESS BOARD", use_container_width=True)
     
     # Processar login
     if login_button:
@@ -144,21 +103,20 @@ def show_login_page():
             if user_data:
                 st.session_state["authenticated"] = True
                 st.session_state["user_data"] = user_data
-                st.success(f"✅ Bem-vindo, {user_data['name']}!")
+                st.success(f"✅ Welcome, {user_data['name']}!")
                 st.rerun()
             else:
-                st.error("❌ Usuário ou senha incorretos!")
+                st.error("❌ Invalid credentials!")
         else:
-            st.warning("⚠️ Por favor, preencha todos os campos!")
+            st.warning("⚠️ Please fill all fields!")
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Rodapé
-    st.markdown("---")
+    # Rodapé premium
     st.markdown("""
-    <div style="text-align: center; color: #666; font-size: 0.8rem;">
-        <p>🔐 Sistema de autenticação seguro</p>
-        <p>FOX SA - Agronegócio | Desenvolvido com Streamlit</p>
+    <div style="text-align: center; color: #666; font-size: 0.8rem; margin-top: 3rem; padding: 2rem;">
+        <p style="color: #c0c0c0; font-weight: 300; letter-spacing: 1px;">🔐 SECURE AUTHENTICATION SYSTEM</p>
+        <p style="color: #888; font-weight: 200;">FOX SA - AGRIBUSINESS INVESTMENT BOARD</p>
     </div>
     """, unsafe_allow_html=True)
 
