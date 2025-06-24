@@ -65,36 +65,36 @@ def logout():
     st.rerun()
 
 def show_login_page():
-    """Exibe a página de login premium"""
+    """Exibe a página de login minimalista Steve Jobs"""
     
-    # Container principal premium
-    st.markdown('<div class="login-container-premium">', unsafe_allow_html=True)
+    # Container principal minimalista
+    st.markdown('<div class="login-container-jobs">', unsafe_allow_html=True)
     
-    # Header premium
-    st.markdown('<h1 class="login-header-premium">🌾 FOX SA</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="text-align: center; color: #c0c0c0; font-size: 1.1rem; font-weight: 300; letter-spacing: 1px; margin-bottom: 2rem;">INVESTMENT BOARD - EXCLUSIVE ACCESS</p>', unsafe_allow_html=True)
+    # Header minimalista
+    st.markdown('<h1 class="login-header-jobs">FOX SA</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.9rem; font-weight: 300; margin-bottom: 3rem;">Investment Board</p>', unsafe_allow_html=True)
     
-    # Informações de credenciais premium
+    # Credenciais simples
     st.markdown("""
-    <div style="background: linear-gradient(145deg, #2a2a2a, #1a1a1a); padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem; border: 1px solid rgba(192, 192, 192, 0.2);">
-        <div style="color: #c0c0c0; font-weight: 300; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; text-align: center;">👤 Demo Credentials</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem;">
-            <div style="color: #ffffff;"><strong>ADMIN:</strong> admin / admin</div>
-            <div style="color: #ffffff;"><strong>FOX ADMIN:</strong> fox.admin / fox2024</div>
-            <div style="color: #ffffff;"><strong>MANAGER:</strong> gestor / gestor123</div>
-            <div style="color: #ffffff;"><strong>VIEWER:</strong> viewer / viewer123</div>
+    <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.1);">
+        <div style="color: rgba(255,255,255,0.8); font-weight: 400; margin-bottom: 1rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Demo Access</div>
+        <div style="font-size: 0.85rem; line-height: 1.6;">
+            <div style="color: #ffffff; margin-bottom: 0.5rem;"><strong>admin</strong> / admin</div>
+            <div style="color: #ffffff; margin-bottom: 0.5rem;"><strong>fox.admin</strong> / fox2024</div>
+            <div style="color: #ffffff; margin-bottom: 0.5rem;"><strong>gestor</strong> / gestor123</div>
+            <div style="color: #ffffff;"><strong>viewer</strong> / viewer123</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Formulário de login premium
+    # Formulário minimalista
     with st.form("login_form"):
-        username = st.text_input("👤 USERNAME", placeholder="Enter your username")
-        password = st.text_input("🔒 PASSWORD", type="password", placeholder="Enter your password")
+        username = st.text_input("Username", placeholder="Enter username")
+        password = st.text_input("Password", type="password", placeholder="Enter password")
         
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            login_button = st.form_submit_button("🚀 ACCESS BOARD", use_container_width=True)
+            login_button = st.form_submit_button("Sign In", use_container_width=True)
     
     # Processar login
     if login_button:
@@ -103,20 +103,19 @@ def show_login_page():
             if user_data:
                 st.session_state["authenticated"] = True
                 st.session_state["user_data"] = user_data
-                st.success(f"✅ Welcome, {user_data['name']}!")
+                st.success(f"Welcome, {user_data['name']}")
                 st.rerun()
             else:
-                st.error("❌ Invalid credentials!")
+                st.error("Invalid credentials")
         else:
-            st.warning("⚠️ Please fill all fields!")
+            st.warning("Please fill all fields")
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Rodapé premium
+    # Rodapé minimalista
     st.markdown("""
-    <div style="text-align: center; color: #666; font-size: 0.8rem; margin-top: 3rem; padding: 2rem;">
-        <p style="color: #c0c0c0; font-weight: 300; letter-spacing: 1px;">🔐 SECURE AUTHENTICATION SYSTEM</p>
-        <p style="color: #888; font-weight: 200;">FOX SA - AGRIBUSINESS INVESTMENT BOARD</p>
+    <div style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.7rem; margin-top: 3rem; font-weight: 300;">
+        Secure Authentication System
     </div>
     """, unsafe_allow_html=True)
 

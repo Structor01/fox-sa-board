@@ -32,130 +32,106 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS customizado para design premium
+# CSS minimalista inspirado em Steve Jobs
 st.markdown("""
 <style>
-    /* Reset e configurações globais */
+    /* Reset e configurações globais - Simplicidade extrema */
     .stApp {
-        background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+        background: #000000;
         color: #ffffff;
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
     }
     
-    /* Header principal premium */
+    /* Header principal - Tipografia perfeita */
     .main-header {
-        font-size: 3.5rem;
-        font-weight: 300;
+        font-size: 3.2rem;
+        font-weight: 100;
         color: #ffffff;
         text-align: center;
-        margin: 2rem 0;
-        text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-        letter-spacing: 2px;
-        background: linear-gradient(45deg, #ffffff, #c0c0c0, #ffffff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: glow 3s ease-in-out infinite alternate;
+        margin: 3rem 0;
+        letter-spacing: -1px;
+        line-height: 1.1;
     }
     
-    @keyframes glow {
-        from { text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
-        to { text-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
-    }
-    
-    /* Headers de seção premium */
+    /* Headers de seção - Minimalismo */
     .company-header {
-        font-size: 2.2rem;
+        font-size: 1.8rem;
         font-weight: 200;
-        color: #c0c0c0;
-        margin: 2rem 0 1.5rem 0;
-        padding: 1rem 0;
-        border-bottom: 2px solid rgba(192, 192, 192, 0.3);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    /* Cards de métricas premium */
-    .metric-card-premium {
-        background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-        border: 1px solid rgba(192, 192, 192, 0.2);
-        border-radius: 15px;
-        padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: 
-            0 10px 30px rgba(0, 0, 0, 0.5),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-    }
-    
-    .metric-card-premium:hover {
-        transform: translateY(-5px);
-        box-shadow: 
-            0 20px 40px rgba(0, 0, 0, 0.7),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        border-color: rgba(192, 192, 192, 0.4);
-    }
-    
-    /* Sidebar premium */
-    .css-1d391kg {
-        background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
-        border-right: 1px solid rgba(192, 192, 192, 0.2);
-    }
-    
-    /* Botões premium */
-    .stButton > button {
-        background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
         color: #ffffff;
-        border: 1px solid rgba(192, 192, 192, 0.3);
-        border-radius: 10px;
-        padding: 0.75rem 2rem;
-        font-weight: 300;
-        letter-spacing: 1px;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
+        margin: 3rem 0 2rem 0;
+        padding: 0;
+        border: none;
+        letter-spacing: -0.5px;
+    }
+    
+    /* Cards de métricas - Simplicidade */
+    .metric-card-jobs {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        transition: all 0.2s ease;
+    }
+    
+    .metric-card-jobs:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Sidebar - Minimalismo total */
+    .css-1d391kg {
+        background: #000000;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Botões - Design Apple */
+    .stButton > button {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 400;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        letter-spacing: 0;
     }
     
     .stButton > button:hover {
-        background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
-        border-color: rgba(192, 192, 192, 0.5);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
     }
     
-    /* Métricas com estilo premium */
+    /* Métricas - Estilo Apple */
     .stMetric {
-        background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-        border: 1px solid rgba(192, 192, 192, 0.2);
-        border-radius: 12px;
-        padding: 1.5rem;
-        text-align: center;
-        transition: all 0.3s ease;
-    }
-    
-    .stMetric:hover {
-        transform: scale(1.02);
-        border-color: rgba(192, 192, 192, 0.4);
+        background: transparent;
+        border: none;
+        padding: 1rem 0;
+        text-align: left;
     }
     
     .stMetric label {
-        color: #c0c0c0 !important;
-        font-size: 0.9rem !important;
-        font-weight: 300 !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        font-size: 0.8rem !important;
+        font-weight: 400 !important;
         text-transform: uppercase !important;
         letter-spacing: 1px !important;
+        margin-bottom: 0.5rem !important;
     }
     
     .stMetric div[data-testid="metric-container"] > div:first-child {
         color: #ffffff !important;
-        font-size: 2.5rem !important;
+        font-size: 2.2rem !important;
         font-weight: 200 !important;
+        line-height: 1.1 !important;
     }
     
-    /* Tabelas premium */
+    /* Tabelas - Minimalismo */
     .stDataFrame {
-        background: rgba(26, 26, 26, 0.8);
-        border: 1px solid rgba(192, 192, 192, 0.2);
-        border-radius: 10px;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
         overflow: hidden;
     }
     
@@ -165,206 +141,192 @@ st.markdown("""
     }
     
     .stDataFrame th {
-        background: linear-gradient(145deg, #2a2a2a, #1a1a1a) !important;
-        color: #c0c0c0 !important;
-        font-weight: 300 !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        font-weight: 400 !important;
+        font-size: 0.8rem !important;
         text-transform: uppercase !important;
         letter-spacing: 1px !important;
-        border-bottom: 1px solid rgba(192, 192, 192, 0.3) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
     
     .stDataFrame td {
-        background: rgba(26, 26, 26, 0.5) !important;
+        background: transparent !important;
         color: #ffffff !important;
-        border-bottom: 1px solid rgba(192, 192, 192, 0.1) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        font-size: 0.9rem !important;
     }
     
-    /* Selectbox premium */
+    /* Selectbox - Apple style */
     .stSelectbox > div > div {
-        background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-        border: 1px solid rgba(192, 192, 192, 0.3);
-        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
         color: #ffffff;
     }
     
-    /* Tags de commodity premium */
-    .commodity-tag-premium {
-        background: linear-gradient(45deg, #2a2a2a, #3a3a3a);
-        color: #c0c0c0;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
+    /* Tags de commodity - Minimalismo */
+    .commodity-tag-jobs {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
         margin: 0.2rem;
         display: inline-block;
-        border: 1px solid rgba(192, 192, 192, 0.3);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 300;
-        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-weight: 400;
+        letter-spacing: 0.5px;
     }
     
-    .commodity-tag-premium:hover {
-        background: linear-gradient(45deg, #3a3a3a, #4a4a4a);
-        border-color: rgba(192, 192, 192, 0.5);
-        transform: scale(1.05);
-    }
-    
-    /* Informações de usuário premium */
-    .user-info-premium {
-        background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-        border: 1px solid rgba(192, 192, 192, 0.2);
-        border-radius: 10px;
+    /* Informações de usuário - Simplicidade */
+    .user-info-jobs {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
         padding: 1rem;
         margin: 1rem 0;
-        text-align: center;
+        text-align: left;
     }
     
-    /* Gráficos com fundo escuro */
-    .js-plotly-plot {
-        background: transparent !important;
-    }
-    
-    /* Animações suaves */
-    .stApp > div {
-        animation: fadeIn 0.8s ease-in;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Rodapé premium */
-    .footer-premium {
-        background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
-        border-top: 1px solid rgba(192, 192, 192, 0.2);
-        padding: 2rem;
-        margin-top: 3rem;
-        text-align: center;
-        color: #c0c0c0;
-        font-weight: 300;
-        letter-spacing: 1px;
-    }
-    
-    /* Efeitos de hover para elementos interativos */
-    .element-container:hover {
-        transition: all 0.3s ease;
-    }
-    
-    /* Estilo para login premium */
-    .login-container-premium {
-        max-width: 450px;
+    /* Login container - Apple style */
+    .login-container-jobs {
+        max-width: 400px;
         margin: 0 auto;
-        padding: 3rem;
-        background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-        border: 1px solid rgba(192, 192, 192, 0.3);
-        border-radius: 20px;
-        box-shadow: 
-            0 20px 40px rgba(0, 0, 0, 0.7),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        margin-top: 5rem;
+        padding: 3rem 2rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        margin-top: 8rem;
         backdrop-filter: blur(20px);
     }
     
-    .login-header-premium {
+    .login-header-jobs {
         text-align: center;
         color: #ffffff;
         font-size: 2.5rem;
-        font-weight: 200;
+        font-weight: 100;
         margin-bottom: 2rem;
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-        letter-spacing: 2px;
+        letter-spacing: -1px;
     }
     
-    /* Inputs premium */
+    /* Inputs - Apple design */
     .stTextInput > div > div > input {
-        background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-        border: 1px solid rgba(192, 192, 192, 0.3);
-        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
         color: #ffffff;
-        padding: 1rem;
+        padding: 0.75rem;
+        font-size: 0.9rem;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: rgba(192, 192, 192, 0.6);
-        box-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
     }
     
-    /* Esconder elementos do Streamlit */
+    /* Rodapé - Minimalismo total */
+    .footer-jobs {
+        background: transparent;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem 0;
+        margin-top: 4rem;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 300;
+        font-size: 0.8rem;
+    }
+    
+    /* Esconder elementos desnecessários */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    .stDeployButton {visibility: hidden;}
     
-    /* Responsividade premium */
+    /* Animação suave - Subtil como Apple */
+    .stApp > div {
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    /* Responsividade - Mobile first */
     @media (max-width: 768px) {
         .main-header {
             font-size: 2.5rem;
         }
         .company-header {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
         }
-        .metric-card-premium {
-            padding: 1.5rem;
+        .login-container-jobs {
+            margin-top: 4rem;
+            padding: 2rem 1.5rem;
         }
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Configuração de tema premium para gráficos
-def get_premium_theme():
-    """Retorna configuração de tema premium para gráficos Plotly"""
+# Configuração de tema minimalista Steve Jobs para gráficos
+def get_jobs_theme():
+    """Retorna configuração de tema minimalista inspirado em Steve Jobs"""
     return {
-        'layout': {
-            'paper_bgcolor': 'rgba(0,0,0,0)',
-            'plot_bgcolor': 'rgba(26,26,26,0.8)',
+        'paper_bgcolor': 'rgba(0,0,0,0)',
+        'plot_bgcolor': 'rgba(0,0,0,0)',
+        'font': {
+            'color': '#ffffff',
+            'family': 'SF Pro Display, -apple-system, BlinkMacSystemFont, Helvetica Neue, Arial, sans-serif',
+            'size': 14
+        },
+        'title': {
             'font': {
                 'color': '#ffffff',
-                'family': 'Arial, sans-serif',
-                'size': 12
+                'size': 24,
+                'family': 'SF Pro Display, -apple-system, BlinkMacSystemFont, Helvetica Neue, Arial, sans-serif'
             },
-            'title': {
-                'font': {
-                    'color': '#ffffff',
-                    'size': 18,
-                    'family': 'Arial, sans-serif'
-                },
-                'x': 0.5,
-                'xanchor': 'center'
-            },
-            'xaxis': {
-                'gridcolor': 'rgba(192,192,192,0.2)',
-                'linecolor': 'rgba(192,192,192,0.3)',
-                'tickcolor': 'rgba(192,192,192,0.3)',
-                'tickfont': {'color': '#c0c0c0'},
-                'titlefont': {'color': '#c0c0c0'}
-            },
-            'yaxis': {
-                'gridcolor': 'rgba(192,192,192,0.2)',
-                'linecolor': 'rgba(192,192,192,0.3)',
-                'tickcolor': 'rgba(192,192,192,0.3)',
-                'tickfont': {'color': '#c0c0c0'},
-                'titlefont': {'color': '#c0c0c0'}
-            },
-            'legend': {
-                'font': {'color': '#c0c0c0'},
-                'bgcolor': 'rgba(26,26,26,0.8)',
-                'bordercolor': 'rgba(192,192,192,0.3)',
-                'borderwidth': 1
-            },
-            'margin': {'l': 60, 'r': 60, 't': 80, 'b': 60}
-        }
+            'x': 0.5,
+            'xanchor': 'center',
+            'y': 0.95,
+            'yanchor': 'top'
+        },
+        'xaxis': {
+            'showgrid': False,
+            'showline': False,
+            'showticklabels': True,
+            'tickcolor': 'rgba(255,255,255,0.3)',
+            'tickfont': {'color': '#ffffff', 'size': 12},
+            'titlefont': {'color': '#ffffff', 'size': 14}
+        },
+        'yaxis': {
+            'showgrid': True,
+            'gridcolor': 'rgba(255,255,255,0.1)',
+            'showline': False,
+            'showticklabels': True,
+            'tickcolor': 'rgba(255,255,255,0.3)',
+            'tickfont': {'color': '#ffffff', 'size': 12},
+            'titlefont': {'color': '#ffffff', 'size': 14}
+        },
+        'legend': {
+            'font': {'color': '#ffffff', 'size': 12},
+            'bgcolor': 'rgba(0,0,0,0)',
+            'bordercolor': 'rgba(0,0,0,0)',
+            'borderwidth': 0
+        },
+        'margin': {'l': 40, 'r': 40, 't': 60, 'b': 40}
     }
 
-# Paleta de cores premium para gráficos
-PREMIUM_COLORS = [
-    '#c0c0c0',  # Prata principal
-    '#ffffff',  # Branco
-    '#808080',  # Cinza médio
-    '#a0a0a0',  # Prata claro
-    '#606060',  # Cinza escuro
-    '#d0d0d0',  # Prata muito claro
-    '#404040',  # Cinza muito escuro
-    '#e0e0e0'   # Quase branco
+# Paleta de cores minimalista Steve Jobs
+JOBS_COLORS = [
+    '#ffffff',  # Branco puro - principal
+    '#e5e5e7',  # Cinza muito claro
+    '#d1d1d6',  # Cinza claro
+    '#8e8e93',  # Cinza médio
+    '#636366',  # Cinza escuro
+    '#48484a',  # Cinza muito escuro
+    '#1c1c1e',  # Quase preto
+    '#000000'   # Preto puro
 ]
 
 # Função para formatar valores monetários
@@ -403,7 +365,7 @@ def calcular_indicadores(balanco, dre):
     
     return indicadores
 
-# Função para criar gráfico de barras comparativo premium
+# Função para criar gráfico de barras minimalista Steve Jobs
 def criar_grafico_receitas():
     empresas = ['Fox Grãos', 'Fox Log', 'Clube FX']
     receitas = [262000, 79500, 23000]
@@ -411,33 +373,36 @@ def criar_grafico_receitas():
     fig = px.bar(
         x=empresas, 
         y=receitas,
-        title="REVENUE BY COMPANY (R$ THOUSAND)",
-        color=empresas,
-        color_discrete_sequence=PREMIUM_COLORS[:3]
+        title="Revenue by Company",
+        color_discrete_sequence=[JOBS_COLORS[0], JOBS_COLORS[2], JOBS_COLORS[4]]
     )
     
-    # Aplicar tema premium
-    theme = get_premium_theme()
-    fig.update_layout(**theme['layout'])
+    # Aplicar tema minimalista Steve Jobs
+    theme = get_jobs_theme()
+    fig.update_layout(**theme)
     fig.update_layout(
         showlegend=False, 
-        height=400,
-        title_font_size=16,
-        title_font_color='#c0c0c0'
+        height=350,
+        title_font_size=20,
+        title_font_color='#ffffff'
     )
     
-    # Customizar barras
+    # Estilo minimalista das barras
     fig.update_traces(
-        texttemplate='%{y:,.0f}',
+        texttemplate='R$ %{y:,.0f}k',
         textposition='outside',
-        textfont_color='#c0c0c0',
-        marker_line_color='rgba(192,192,192,0.3)',
-        marker_line_width=1
+        textfont_color='#ffffff',
+        textfont_size=12,
+        marker_line_width=0
     )
+    
+    # Remover elementos desnecessários (filosofia Jobs)
+    fig.update_xaxes(title_text="")
+    fig.update_yaxes(title_text="")
     
     return fig
 
-# Função para criar gráfico de commodities premium
+# Função para criar gráfico de commodities minimalista Steve Jobs
 def criar_grafico_commodities():
     commodities = ['Soja', 'Milho', 'Sorgo']
     volumes = [45000, 35000, 8000]
@@ -445,27 +410,28 @@ def criar_grafico_commodities():
     fig = px.pie(
         values=volumes,
         names=commodities,
-        title="COMMODITY VOLUME DISTRIBUTION (TONS/YEAR)",
-        color_discrete_sequence=PREMIUM_COLORS[:3]
+        title="Commodity Distribution",
+        color_discrete_sequence=[JOBS_COLORS[0], JOBS_COLORS[2], JOBS_COLORS[4]]
     )
     
-    # Aplicar tema premium
-    theme = get_premium_theme()
-    fig.update_layout(**theme['layout'])
+    # Aplicar tema minimalista Steve Jobs
+    theme = get_jobs_theme()
+    fig.update_layout(**theme)
     fig.update_layout(
-        height=400,
-        title_font_size=16,
-        title_font_color='#c0c0c0'
+        height=350,
+        title_font_size=20,
+        title_font_color='#ffffff'
     )
     
-    # Customizar pizza
+    # Estilo minimalista da pizza
     fig.update_traces(
         textposition='inside',
         textinfo='percent+label',
         textfont_color='#000000',
-        textfont_size=12,
-        marker_line_color='rgba(0,0,0,0.8)',
-        marker_line_width=2
+        textfont_size=11,
+        marker_line_color='rgba(0,0,0,0.2)',
+        marker_line_width=1,
+        hole=0.3  # Donut style - mais elegante
     )
     
     return fig
@@ -547,8 +513,9 @@ def main():
         show_login_page()
         return
     
-    # Título principal premium
-    st.markdown('<h1 class="main-header">🌾 FOX SA - INVESTMENT BOARD</h1>', unsafe_allow_html=True)
+    # Título principal minimalista Steve Jobs
+    st.markdown('<h1 class="main-header">FOX SA</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 1.1rem; font-weight: 300; margin-bottom: 3rem; letter-spacing: 1px;">Investment Board</p>', unsafe_allow_html=True)
     
     # Sidebar com informações do usuário
     show_user_info()
@@ -631,12 +598,12 @@ def main():
     elif opcao == "🌾 Fox Grãos":
         st.markdown('<h2 class="company-header">🌾 Fox Grãos - Comercialização e Logística</h2>', unsafe_allow_html=True)
         
-        # Tags de commodities premium
+        # Tags de commodities minimalistas
         st.markdown("""
-        <div style="margin: 1rem 0;">
-            <span class="commodity-tag-premium">SOJA</span>
-            <span class="commodity-tag-premium">MILHO</span>
-            <span class="commodity-tag-premium">SORGO</span>
+        <div style="margin: 2rem 0;">
+            <span class="commodity-tag-jobs">Soja</span>
+            <span class="commodity-tag-jobs">Milho</span>
+            <span class="commodity-tag-jobs">Sorgo</span>
         </div>
         """, unsafe_allow_html=True)
         
@@ -885,21 +852,21 @@ def main():
             st.checkbox("Notificar logins suspeitos", value=False)
             st.checkbox("Backup automático", value=True)
     
-    # Rodapé premium
-    st.markdown('<div class="footer-premium">', unsafe_allow_html=True)
+    # Rodapé minimalista Steve Jobs
+    st.markdown('<div class="footer-jobs">', unsafe_allow_html=True)
     
-    # Informações de segurança baseadas no perfil
-    security_info = f"🔐 **SECURE SESSION** | User: {current_user['name']} ({current_user['role'].title()}) | "
+    # Informações de segurança minimalistas
+    security_info = f"Secure Session • {current_user['name']} ({current_user['role'].title()}) • "
     
     if check_permission("admin"):
-        security_info += "FULL ACCESS"
+        security_info += "Full Access"
     elif check_permission("manager"):
-        security_info += "MANAGEMENT ACCESS"
+        security_info += "Management Access"
     else:
-        security_info += "VIEW ACCESS"
+        security_info += "View Access"
     
     st.markdown(security_info)
-    st.markdown("**FOX SA** - AGRIBUSINESS INVESTMENT BOARD | Authenticated System | Demo Data for Presentation")
+    st.markdown("FOX SA Investment Board • Demo Data")
     st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
