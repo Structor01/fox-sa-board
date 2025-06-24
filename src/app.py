@@ -103,7 +103,7 @@ st.markdown("""
         border-color: rgba(255, 255, 255, 0.3);
     }
     
-    /* Métricas - Estilo Apple */
+    /* Métricas - Estilo Apple com contraste perfeito */
     .stMetric {
         background: transparent;
         border: none;
@@ -112,7 +112,7 @@ st.markdown("""
     }
     
     .stMetric label {
-        color: rgba(255, 255, 255, 0.6) !important;
+        color: #ffffff !important;
         font-size: 0.8rem !important;
         font-weight: 400 !important;
         text-transform: uppercase !important;
@@ -127,10 +127,15 @@ st.markdown("""
         line-height: 1.1 !important;
     }
     
-    /* Tabelas - Minimalismo */
+    .stMetric div[data-testid="metric-container"] > div:nth-child(2) {
+        color: #ffffff !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Tabelas - Minimalismo com contraste perfeito */
     .stDataFrame {
         background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 6px;
         overflow: hidden;
     }
@@ -141,28 +146,54 @@ st.markdown("""
     }
     
     .stDataFrame th {
-        background: rgba(255, 255, 255, 0.05) !important;
-        color: rgba(255, 255, 255, 0.8) !important;
-        font-weight: 400 !important;
-        font-size: 0.8rem !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+        font-weight: 500 !important;
+        font-size: 0.9rem !important;
         text-transform: uppercase !important;
         letter-spacing: 1px !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        padding: 1rem !important;
     }
     
     .stDataFrame td {
         background: transparent !important;
         color: #ffffff !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        font-size: 1rem !important;
+        padding: 0.8rem 1rem !important;
+    }
+    
+    /* Selectbox - Apple style com contraste perfeito */
+    .stSelectbox > div > div {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        color: #ffffff;
+    }
+    
+    .stSelectbox label {
+        color: #ffffff !important;
+        font-weight: 500 !important;
         font-size: 0.9rem !important;
     }
     
-    /* Selectbox - Apple style */
-    .stSelectbox > div > div {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        color: #ffffff;
+    /* Sidebar - Minimalismo total com contraste */
+    .css-1d391kg {
+        background: #000000;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .css-1d391kg .stMarkdown {
+        color: #ffffff !important;
+    }
+    
+    .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3 {
+        color: #ffffff !important;
+    }
+    
+    .css-1d391kg p {
+        color: #ffffff !important;
     }
     
     /* Tags de commodity - Minimalismo */
@@ -179,14 +210,22 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
-    /* Informações de usuário - Simplicidade */
+    /* Informações de usuário - Simplicidade com contraste perfeito */
     .user-info-jobs {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 6px;
         padding: 1rem;
         margin: 1rem 0;
         text-align: left;
+    }
+    
+    .user-info-jobs h1, .user-info-jobs h2, .user-info-jobs h3, .user-info-jobs h4 {
+        color: #ffffff !important;
+    }
+    
+    .user-info-jobs p, .user-info-jobs span, .user-info-jobs div {
+        color: #ffffff !important;
     }
     
     /* Login container - Apple style */
@@ -242,6 +281,63 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     .stDeployButton {visibility: hidden;}
+    
+    /* ESTILOS GLOBAIS PARA CONTRASTE PERFEITO */
+    .stApp, .stApp * {
+        color: #ffffff !important;
+    }
+    
+    /* Forçar texto branco em todos os elementos */
+    h1, h2, h3, h4, h5, h6 {
+        color: #ffffff !important;
+    }
+    
+    p, span, div, label {
+        color: #ffffff !important;
+    }
+    
+    /* Elementos específicos do Streamlit */
+    .stMarkdown {
+        color: #ffffff !important;
+    }
+    
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        color: #ffffff !important;
+    }
+    
+    .stMarkdown p {
+        color: #ffffff !important;
+    }
+    
+    /* Sidebar específica */
+    .css-1d391kg * {
+        color: #ffffff !important;
+    }
+    
+    /* Alertas e mensagens */
+    .stAlert {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        color: #ffffff !important;
+    }
+    
+    .stSuccess {
+        background: rgba(0, 255, 0, 0.1) !important;
+        border: 1px solid rgba(0, 255, 0, 0.3) !important;
+        color: #ffffff !important;
+    }
+    
+    .stError {
+        background: rgba(255, 0, 0, 0.1) !important;
+        border: 1px solid rgba(255, 0, 0, 0.3) !important;
+        color: #ffffff !important;
+    }
+    
+    .stWarning {
+        background: rgba(255, 255, 0, 0.1) !important;
+        border: 1px solid rgba(255, 255, 0, 0.3) !important;
+        color: #ffffff !important;
+    }
     
     /* Animação suave - Subtil como Apple */
     .stApp > div {
@@ -377,7 +473,7 @@ def criar_grafico_receitas():
         color_discrete_sequence=[JOBS_COLORS[0], JOBS_COLORS[2], JOBS_COLORS[4]]
     )
     
-    # Aplicar tema minimalista Steve Jobs
+    # Aplicar tema minimalista Steve Jobs diretamente
     theme = get_jobs_theme()
     fig.update_layout(**theme)
     fig.update_layout(
@@ -414,7 +510,7 @@ def criar_grafico_commodities():
         color_discrete_sequence=[JOBS_COLORS[0], JOBS_COLORS[2], JOBS_COLORS[4]]
     )
     
-    # Aplicar tema minimalista Steve Jobs
+    # Aplicar tema minimalista Steve Jobs diretamente
     theme = get_jobs_theme()
     fig.update_layout(**theme)
     fig.update_layout(
