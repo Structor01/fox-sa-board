@@ -20,6 +20,128 @@ class FOXDataGenerator:
         self.commodities = ['Soja', 'Milho', 'Sorgo']
         self.empresas = ['Fox Grãos', 'Fox Log', 'Clube FX']
         
+        # Coordenadas de Goiás para o mapa
+        self.cidades_goias = {
+            'Goiânia': {'lat': -16.6869, 'lon': -49.2648, 'tipo': 'hub'},
+            'Rio Verde': {'lat': -17.7944, 'lon': -50.9267, 'tipo': 'produtor'},
+            'Jataí': {'lat': -17.8816, 'lon': -51.7142, 'tipo': 'produtor'},
+            'Cristalina': {'lat': -16.7677, 'lon': -47.6137, 'tipo': 'produtor'},
+            'Luziânia': {'lat': -16.2573, 'lon': -47.9502, 'tipo': 'comprador'},
+            'Anápolis': {'lat': -16.3281, 'lon': -48.9531, 'tipo': 'comprador'},
+            'Aparecida de Goiânia': {'lat': -16.8173, 'lon': -49.2437, 'tipo': 'comprador'},
+            'Catalão': {'lat': -18.1659, 'lon': -47.9469, 'tipo': 'produtor'},
+            'Itumbiara': {'lat': -18.4192, 'lon': -49.2150, 'tipo': 'comprador'},
+            'Planaltina': {'lat': -15.4528, 'lon': -47.6581, 'tipo': 'produtor'},
+            'Formosa': {'lat': -15.5372, 'lon': -47.3342, 'tipo': 'produtor'},
+            'Senador Canedo': {'lat': -16.7014, 'lon': -49.0919, 'tipo': 'comprador'},
+            'Quirinópolis': {'lat': -18.4481, 'lon': -50.4503, 'tipo': 'produtor'},
+            'Mineiros': {'lat': -17.5697, 'lon': -52.5511, 'tipo': 'produtor'},
+            'Chapadão do Céu': {'lat': -18.4067, 'lon': -52.6331, 'tipo': 'produtor'}
+        }
+        
+    def gerar_dados_mapa_goias(self):
+        """
+        Gera dados para o mapa de Goiás com produtores e compradores
+        """
+        dados_mapa = []
+        
+        for cidade, info in self.cidades_goias.items():
+            # Volume de negócios baseado no tipo
+            if info['tipo'] == 'produtor':
+                volume_base = np.random.uniform(5000, 25000)  # toneladas/ano
+                cor = '#90EE90'  # Verde para produtores
+                simbolo = 'triangle-up'
+            elif info['tipo'] == 'comprador':
+                volume_base = np.random.uniform(2000, 15000)  # toneladas/ano
+                cor = '#FFD700'  # Dourado para compradores
+                simbolo = 'circle'
+            else:  # hub
+                volume_base = np.random.uniform(50000, 100000)  # toneladas/ano
+                cor = '#C0C0C0'  # Prata para hub
+                simbolo = 'diamond'
+            
+            # LTV baseado no volume e tipo
+            if info['tipo'] == 'produtor':
+                ltv_base = volume_base * np.random.uniform(180, 250)  # R$/tonelada
+            elif info['tipo'] == 'comprador':
+                ltv_base = volume_base * np.random.uniform(120, 180)  # R$/tonelada
+            else:  # hub
+                ltv_base = volume_base * np.random.uniform(80, 120)  # R$/tonelada
+            
+            dados_mapa.append({
+                'cidade': cidade,
+                'latitude': info['lat'],
+                'longitude': info['lon'],
+                'tipo': info['tipo'],
+                'volume_anual': round(volume_base, 0),
+                'ltv': round(ltv_base, 0),
+                'cor': cor,
+                'simbolo': simbolo,
+                'empresa_responsavel': np.random.choice(self.empresas),
+                'commodities_principais': np.random.choice(self.commodities, 
+                                                         size=np.random.randint(1, 4), 
+                                                         replace=False).tolist()
+            })
+        
+        return pd.DataFrame(dados_mapa)
+    
+    def gerar_dados_ltv_detalhado(self):
+        """
+        Gera dados detalhados de LTV por cliente e segmento
+        """
+        dados_ltv = []
+        
+        # Gerar clientes fictícios
+        nomes_fazendas = [
+            'Fazenda São João', 'Agropecuária Boa Vista', 'Fazenda Santa Maria',
+            'Cooperativa Central', 'Fazenda Esperança', 'Agro Cerrado',
+            'Fazenda Progresso', 'Cooperativa Regional', 'Fazenda Vitória',
+            'Agropecuária Moderna', 'Fazenda Prosperidade', 'Grupo Agro Sul',
+            'Fazenda Horizonte', 'Cooperativa União', 'Fazenda Sucesso'
+        ]
+        
+        for i, nome in enumerate(nomes_fazendas):
+            # Tempo de relacionamento (anos)
+            tempo_relacionamento = np.random.uniform(1, 8)
+            
+            # Receita anual média
+            receita_anual = np.random.uniform(500000, 5000000)  # R$
+            
+            # LTV baseado no tempo e receita
+            ltv_total = receita_anual * tempo_relacionamento * np.random.uniform(0.8, 1.2)
+            
+            # Segmentação por valor
+            if ltv_total > 10000000:
+                segmento = 'Premium'
+                cor_segmento = '#FFD700'
+            elif ltv_total > 5000000:
+                segmento = 'Gold'
+                cor_segmento = '#C0C0C0'
+            elif ltv_total > 2000000:
+                segmento = 'Silver'
+                cor_segmento = '#CD7F32'
+            else:
+                segmento = 'Bronze'
+                cor_segmento = '#8B4513'
+            
+            dados_ltv.append({
+                'cliente': nome,
+                'empresa_fox': np.random.choice(self.empresas),
+                'tempo_relacionamento': round(tempo_relacionamento, 1),
+                'receita_anual': round(receita_anual, 0),
+                'ltv_total': round(ltv_total, 0),
+                'ltv_mensal': round(ltv_total / (tempo_relacionamento * 12), 0),
+                'segmento': segmento,
+                'cor_segmento': cor_segmento,
+                'cidade': np.random.choice(list(self.cidades_goias.keys())),
+                'commodities': np.random.choice(self.commodities, 
+                                              size=np.random.randint(1, 3), 
+                                              replace=False).tolist(),
+                'status': np.random.choice(['Ativo', 'Ativo', 'Ativo', 'Inativo'], p=[0.85, 0.1, 0.04, 0.01])
+            })
+        
+        return pd.DataFrame(dados_ltv)
+        
     def gerar_dados_temporais(self):
         """
         Gera dados temporais para análise de tendências
@@ -482,7 +604,9 @@ def obter_dados_para_eda():
         'dados_temporais': generator.gerar_dados_temporais(),
         'commodities_temporais': generator.gerar_dados_commodities_temporais(),
         'performance_mensal': generator.gerar_metricas_performance(),
-        'migracao_commodities': generator.gerar_dados_migracao_estados()
+        'migracao_commodities': generator.gerar_dados_migracao_estados(),
+        'mapa_goias': generator.gerar_dados_mapa_goias(),
+        'ltv_detalhado': generator.gerar_dados_ltv_detalhado()
     }
 
 if __name__ == "__main__":
@@ -500,6 +624,19 @@ if __name__ == "__main__":
     df_temporal = dados_eda['dados_temporais']
     receita_2024 = df_temporal[df_temporal['ano'] == 2024].groupby('empresa')['receita'].sum()
     print(receita_2024)
+    
+    # Exemplo de análise de mapa
+    print("\nExemplo de análise geográfica:")
+    df_mapa = dados_eda['mapa_goias']
+    print(f"Total de pontos no mapa: {len(df_mapa)}")
+    print(f"Produtores: {len(df_mapa[df_mapa['tipo'] == 'produtor'])}")
+    print(f"Compradores: {len(df_mapa[df_mapa['tipo'] == 'comprador'])}")
+    
+    # Exemplo de análise LTV
+    print("\nExemplo de análise LTV:")
+    df_ltv = dados_eda['ltv_detalhado']
+    ltv_por_segmento = df_ltv.groupby('segmento')['ltv_total'].agg(['count', 'mean', 'sum'])
+    print(ltv_por_segmento)
     
     print("\nDados gerados com sucesso seguindo princípios de EDA!")
 

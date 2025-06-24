@@ -286,6 +286,276 @@ def criar_grafico_receita_barras_premium(dados_temporais, ano_selecionado):
     
     return fig
 
+def criar_mapa_goias_premium(dados_mapa):
+    """Mapa de Goiás com produtores e compradores"""
+    import plotly.graph_objects as go
+    
+    # Separar dados por tipo
+    produtores = dados_mapa[dados_mapa['tipo'] == 'produtor']
+    compradores = dados_mapa[dados_mapa['tipo'] == 'comprador']
+    hubs = dados_mapa[dados_mapa['tipo'] == 'hub']
+    
+    fig = go.Figure()
+    
+    # Adicionar produtores
+    fig.add_trace(go.Scattermapbox(
+        lat=produtores['latitude'],
+        lon=produtores['longitude'],
+        mode='markers',
+        marker=dict(
+            size=produtores['volume_anual'] / 1000,  # Tamanho baseado no volume
+            color='#90EE90',  # Verde para produtores
+            symbol='triangle-up',
+            sizemode='diameter',
+            sizemin=8,
+            sizemax=25,
+            opacity=0.8
+        ),
+        text=produtores.apply(lambda x: f"<b>{x['cidade']}</b><br>" +
+                                      f"Tipo: Produtor<br>" +
+                                      f"Volume: {x['volume_anual']:,.0f} ton/ano<br>" +
+                                      f"LTV: R$ {x['ltv']:,.0f}<br>" +
+                                      f"Empresa: {x['empresa_responsavel']}<br>" +
+                                      f"Commodities: {', '.join(x['commodities_principais'])}", axis=1),
+        hovertemplate='%{text}<extra></extra>',
+        name='Produtores',
+        showlegend=True
+    ))
+    
+    # Adicionar compradores
+    fig.add_trace(go.Scattermapbox(
+        lat=compradores['latitude'],
+        lon=compradores['longitude'],
+        mode='markers',
+        marker=dict(
+            size=compradores['volume_anual'] / 1000,
+            color='#FFD700',  # Dourado para compradores
+            symbol='circle',
+            sizemode='diameter',
+            sizemin=8,
+            sizemax=25,
+            opacity=0.8
+        ),
+        text=compradores.apply(lambda x: f"<b>{x['cidade']}</b><br>" +
+                                        f"Tipo: Comprador<br>" +
+                                        f"Volume: {x['volume_anual']:,.0f} ton/ano<br>" +
+                                        f"LTV: R$ {x['ltv']:,.0f}<br>" +
+                                        f"Empresa: {x['empresa_responsavel']}<br>" +
+                                        f"Commodities: {', '.join(x['commodities_principais'])}", axis=1),
+        hovertemplate='%{text}<extra></extra>',
+        name='Compradores',
+        showlegend=True
+    ))
+    
+    # Adicionar hubs
+    if not hubs.empty:
+        fig.add_trace(go.Scattermapbox(
+            lat=hubs['latitude'],
+            lon=hubs['longitude'],
+            mode='markers',
+            marker=dict(
+                size=hubs['volume_anual'] / 2000,
+                color='#C0C0C0',  # Prata para hubs
+                symbol='diamond',
+                sizemode='diameter',
+                sizemin=15,
+                sizemax=35,
+                opacity=0.9
+            ),
+            text=hubs.apply(lambda x: f"<b>{x['cidade']}</b><br>" +
+                                     f"Tipo: Hub Central<br>" +
+                                     f"Volume: {x['volume_anual']:,.0f} ton/ano<br>" +
+                                     f"LTV: R$ {x['ltv']:,.0f}<br>" +
+                                     f"Empresa: {x['empresa_responsavel']}<br>" +
+                                     f"Commodities: {', '.join(x['commodities_principais'])}", axis=1),
+            hovertemplate='%{text}<extra></extra>',
+            name='Hub Central',
+            showlegend=True
+        ))
+    
+    # Configurar layout do mapa
+    fig.update_layout(
+        mapbox=dict(
+            style="carto-darkmatter",  # Tema escuro
+            center=dict(lat=-16.8, lon=-49.5),  # Centro de Goiás
+            zoom=6.5
+        ),
+        height=500,
+        margin=dict(l=0, r=0, t=40, b=0),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#FFFFFF', family='Inter'),
+        title=dict(
+            text="Mapa de Produtores e Compradores - Goiás",
+            font=dict(size=20, color='#FFFFFF', weight='bold'),
+            x=0.02,
+            y=0.95
+        ),
+        legend=dict(
+            font=dict(color='#FFFFFF', size=12),
+            bgcolor='rgba(26, 26, 26, 0.8)',
+            bordercolor='#333333',
+            borderwidth=1,
+            x=0.02,
+            y=0.02
+        )
+    )
+    
+    return fig
+
+def criar_grafico_ltv_segmentos(dados_ltv):
+    """Gráfico de LTV por segmentos"""
+    import plotly.graph_objects as go
+    
+    # Agrupar por segmento
+    ltv_por_segmento = dados_ltv.groupby('segmento').agg({
+        'ltv_total': ['count', 'mean', 'sum'],
+        'tempo_relacionamento': 'mean'
+    }).round(0)
+    
+    # Flatten column names
+    ltv_por_segmento.columns = ['_'.join(col).strip() for col in ltv_por_segmento.columns]
+    ltv_por_segmento = ltv_por_segmento.reset_index()
+    
+    # Cores por segmento
+    cores_segmento = {
+        'Premium': '#FFD700',
+        'Gold': '#C0C0C0', 
+        'Silver': '#CD7F32',
+        'Bronze': '#8B4513'
+    }
+    
+    fig = go.Figure()
+    
+    # Gráfico de barras para LTV total por segmento
+    fig.add_trace(go.Bar(
+        x=ltv_por_segmento['segmento'],
+        y=ltv_por_segmento['ltv_total_sum'],
+        marker=dict(
+            color=[cores_segmento.get(seg, '#666666') for seg in ltv_por_segmento['segmento']],
+            line=dict(color='#000000', width=1)
+        ),
+        text=ltv_por_segmento['ltv_total_sum'].apply(lambda x: f'R$ {x/1000000:.1f}M'),
+        textposition='outside',
+        textfont=dict(color='#FFFFFF', size=11, family='Inter'),
+        name='LTV Total por Segmento'
+    ))
+    
+    fig.update_layout(
+        height=400,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#FFFFFF', family='Inter'),
+        title=dict(
+            text="LTV Total por Segmento de Cliente",
+            font=dict(size=18, color='#FFFFFF', weight='bold'),
+            x=0.02,
+            y=0.95
+        ),
+        xaxis=dict(
+            showgrid=False,
+            showline=True,
+            linecolor='#333333',
+            color='#C0C0C0',
+            tickfont=dict(size=11),
+            title=dict(text="Segmento", font=dict(color='#C0C0C0'))
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor='rgba(192, 192, 192, 0.1)',
+            showline=True,
+            linecolor='#333333',
+            color='#C0C0C0',
+            tickfont=dict(size=11),
+            title=dict(text="LTV Total (R$)", font=dict(color='#C0C0C0'))
+        ),
+        showlegend=False,
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
+    
+    return fig
+
+def criar_scatter_ltv_tempo(dados_ltv):
+    """Scatter plot LTV vs Tempo de Relacionamento"""
+    import plotly.graph_objects as go
+    
+    # Cores por segmento
+    cores_segmento = {
+        'Premium': '#FFD700',
+        'Gold': '#C0C0C0', 
+        'Silver': '#CD7F32',
+        'Bronze': '#8B4513'
+    }
+    
+    fig = go.Figure()
+    
+    # Adicionar pontos por segmento
+    for segmento in dados_ltv['segmento'].unique():
+        dados_seg = dados_ltv[dados_ltv['segmento'] == segmento]
+        
+        fig.add_trace(go.Scatter(
+            x=dados_seg['tempo_relacionamento'],
+            y=dados_seg['ltv_total'],
+            mode='markers',
+            marker=dict(
+                color=cores_segmento.get(segmento, '#666666'),
+                size=dados_seg['receita_anual'] / 200000,  # Tamanho baseado na receita
+                sizemode='diameter',
+                sizemin=8,
+                sizemax=25,
+                opacity=0.8,
+                line=dict(color='#000000', width=1)
+            ),
+            text=dados_seg.apply(lambda x: f"<b>{x['cliente']}</b><br>" +
+                                          f"Segmento: {x['segmento']}<br>" +
+                                          f"LTV: R$ {x['ltv_total']:,.0f}<br>" +
+                                          f"Tempo: {x['tempo_relacionamento']:.1f} anos<br>" +
+                                          f"Receita Anual: R$ {x['receita_anual']:,.0f}<br>" +
+                                          f"Empresa FOX: {x['empresa_fox']}", axis=1),
+            hovertemplate='%{text}<extra></extra>',
+            name=segmento
+        ))
+    
+    fig.update_layout(
+        height=450,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#FFFFFF', family='Inter'),
+        title=dict(
+            text="LTV vs Tempo de Relacionamento",
+            font=dict(size=18, color='#FFFFFF', weight='bold'),
+            x=0.02,
+            y=0.95
+        ),
+        xaxis=dict(
+            showgrid=True,
+            gridcolor='rgba(192, 192, 192, 0.1)',
+            showline=True,
+            linecolor='#333333',
+            color='#C0C0C0',
+            tickfont=dict(size=11),
+            title=dict(text="Tempo de Relacionamento (anos)", font=dict(color='#C0C0C0'))
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor='rgba(192, 192, 192, 0.1)',
+            showline=True,
+            linecolor='#333333',
+            color='#C0C0C0',
+            tickfont=dict(size=11),
+            title=dict(text="LTV Total (R$)", font=dict(color='#C0C0C0'))
+        ),
+        legend=dict(
+            font=dict(color='#FFFFFF', size=12),
+            bgcolor='rgba(26, 26, 26, 0.8)',
+            bordercolor='#333333',
+            borderwidth=1
+        ),
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
+    
+    return fig
+
 # ============================================================================
 # COMPONENTES DE INTERFACE PREMIUM
 # ============================================================================
@@ -498,6 +768,292 @@ def pagina_analise_commodities_premium(dados_eda, ano_selecionado):
     
     # Tabela premium
     exibir_tabela_premium(dados_eda['migracao_commodities'])
+
+def pagina_mapa_goias_premium(dados_eda):
+    """Página do mapa de Goiás com produtores e compradores"""
+    st.markdown('<div class="page-header">Geographic Map - Goiás</div>', unsafe_allow_html=True)
+    
+    # Métricas do mapa
+    dados_mapa = dados_eda['mapa_goias']
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    total_pontos = len(dados_mapa)
+    total_produtores = len(dados_mapa[dados_mapa['tipo'] == 'produtor'])
+    total_compradores = len(dados_mapa[dados_mapa['tipo'] == 'comprador'])
+    volume_total = dados_mapa['volume_anual'].sum()
+    
+    metricas_mapa = [
+        {'label': 'Total Points', 'value': f'{total_pontos}', 'delta': 'Active locations', 'color': '#C0C0C0'},
+        {'label': 'Producers', 'value': f'{total_produtores}', 'delta': 'Supply points', 'color': '#90EE90'},
+        {'label': 'Buyers', 'value': f'{total_compradores}', 'delta': 'Demand points', 'color': '#FFD700'},
+        {'label': 'Total Volume', 'value': f'{volume_total:,.0f}', 'delta': 'tons/year', 'color': '#C0C0C0'}
+    ]
+    
+    for i, metrica in enumerate(metricas_mapa):
+        with [col1, col2, col3, col4][i]:
+            st.markdown(f'''
+            <div class="metric-card-premium">
+                <div class="metric-label">{metrica['label']}</div>
+                <div class="metric-value">{metrica['value']}</div>
+                <div class="metric-delta" style="color: {metrica['color']}">{metrica['delta']}</div>
+            </div>
+            ''', unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Mapa principal
+    fig_mapa = criar_mapa_goias_premium(dados_mapa)
+    st.plotly_chart(fig_mapa, use_container_width=True)
+    
+    # Análise por tipo
+    st.markdown('<div class="section-header-premium">Analysis by Type</div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Volume por tipo
+        volume_por_tipo = dados_mapa.groupby('tipo')['volume_anual'].sum().reset_index()
+        
+        fig_volume_tipo = go.Figure(data=[go.Bar(
+            x=volume_por_tipo['tipo'],
+            y=volume_por_tipo['volume_anual'],
+            marker=dict(
+                color=['#90EE90', '#FFD700', '#C0C0C0'],
+                line=dict(color='#000000', width=1)
+            ),
+            text=volume_por_tipo['volume_anual'].apply(lambda x: f'{x:,.0f}'),
+            textposition='outside',
+            textfont=dict(color='#FFFFFF', size=11, family='Inter')
+        )])
+        
+        fig_volume_tipo.update_layout(
+            height=400,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#FFFFFF', family='Inter'),
+            title=dict(
+                text="Volume by Type",
+                font=dict(size=18, color='#FFFFFF', weight='bold'),
+                x=0.02,
+                y=0.95
+            ),
+            xaxis=dict(
+                showgrid=False,
+                showline=True,
+                linecolor='#333333',
+                color='#C0C0C0',
+                tickfont=dict(size=11)
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor='rgba(192, 192, 192, 0.1)',
+                showline=True,
+                linecolor='#333333',
+                color='#C0C0C0',
+                tickfont=dict(size=11)
+            ),
+            showlegend=False,
+            margin=dict(l=20, r=20, t=60, b=20)
+        )
+        
+        st.plotly_chart(fig_volume_tipo, use_container_width=True)
+    
+    with col2:
+        # LTV por tipo
+        ltv_por_tipo = dados_mapa.groupby('tipo')['ltv'].sum().reset_index()
+        
+        fig_ltv_tipo = go.Figure(data=[go.Pie(
+            labels=ltv_por_tipo['tipo'],
+            values=ltv_por_tipo['ltv'],
+            hole=0.4,
+            marker=dict(
+                colors=['#90EE90', '#FFD700', '#C0C0C0'],
+                line=dict(color='#000000', width=2)
+            ),
+            textfont=dict(color='white', size=12, family='Inter'),
+            textinfo='label+percent',
+            textposition='outside'
+        )])
+        
+        fig_ltv_tipo.update_layout(
+            height=400,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#FFFFFF', family='Inter'),
+            title=dict(
+                text="LTV Distribution by Type",
+                font=dict(size=18, color='#FFFFFF', weight='bold'),
+                x=0.02,
+                y=0.95
+            ),
+            showlegend=True,
+            legend=dict(
+                font=dict(color='#FFFFFF', size=12)
+            ),
+            margin=dict(l=20, r=20, t=60, b=20)
+        )
+        
+        st.plotly_chart(fig_ltv_tipo, use_container_width=True)
+    
+    # Tabela detalhada
+    st.markdown('<div class="section-header-premium">Detailed Location Data</div>', unsafe_allow_html=True)
+    
+    # Preparar dados para tabela
+    df_tabela = dados_mapa[['cidade', 'tipo', 'volume_anual', 'ltv', 'empresa_responsavel']].copy()
+    df_tabela['volume_anual'] = df_tabela['volume_anual'].apply(lambda x: f"{x:,.0f}")
+    df_tabela['ltv'] = df_tabela['ltv'].apply(lambda x: f"R$ {x:,.0f}")
+    df_tabela.columns = ['City', 'Type', 'Annual Volume (tons)', 'LTV', 'FOX Company']
+    
+    st.dataframe(
+        df_tabela,
+        use_container_width=True,
+        hide_index=True,
+        height=400
+    )
+
+def pagina_analise_ltv_premium(dados_eda):
+    """Página de análise de LTV"""
+    st.markdown('<div class="page-header">LTV Analysis</div>', unsafe_allow_html=True)
+    
+    dados_ltv = dados_eda['ltv_detalhado']
+    
+    # Métricas principais de LTV
+    col1, col2, col3, col4 = st.columns(4)
+    
+    ltv_total = dados_ltv['ltv_total'].sum()
+    ltv_medio = dados_ltv['ltv_total'].mean()
+    tempo_medio = dados_ltv['tempo_relacionamento'].mean()
+    clientes_ativos = len(dados_ltv[dados_ltv['status'] == 'Ativo'])
+    
+    metricas_ltv = [
+        {'label': 'Total LTV', 'value': f'R$ {ltv_total/1000000:.1f}M', 'delta': 'All customers', 'color': '#FFD700'},
+        {'label': 'Average LTV', 'value': f'R$ {ltv_medio/1000000:.1f}M', 'delta': 'Per customer', 'color': '#C0C0C0'},
+        {'label': 'Avg Relationship', 'value': f'{tempo_medio:.1f} years', 'delta': 'Customer tenure', 'color': '#90EE90'},
+        {'label': 'Active Customers', 'value': f'{clientes_ativos}', 'delta': f'{len(dados_ltv)} total', 'color': '#C0C0C0'}
+    ]
+    
+    for i, metrica in enumerate(metricas_ltv):
+        with [col1, col2, col3, col4][i]:
+            st.markdown(f'''
+            <div class="metric-card-premium">
+                <div class="metric-label">{metrica['label']}</div>
+                <div class="metric-value">{metrica['value']}</div>
+                <div class="metric-delta" style="color: {metrica['color']}">{metrica['delta']}</div>
+            </div>
+            ''', unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Gráficos de LTV
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        fig_ltv_segmentos = criar_grafico_ltv_segmentos(dados_ltv)
+        st.plotly_chart(fig_ltv_segmentos, use_container_width=True)
+    
+    with col2:
+        fig_scatter_ltv = criar_scatter_ltv_tempo(dados_ltv)
+        st.plotly_chart(fig_scatter_ltv, use_container_width=True)
+    
+    # Análise por empresa FOX
+    st.markdown('<div class="section-header-premium">LTV by FOX Company</div>', unsafe_allow_html=True)
+    
+    ltv_por_empresa = dados_ltv.groupby('empresa_fox').agg({
+        'ltv_total': ['count', 'mean', 'sum'],
+        'tempo_relacionamento': 'mean'
+    }).round(0)
+    
+    # Flatten column names
+    ltv_por_empresa.columns = ['_'.join(col).strip() for col in ltv_por_empresa.columns]
+    ltv_por_empresa = ltv_por_empresa.reset_index()
+    
+    fig_ltv_empresa = go.Figure()
+    
+    # Gráfico de barras agrupadas
+    fig_ltv_empresa.add_trace(go.Bar(
+        name='Number of Customers',
+        x=ltv_por_empresa['empresa_fox'],
+        y=ltv_por_empresa['ltv_total_count'],
+        yaxis='y',
+        marker=dict(color='#C0C0C0', line=dict(color='#000000', width=1)),
+        text=ltv_por_empresa['ltv_total_count'],
+        textposition='outside'
+    ))
+    
+    fig_ltv_empresa.add_trace(go.Bar(
+        name='Average LTV (R$ M)',
+        x=ltv_por_empresa['empresa_fox'],
+        y=ltv_por_empresa['ltv_total_mean'] / 1000000,
+        yaxis='y2',
+        marker=dict(color='#FFD700', line=dict(color='#000000', width=1)),
+        text=ltv_por_empresa['ltv_total_mean'].apply(lambda x: f'R$ {x/1000000:.1f}M'),
+        textposition='outside'
+    ))
+    
+    fig_ltv_empresa.update_layout(
+        height=450,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#FFFFFF', family='Inter'),
+        title=dict(
+            text="LTV Analysis by FOX Company",
+            font=dict(size=18, color='#FFFFFF', weight='bold'),
+            x=0.02,
+            y=0.95
+        ),
+        xaxis=dict(
+            showgrid=False,
+            showline=True,
+            linecolor='#333333',
+            color='#C0C0C0',
+            tickfont=dict(size=11)
+        ),
+        yaxis=dict(
+            title='Number of Customers',
+            showgrid=True,
+            gridcolor='rgba(192, 192, 192, 0.1)',
+            showline=True,
+            linecolor='#333333',
+            color='#C0C0C0',
+            tickfont=dict(size=11),
+            side='left'
+        ),
+        yaxis2=dict(
+            title='Average LTV (R$ M)',
+            showgrid=False,
+            showline=True,
+            linecolor='#333333',
+            color='#C0C0C0',
+            tickfont=dict(size=11),
+            side='right',
+            overlaying='y'
+        ),
+        legend=dict(
+            font=dict(color='#FFFFFF', size=12),
+            bgcolor='rgba(26, 26, 26, 0.8)',
+            bordercolor='#333333',
+            borderwidth=1
+        ),
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
+    
+    st.plotly_chart(fig_ltv_empresa, use_container_width=True)
+    
+    # Tabela de clientes top
+    st.markdown('<div class="section-header-premium">Top Customers by LTV</div>', unsafe_allow_html=True)
+    
+    top_clientes = dados_ltv.nlargest(10, 'ltv_total')[['cliente', 'segmento', 'ltv_total', 'tempo_relacionamento', 'empresa_fox', 'cidade']].copy()
+    top_clientes['ltv_total'] = top_clientes['ltv_total'].apply(lambda x: f"R$ {x:,.0f}")
+    top_clientes['tempo_relacionamento'] = top_clientes['tempo_relacionamento'].apply(lambda x: f"{x:.1f} years")
+    top_clientes.columns = ['Customer', 'Segment', 'LTV', 'Relationship Time', 'FOX Company', 'City']
+    
+    st.dataframe(
+        top_clientes,
+        use_container_width=True,
+        hide_index=True,
+        height=400
+    )
 
 # ============================================================================
 # CSS PREMIUM (PRETO E PRATA)
@@ -888,6 +1444,8 @@ def main():
     
     if check_permission("viewer"):
         menu_options.extend([
+            "Geographic Map",
+            "LTV Analysis", 
             "Commodity Analysis",
             "Logistics Overview",
             "Advisory Services"
@@ -904,6 +1462,12 @@ def main():
     # Roteamento de páginas
     if opcao == "Consolidated View":
         pagina_visao_consolidada_premium(dados_eda, dados_financeiros, ano_selecionado)
+    
+    elif opcao == "Geographic Map":
+        pagina_mapa_goias_premium(dados_eda)
+    
+    elif opcao == "LTV Analysis":
+        pagina_analise_ltv_premium(dados_eda)
     
     elif opcao == "Commodity Analysis":
         pagina_analise_commodities_premium(dados_eda, ano_selecionado)
