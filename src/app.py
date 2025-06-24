@@ -298,54 +298,42 @@ def criar_mapa_goias_premium(dados_mapa):
     fig = go.Figure()
     
     # Adicionar produtores
-    fig.add_trace(go.Scattermapbox(
-        lat=produtores['latitude'],
-        lon=produtores['longitude'],
-        mode='markers',
-        marker=dict(
-            size=produtores['volume_anual'] / 1000,  # Tamanho baseado no volume
-            color='#90EE90',  # Verde para produtores
-            symbol='triangle-up',
-            sizemode='diameter',
-            sizemin=8,
-            sizemax=25,
-            opacity=0.8
-        ),
-        text=produtores.apply(lambda x: f"<b>{x['cidade']}</b><br>" +
-                                      f"Tipo: Produtor<br>" +
-                                      f"Volume: {x['volume_anual']:,.0f} ton/ano<br>" +
-                                      f"LTV: R$ {x['ltv']:,.0f}<br>" +
-                                      f"Empresa: {x['empresa_responsavel']}<br>" +
-                                      f"Commodities: {', '.join(x['commodities_principais'])}", axis=1),
-        hovertemplate='%{text}<extra></extra>',
-        name='Produtores',
-        showlegend=True
-    ))
+    if not produtores.empty:
+        fig.add_trace(go.Scattermapbox(
+            lat=produtores['latitude'],
+            lon=produtores['longitude'],
+            mode='markers',
+            marker=dict(
+                size=15,
+                color='#90EE90'
+            ),
+            text=produtores.apply(lambda x: f"<b>{x['cidade']}</b><br>" +
+                                          f"Tipo: Produtor<br>" +
+                                          f"Volume: {x['volume_anual']:,.0f} ton/ano<br>" +
+                                          f"LTV: R$ {x['ltv']:,.0f}<br>" +
+                                          f"Empresa: {x['empresa_responsavel']}", axis=1),
+            hovertemplate='%{text}<extra></extra>',
+            name='Produtores'
+        ))
     
     # Adicionar compradores
-    fig.add_trace(go.Scattermapbox(
-        lat=compradores['latitude'],
-        lon=compradores['longitude'],
-        mode='markers',
-        marker=dict(
-            size=compradores['volume_anual'] / 1000,
-            color='#FFD700',  # Dourado para compradores
-            symbol='circle',
-            sizemode='diameter',
-            sizemin=8,
-            sizemax=25,
-            opacity=0.8
-        ),
-        text=compradores.apply(lambda x: f"<b>{x['cidade']}</b><br>" +
-                                        f"Tipo: Comprador<br>" +
-                                        f"Volume: {x['volume_anual']:,.0f} ton/ano<br>" +
-                                        f"LTV: R$ {x['ltv']:,.0f}<br>" +
-                                        f"Empresa: {x['empresa_responsavel']}<br>" +
-                                        f"Commodities: {', '.join(x['commodities_principais'])}", axis=1),
-        hovertemplate='%{text}<extra></extra>',
-        name='Compradores',
-        showlegend=True
-    ))
+    if not compradores.empty:
+        fig.add_trace(go.Scattermapbox(
+            lat=compradores['latitude'],
+            lon=compradores['longitude'],
+            mode='markers',
+            marker=dict(
+                size=12,
+                color='#FFD700'
+            ),
+            text=compradores.apply(lambda x: f"<b>{x['cidade']}</b><br>" +
+                                            f"Tipo: Comprador<br>" +
+                                            f"Volume: {x['volume_anual']:,.0f} ton/ano<br>" +
+                                            f"LTV: R$ {x['ltv']:,.0f}<br>" +
+                                            f"Empresa: {x['empresa_responsavel']}", axis=1),
+            hovertemplate='%{text}<extra></extra>',
+            name='Compradores'
+        ))
     
     # Adicionar hubs
     if not hubs.empty:
@@ -354,30 +342,23 @@ def criar_mapa_goias_premium(dados_mapa):
             lon=hubs['longitude'],
             mode='markers',
             marker=dict(
-                size=hubs['volume_anual'] / 2000,
-                color='#C0C0C0',  # Prata para hubs
-                symbol='diamond',
-                sizemode='diameter',
-                sizemin=15,
-                sizemax=35,
-                opacity=0.9
+                size=20,
+                color='#C0C0C0'
             ),
             text=hubs.apply(lambda x: f"<b>{x['cidade']}</b><br>" +
                                      f"Tipo: Hub Central<br>" +
                                      f"Volume: {x['volume_anual']:,.0f} ton/ano<br>" +
                                      f"LTV: R$ {x['ltv']:,.0f}<br>" +
-                                     f"Empresa: {x['empresa_responsavel']}<br>" +
-                                     f"Commodities: {', '.join(x['commodities_principais'])}", axis=1),
+                                     f"Empresa: {x['empresa_responsavel']}", axis=1),
             hovertemplate='%{text}<extra></extra>',
-            name='Hub Central',
-            showlegend=True
+            name='Hub Central'
         ))
     
     # Configurar layout do mapa
     fig.update_layout(
         mapbox=dict(
-            style="carto-darkmatter",  # Tema escuro
-            center=dict(lat=-16.8, lon=-49.5),  # Centro de Goiás
+            style="open-street-map",
+            center=dict(lat=-16.8, lon=-49.5),
             zoom=6.5
         ),
         height=500,
@@ -398,7 +379,8 @@ def criar_mapa_goias_premium(dados_mapa):
             borderwidth=1,
             x=0.02,
             y=0.02
-        )
+        ),
+        showlegend=True
     )
     
     return fig
