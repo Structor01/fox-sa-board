@@ -114,11 +114,17 @@ def aplicar_filtros_contratos(df, grao, status, tipo_operacao, ano):
     
     # Filtro por produto
     if grao != 'Todos':
-        df_filtrado = df_filtrado[df_filtrado['grainName'] == grao]
+        if 'grainName' in df_filtrado.columns:
+            df_filtrado = df_filtrado[df_filtrado['grainName'] == grao]
+        else:
+            st.warning("⚠️ Campo grainName não encontrado. Filtro por produto não aplicado.")
     
     # Filtro por status
     if status != 'Todos':
-        df_filtrado = df_filtrado[df_filtrado['status'] == status]
+        if 'status' in df_filtrado.columns:
+            df_filtrado = df_filtrado[df_filtrado['status'] == status]
+        else:
+            st.warning("⚠️ Campo status não encontrado. Filtro por status não aplicado.")
     
     # Filtro por tipo de operação
     if tipo_operacao != 'Todos':
