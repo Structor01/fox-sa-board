@@ -2216,7 +2216,7 @@ def main():
         st.session_state.theme = 'light'
     
     # Aplicar CSS
-    aplicar_css_premium(st.session_state.theme)
+    aplicar_css_tema(st.session_state.theme)
     
     # Header principal
     st.markdown(f'<h1 style="color: inherit; text-align: center; margin-bottom: 0.5rem;">🌾 FOX SA Investment Board</h1>', unsafe_allow_html=True)
