@@ -2228,6 +2228,7 @@ def main():
     with col1:
         opcoes = [
             get_text('consolidated_view', st.session_state.language),
+            "📋 Contratos Reais (MongoDB)",
             "Dashboards por Unidade",
             get_text('dre_realtime', st.session_state.language),
             get_text('financial_performance', st.session_state.language),
@@ -2307,6 +2308,10 @@ def main():
     # Roteamento de páginas
     if opcao == get_text('consolidated_view', st.session_state.language):
         visao_consolidada(dados_eda, dados_financeiros, st.session_state.language)
+    
+    elif opcao == "📋 Contratos Reais (MongoDB)":
+        from contratos_reais import pagina_contratos_reais
+        pagina_contratos_reais(st.session_state.theme)
     
     elif opcao == "Dashboards por Unidade":
         dashboards_unidades_negocio(st.session_state.language)
