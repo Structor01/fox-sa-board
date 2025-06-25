@@ -591,6 +591,7 @@ def criar_mapa_contratos(df, tema='plotly'):
     try:
         import plotly.express as px
         import pandas as pd
+        import numpy as np
         
         # Preparar dados para o mapa
         map_data = []
@@ -603,36 +604,52 @@ def criar_mapa_contratos(df, tema='plotly'):
                 location = row['toLocation']
                 if isinstance(location, dict) and 'coordinates' in location:
                     coords = location['coordinates']
-                    if len(coords) >= 2:
-                        map_data.append({
-                            'lat': coords[1],  # MongoDB usa [longitude, latitude]
-                            'lon': coords[0],
-                            'quantidade': row.get('amount', 0),
-                            'valor': row.get('valorTotal', 0),
-                            'tipo': 'Supply',
-                            'cidade': row.get('toCity', 'Não informado'),
-                            'estado': row.get('toState', 'Não informado'),
-                            'produto': row.get('grainName', 'Não informado'),
-                            'preco': row.get('bagPrice', 0)
-                        })
+                    if len(coords) >= 2 and pd.notna(coords[0]) and pd.notna(coords[1]):
+                        # Garantir que são números válidos
+                        lat = float(coords[1]) if coords[1] is not None else None
+                        lon = float(coords[0]) if coords[0] is not None else None
+                        quantidade = float(row.get('amount', 0)) if pd.notna(row.get('amount', 0)) else 0
+                        valor = float(row.get('valorTotal', 0)) if pd.notna(row.get('valorTotal', 0)) else 0
+                        preco = float(row.get('bagPrice', 0)) if pd.notna(row.get('bagPrice', 0)) else 0
+                        
+                        if lat is not None and lon is not None:
+                            map_data.append({
+                                'lat': lat,
+                                'lon': lon,
+                                'quantidade': quantidade,
+                                'valor': valor,
+                                'tipo': 'Supply',
+                                'cidade': str(row.get('toCity', 'Não informado')),
+                                'estado': str(row.get('toState', 'Não informado')),
+                                'produto': str(row.get('grainName', 'Não informado')),
+                                'preco': preco
+                            })
             
             # Para Originação, usar origem (from)
             elif tipo_operacao == 'Originação' and row.get('fromLocation') is not None:
                 location = row['fromLocation']
                 if isinstance(location, dict) and 'coordinates' in location:
                     coords = location['coordinates']
-                    if len(coords) >= 2:
-                        map_data.append({
-                            'lat': coords[1],  # MongoDB usa [longitude, latitude]
-                            'lon': coords[0],
-                            'quantidade': row.get('amount', 0),
-                            'valor': row.get('valorTotal', 0),
-                            'tipo': 'Originação',
-                            'cidade': row.get('fromCity', 'Não informado'),
-                            'estado': row.get('fromState', 'Não informado'),
-                            'produto': row.get('grainName', 'Não informado'),
-                            'preco': row.get('bagPrice', 0)
-                        })
+                    if len(coords) >= 2 and pd.notna(coords[0]) and pd.notna(coords[1]):
+                        # Garantir que são números válidos
+                        lat = float(coords[1]) if coords[1] is not None else None
+                        lon = float(coords[0]) if coords[0] is not None else None
+                        quantidade = float(row.get('amount', 0)) if pd.notna(row.get('amount', 0)) else 0
+                        valor = float(row.get('valorTotal', 0)) if pd.notna(row.get('valorTotal', 0)) else 0
+                        preco = float(row.get('bagPrice', 0)) if pd.notna(row.get('bagPrice', 0)) else 0
+                        
+                        if lat is not None and lon is not None:
+                            map_data.append({
+                                'lat': lat,
+                                'lon': lon,
+                                'quantidade': quantidade,
+                                'valor': valor,
+                                'tipo': 'Originação',
+                                'cidade': str(row.get('fromCity', 'Não informado')),
+                                'estado': str(row.get('fromState', 'Não informado')),
+                                'produto': str(row.get('grainName', 'Não informado')),
+                                'preco': preco
+                            })
         
         if not map_data:
             st.info("📍 Nenhum contrato com localização disponível para exibir no mapa.")
@@ -641,6 +658,20 @@ def criar_mapa_contratos(df, tema='plotly'):
         # Converter para DataFrame
         df_map = pd.DataFrame(map_data)
         
+        # Garantir que todos os valores numéricos são válidos
+        df_map['lat'] = pd.to_numeric(df_map['lat'], errors='coerce')
+        df_map['lon'] = pd.to_numeric(df_map['lon'], errors='coerce')
+        df_map['quantidade'] = pd.to_numeric(df_map['quantidade'], errors='coerce').fillna(0)
+        df_map['valor'] = pd.to_numeric(df_map['valor'], errors='coerce').fillna(0)
+        df_map['preco'] = pd.to_numeric(df_map['preco'], errors='coerce').fillna(0)
+        
+        # Remover linhas com coordenadas inválidas
+        df_map = df_map.dropna(subset=['lat', 'lon'])
+        
+        if df_map.empty:
+            st.info("📍 Nenhum contrato com coordenadas válidas para exibir no mapa.")
+            return None
+        
         # Agregar por localização para evitar sobreposição
         df_map_agg = df_map.groupby(['lat', 'lon', 'cidade', 'estado', 'tipo']).agg({
             'quantidade': 'sum',
@@ -648,6 +679,13 @@ def criar_mapa_contratos(df, tema='plotly'):
             'produto': lambda x: ', '.join(x.unique()),
             'preco': 'mean'
         }).reset_index()
+        
+        # Garantir que valores agregados são serializáveis
+        df_map_agg['quantidade'] = df_map_agg['quantidade'].astype(float)
+        df_map_agg['valor'] = df_map_agg['valor'].astype(float)
+        df_map_agg['preco'] = df_map_agg['preco'].astype(float)
+        df_map_agg['lat'] = df_map_agg['lat'].astype(float)
+        df_map_agg['lon'] = df_map_agg['lon'].astype(float)
         
         # Criar o mapa
         fig = px.scatter_mapbox(
