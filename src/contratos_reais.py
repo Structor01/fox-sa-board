@@ -46,8 +46,8 @@ def pagina_contratos_reais(tema='escuro'):
         status_selecionado = st.selectbox("📊 Status", status_disponiveis)
     
     with col3:
-        # Filtro por tipo de operação - usando dados reais
-        tipos_operacao = ['Todos'] + sorted([t for t in df_contratos['tipoOperacao'].unique() if pd.notna(t)])
+        # Filtro por tipo de operação - categorias específicas
+        tipos_operacao = ['Todos', 'Supply', 'Originação', 'Frete', 'Clube FX']
         tipo_selecionado = st.selectbox("🔄 Operação", tipos_operacao)
     
     with col4:
@@ -110,7 +110,24 @@ def aplicar_filtros_contratos(df, grao, status, tipo_operacao, ano):
     
     # Filtro por tipo de operação
     if tipo_operacao != 'Todos':
-        df_filtrado = df_filtrado[df_filtrado['tipoOperacao'] == tipo_operacao]
+        if tipo_operacao == 'Supply':
+            # Supply: isBuying: false, isGrain: true
+            df_filtrado = df_filtrado[
+                (df_filtrado['isBuying'] == False) & 
+                (df_filtrado.get('isGrain', False) == True)
+            ]
+        elif tipo_operacao == 'Originação':
+            # Originação: isBuying: true, isGrain: true
+            df_filtrado = df_filtrado[
+                (df_filtrado['isBuying'] == True) & 
+                (df_filtrado.get('isGrain', False) == True)
+            ]
+        elif tipo_operacao == 'Frete':
+            # Frete: isFreight: true
+            df_filtrado = df_filtrado[df_filtrado.get('isFreight', False) == True]
+        elif tipo_operacao == 'Clube FX':
+            # Clube FX: isService: true
+            df_filtrado = df_filtrado[df_filtrado.get('isService', False) == True]
     
     # Filtro por ano
     if ano and ano != 'Todos':
