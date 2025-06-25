@@ -1,12 +1,19 @@
 """
 Módulo para conexão e consulta ao MongoDB da FOX SA
-Collection: orderv2 (contratos)
+Collections: orderv2, addresses, finances, finances_categories
 """
 
+import warnings
+warnings.filterwarnings('ignore')
+
+import os
+import sys
+import json
 import pymongo
 from pymongo import MongoClient
 import pandas as pd
 from datetime import datetime, timedelta
+
 import streamlit as st
 from typing import Dict, List, Optional
 import logging

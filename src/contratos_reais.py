@@ -2,6 +2,9 @@
 Página de Contratos Reais - Dados do MongoDB orderv2
 """
 
+import warnings
+warnings.filterwarnings('ignore')
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
