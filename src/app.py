@@ -700,7 +700,7 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt'):
         st.plotly_chart(fig_investimento_capex, use_container_width=True)
 
 def criar_grafico_receita_ebitda(lang='pt'):
-    """Gráfico de linha Receita x EBITDA"""
+    """Gráfico de linha Receita x EBITDA - tema branco"""
     meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
     receita = [18.5, 19.2, 21.8, 20.1, 22.3, 24.1, 23.8, 25.2, 24.9, 26.1, 25.8, 27.2]
     ebitda = [6.8, 7.1, 8.2, 7.5, 8.9, 9.8, 9.2, 10.1, 9.8, 10.5, 10.2, 11.1]
@@ -711,7 +711,7 @@ def criar_grafico_receita_ebitda(lang='pt'):
         x=meses, y=receita,
         mode='lines+markers',
         name=get_text('gross_revenue', lang),
-        line=dict(color='#90EE90', width=3),
+        line=dict(color='#198754', width=3),
         marker=dict(size=8),
         hovertemplate=f'<b>%{{x}}</b><br>{get_text("gross_revenue", lang)}: R$ %{{y}}M<extra></extra>'
     ))
@@ -720,26 +720,26 @@ def criar_grafico_receita_ebitda(lang='pt'):
         x=meses, y=ebitda,
         mode='lines+markers',
         name=get_text('ebitda', lang),
-        line=dict(color='#FFD700', width=3),
+        line=dict(color='#0D6EFD', width=3),
         marker=dict(size=8),
         hovertemplate=f'<b>%{{x}}</b><br>{get_text("ebitda", lang)}: R$ %{{y}}M<extra></extra>'
     ))
     
     fig.update_layout(
-        title=dict(text=get_text('revenue_ebitda_12m', lang), font=dict(size=18, color='#FFFFFF')),
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF'),
+        title=dict(text=get_text('revenue_ebitda_12m', lang), font=dict(size=18, color='#000000')),
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font=dict(color='#000000'),
         height=400,
-        legend=dict(font=dict(color='#FFFFFF')),
-        xaxis=dict(showgrid=True, gridcolor='rgba(192, 192, 192, 0.1)', color='#C0C0C0'),
-        yaxis=dict(showgrid=True, gridcolor='rgba(192, 192, 192, 0.1)', color='#C0C0C0', title=f'{get_text("value_millions", lang)}')
+        legend=dict(font=dict(color='#000000')),
+        xaxis=dict(showgrid=True, gridcolor='#E9ECEF', color='#000000'),
+        yaxis=dict(showgrid=True, gridcolor='#E9ECEF', color='#000000', title=f'{get_text("value_millions", lang)}')
     )
     
     return fig
 
 def criar_grafico_investimento_capex(lang='pt'):
-    """Gráfico de barras empilhadas Investimento vs Capex"""
+    """Gráfico de barras empilhadas Investimento vs Capex - tema branco"""
     meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
     investimento = [2.1, 1.8, 2.5, 2.2, 2.8, 3.1, 2.9, 3.2, 3.0, 3.5, 3.3, 3.8]
     capex = [1.2, 1.5, 1.8, 1.4, 2.1, 2.3, 2.0, 2.4, 2.2, 2.6, 2.5, 2.9]
@@ -749,44 +749,44 @@ def criar_grafico_investimento_capex(lang='pt'):
     fig.add_trace(go.Bar(
         x=meses, y=investimento,
         name='Investimento' if lang == 'pt' else 'Investment',
-        marker=dict(color='#C0C0C0'),
+        marker=dict(color='#6C757D'),
         hovertemplate=f'<b>%{{x}}</b><br>{"Investimento" if lang == "pt" else "Investment"}: R$ %{{y}}M<extra></extra>'
     ))
     
     fig.add_trace(go.Bar(
         x=meses, y=capex,
         name='Capex',
-        marker=dict(color='#FFD700'),
+        marker=dict(color='#FD7E14'),
         hovertemplate='<b>%{x}</b><br>Capex: R$ %{y}M<extra></extra>'
     ))
     
     fig.update_layout(
-        title=dict(text=get_text('investment_vs_capex', lang), font=dict(size=18, color='#FFFFFF')),
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF'),
+        title=dict(text=get_text('investment_vs_capex', lang), font=dict(size=18, color='#000000')),
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font=dict(color='#000000'),
         height=400,
         barmode='stack',
-        legend=dict(font=dict(color='#FFFFFF')),
-        xaxis=dict(showgrid=False, color='#C0C0C0'),
-        yaxis=dict(showgrid=True, gridcolor='rgba(192, 192, 192, 0.1)', color='#C0C0C0', title=get_text('value_millions', lang))
+        legend=dict(font=dict(color='#000000')),
+        xaxis=dict(showgrid=False, color='#000000'),
+        yaxis=dict(showgrid=True, gridcolor='#E9ECEF', color='#000000', title=get_text('value_millions', lang))
     )
     
     return fig
 
 # ============================================================================
-# CSS PREMIUM
+# CSS TEMA BRANCO
 # ============================================================================
 
-def aplicar_css_premium():
-    """CSS premium para o dashboard"""
+def aplicar_css_branco():
+    """CSS tema branco para o dashboard"""
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
         .stApp {
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            color: #FFFFFF;
+            background: #FFFFFF;
+            color: #000000;
             font-family: 'Inter', sans-serif;
         }
         
@@ -805,48 +805,543 @@ def aplicar_css_premium():
         
         /* Estilizar selectboxes */
         .stSelectbox > div > div {
-            background: #2d2d2d !important;
-            border: 1px solid #444444 !important;
+            background: #F8F9FA !important;
+            border: 1px solid #DEE2E6 !important;
             border-radius: 8px !important;
-            color: #FFFFFF !important;
+            color: #000000 !important;
         }
         
         /* Estilizar botões */
         .stButton > button {
-            background: linear-gradient(135deg, #333333 0%, #555555 100%) !important;
-            border: 1px solid #666666 !important;
+            background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%) !important;
+            border: 1px solid #DEE2E6 !important;
             border-radius: 8px !important;
-            color: #FFFFFF !important;
+            color: #000000 !important;
             font-weight: 500 !important;
             transition: all 0.3s ease !important;
         }
         
         .stButton > button:hover {
-            border-color: #C0C0C0 !important;
-            box-shadow: 0 0 10px rgba(192, 192, 192, 0.3) !important;
+            border-color: #6C757D !important;
+            box-shadow: 0 0 10px rgba(108, 117, 125, 0.3) !important;
         }
         
         /* Estilizar checkboxes */
         .stCheckbox > label {
-            color: #FFFFFF !important;
+            color: #000000 !important;
         }
         
         /* Estilizar date inputs */
         .stDateInput > div > div > input {
-            background: #2d2d2d !important;
-            border: 1px solid #444444 !important;
+            background: #F8F9FA !important;
+            border: 1px solid #DEE2E6 !important;
             border-radius: 8px !important;
-            color: #FFFFFF !important;
+            color: #000000 !important;
         }
         
         /* Estilizar dataframes */
         .stDataFrame {
-            background: #1a1a1a !important;
-            border: 1px solid #333333 !important;
+            background: #FFFFFF !important;
+            border: 1px solid #DEE2E6 !important;
             border-radius: 8px !important;
         }
+        
+        /* Estilizar tabs */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 8px;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            background: #F8F9FA;
+            border: 1px solid #DEE2E6;
+            border-radius: 8px 8px 0 0;
+            color: #000000;
+            font-weight: 500;
+            padding: 12px 24px;
+        }
+        
+        .stTabs [aria-selected="true"] {
+            background: #FFFFFF;
+            border-bottom: 1px solid #FFFFFF;
+            color: #000000;
+            font-weight: 600;
+        }
+        
+        /* Cards personalizados */
+        .metric-card {
+            background: #F8F9FA;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #DEE2E6;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #000000;
+            margin: 0.5rem 0;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #6C757D;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-delta {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .delta-positive { color: #198754; }
+        .delta-negative { color: #DC3545; }
+        .delta-neutral { color: #6C757D; }
     </style>
     """, unsafe_allow_html=True)
+
+# ============================================================================
+# DASHBOARDS POR UNIDADE DE NEGÓCIO
+# ============================================================================
+
+def dashboards_unidades_negocio(lang='pt'):
+    """Dashboards detalhados por unidade usando tabs"""
+    
+    st.markdown(f'<h2 style="color: #000000; border-bottom: 2px solid #DEE2E6; padding-bottom: 0.5rem;">🏢 {get_text("business_units_detailed", lang)}</h2>', unsafe_allow_html=True)
+    
+    # Criar tabs para navegação rápida
+    tab1, tab2, tab3 = st.tabs(["🌾 Fox Grãos", "🚛 Fox Log", "💼 Clube FX"])
+    
+    with tab1:
+        dashboard_fox_graos_detalhado(lang)
+    
+    with tab2:
+        dashboard_fox_log_detalhado(lang)
+    
+    with tab3:
+        dashboard_clube_fx_detalhado(lang)
+
+def dashboard_fox_graos_detalhado(lang='pt'):
+    """Dashboard detalhado da Fox Grãos"""
+    
+    st.markdown('<h3 style="color: #000000; margin: 1rem 0;">🌾 Fox Grãos - Trade Triangular & Logística</h3>', unsafe_allow_html=True)
+    
+    # Operação de Trade Triangular
+    st.markdown('<h4 style="color: #198754; margin: 1.5rem 0 1rem 0;">📈 Operação de Trade Triangular</h4>', unsafe_allow_html=True)
+    st.markdown('<p style="color: #6C757D; margin-bottom: 1rem;">Demanda de compradores → Sourcing de produtores → Entrega</p>', unsafe_allow_html=True)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    # KPIs Trade
+    with col1:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Volume Negociado</div>
+            <div class="metric-value">125.8k t</div>
+            <div class="metric-delta delta-positive">+18.5% vs mês anterior</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Receita Trade</div>
+            <div class="metric-value">R$ 89.2M</div>
+            <div class="metric-delta delta-positive">+12.3% vs período anterior</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Margem de Trade</div>
+            <div class="metric-value">12.8%</div>
+            <div class="metric-delta delta-positive">+2.1 p.p.</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Tempo de Ciclo</div>
+            <div class="metric-value">18 dias</div>
+            <div class="metric-delta delta-positive">-3 dias vs média</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Serviços Logísticos
+    st.markdown('<h4 style="color: #198754; margin: 2rem 0 1rem 0;">🚛 Serviços Logísticos</h4>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # KPIs Logística
+        col_a, col_b = st.columns(2)
+        with col_a:
+            st.markdown("""
+            <div class="metric-card">
+                <div class="metric-label">Receita Logística</div>
+                <div class="metric-value">R$ 24.5M</div>
+                <div class="metric-delta delta-positive">+15.2%</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col_b:
+            st.markdown("""
+            <div class="metric-card">
+                <div class="metric-label">Margem Bruta</div>
+                <div class="metric-value">28.5%</div>
+                <div class="metric-delta delta-positive">+1.8 p.p.</div>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    with col2:
+        # Volume por tipo de grão
+        fig_volume_graos = criar_grafico_volume_graos_branco()
+        st.plotly_chart(fig_volume_graos, use_container_width=True)
+    
+    # Linha do tempo de contratos
+    st.markdown('<h4 style="color: #198754; margin: 2rem 0 1rem 0;">📅 Timeline de Contratos Fechados</h4>', unsafe_allow_html=True)
+    fig_timeline = criar_timeline_contratos_branco()
+    st.plotly_chart(fig_timeline, use_container_width=True)
+
+def dashboard_fox_log_detalhado(lang='pt'):
+    """Dashboard detalhado da Fox Log"""
+    
+    st.markdown('<h3 style="color: #000000; margin: 1rem 0;">🚛 Fox Log - Transporte & Insumos</h3>', unsafe_allow_html=True)
+    
+    # Transporte & Armazenagem
+    st.markdown('<h4 style="color: #FD7E14; margin: 1.5rem 0 1rem 0;">📦 Transporte & Armazenagem</h4>', unsafe_allow_html=True)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Receita Transporte</div>
+            <div class="metric-value">R$ 45.8M</div>
+            <div class="metric-delta delta-positive">+12.3%</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Receita Armazenagem</div>
+            <div class="metric-value">R$ 18.2M</div>
+            <div class="metric-delta delta-positive">+8.7%</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Volume Total</div>
+            <div class="metric-value">89.5k t</div>
+            <div class="metric-delta delta-positive">+15.2%</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">SLA Pontualidade</div>
+            <div class="metric-value">94.8%</div>
+            <div class="metric-delta delta-positive">+2.1 p.p.</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Tipos de Carga
+    st.markdown('<h4 style="color: #FD7E14; margin: 2rem 0 1rem 0;">📊 Tipos de Carga</h4>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        fig_tipos_carga = criar_grafico_tipos_carga_branco()
+        st.plotly_chart(fig_tipos_carga, use_container_width=True)
+    
+    with col2:
+        # Modalidades de Contratação
+        fig_modalidades = criar_grafico_modalidades_branco()
+        st.plotly_chart(fig_modalidades, use_container_width=True)
+    
+    # Heatmap de Custos Operacionais
+    st.markdown('<h4 style="color: #FD7E14; margin: 2rem 0 1rem 0;">🗺️ Custos Operacionais por Modalidade e Rota</h4>', unsafe_allow_html=True)
+    fig_heatmap = criar_heatmap_custos_branco()
+    st.plotly_chart(fig_heatmap, use_container_width=True)
+    
+    # Parcerias & Infraestrutura
+    st.markdown('<h4 style="color: #FD7E14; margin: 2rem 0 1rem 0;">🏭 Parcerias & Infraestrutura</h4>', unsafe_allow_html=True)
+    criar_tabela_parcerias()
+
+def dashboard_clube_fx_detalhado(lang='pt'):
+    """Dashboard detalhado do Clube FX"""
+    
+    st.markdown('<h3 style="color: #000000; margin: 1rem 0;">💼 Clube FX - Consultoria</h3>', unsafe_allow_html=True)
+    
+    # KPIs principais
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Clientes Atendidos</div>
+            <div class="metric-value">247</div>
+            <div class="metric-delta delta-positive">+18 novos clientes</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Receita Consultoria</div>
+            <div class="metric-value">R$ 12.8M</div>
+            <div class="metric-delta delta-positive">+22.5%</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">NPS Score</div>
+            <div class="metric-value">8.7/10</div>
+            <div class="metric-delta delta-positive">+0.3 vs trimestre</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Taxa Retenção</div>
+            <div class="metric-value">92.3%</div>
+            <div class="metric-delta delta-positive">+1.8 p.p.</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Receita por tipo de serviço
+    st.markdown('<h4 style="color: #0D6EFD; margin: 2rem 0 1rem 0;">💰 Receita por Tipo de Serviço</h4>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        fig_receita_servicos = criar_grafico_receita_servicos_branco()
+        st.plotly_chart(fig_receita_servicos, use_container_width=True)
+    
+    with col2:
+        # Pipeline de projetos
+        st.markdown('<h5 style="color: #0D6EFD;">📋 Pipeline de Projetos</h5>', unsafe_allow_html=True)
+        criar_pipeline_projetos()
+
+# ============================================================================
+# FUNÇÕES DE GRÁFICOS TEMA BRANCO
+# ============================================================================
+
+def criar_grafico_volume_graos_branco():
+    """Gráfico de volume por tipo de grão - tema branco"""
+    graos = ['Soja', 'Milho', 'Sorgo', 'Outros']
+    volumes = [45.2, 32.8, 18.5, 12.1]
+    
+    fig = go.Figure(data=[go.Bar(
+        x=graos, y=volumes,
+        marker=dict(color=['#198754', '#FD7E14', '#6F42C1', '#6C757D']),
+        text=volumes,
+        textposition='outside',
+        texttemplate='%{text}k t',
+        textfont=dict(color='#000000')
+    )])
+    
+    fig.update_layout(
+        title=dict(text="Volume por Tipo de Grão", font=dict(size=16, color='#000000')),
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font=dict(color='#000000'),
+        height=350,
+        yaxis=dict(title='Volume (mil toneladas)', color='#000000', gridcolor='#E9ECEF'),
+        xaxis=dict(color='#000000')
+    )
+    
+    return fig
+
+def criar_timeline_contratos_branco():
+    """Timeline de contratos fechados - tema branco"""
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    contratos = [12, 8, 15, 10, 18, 14, 22, 16, 19, 25, 21, 28]
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Scatter(
+        x=meses, y=contratos,
+        mode='lines+markers',
+        line=dict(color='#198754', width=3),
+        marker=dict(size=8, color='#198754'),
+        name='Contratos Fechados',
+        hovertemplate='<b>%{x}</b><br>Contratos: %{y}<extra></extra>'
+    ))
+    
+    fig.update_layout(
+        title=dict(text="Contratos Fechados por Mês", font=dict(size=16, color='#000000')),
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font=dict(color='#000000'),
+        height=350,
+        yaxis=dict(title='Número de Contratos', color='#000000', gridcolor='#E9ECEF'),
+        xaxis=dict(color='#000000'),
+        showlegend=False
+    )
+    
+    return fig
+
+def criar_grafico_tipos_carga_branco():
+    """Gráfico de tipos de carga - tema branco"""
+    tipos = ['Soja', 'Milho', 'Sorgo', 'Sementes', 'Calcário', 'Outros Insumos']
+    volumes = [35.2, 28.5, 12.8, 8.3, 15.7, 9.5]
+    
+    fig = go.Figure(data=[go.Pie(
+        labels=tipos,
+        values=volumes,
+        hole=0.4,
+        marker=dict(colors=['#198754', '#FD7E14', '#6F42C1', '#0D6EFD', '#DC3545', '#6C757D']),
+        textfont=dict(color='#000000')
+    )])
+    
+    fig.update_layout(
+        title=dict(text="Volume por Tipo de Carga", font=dict(size=16, color='#000000')),
+        paper_bgcolor='#FFFFFF',
+        font=dict(color='#000000'),
+        height=350
+    )
+    
+    return fig
+
+def criar_grafico_modalidades_branco():
+    """Gráfico de modalidades de contratação - tema branco"""
+    modalidades = ['Aluguel Caminhões', 'Transportadoras', 'Autônomos']
+    percentuais = [45, 35, 20]
+    
+    fig = go.Figure(data=[go.Bar(
+        x=modalidades, y=percentuais,
+        marker=dict(color=['#0D6EFD', '#198754', '#FD7E14']),
+        text=percentuais,
+        textposition='outside',
+        texttemplate='%{text}%',
+        textfont=dict(color='#000000')
+    )])
+    
+    fig.update_layout(
+        title=dict(text="Modalidades de Contratação", font=dict(size=16, color='#000000')),
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font=dict(color='#000000'),
+        height=350,
+        yaxis=dict(title='Percentual (%)', color='#000000', gridcolor='#E9ECEF'),
+        xaxis=dict(color='#000000')
+    )
+    
+    return fig
+
+def criar_heatmap_custos_branco():
+    """Heatmap de custos operacionais - tema branco"""
+    modalidades = ['Aluguel', 'Transportadoras', 'Autônomos']
+    rotas = ['Goiânia-SP', 'Rio Verde-SP', 'Jataí-SP', 'Cristalina-MG', 'Formosa-DF']
+    
+    custos = np.array([
+        [120, 135, 145, 160, 125],
+        [110, 125, 140, 155, 115],
+        [105, 120, 135, 150, 110]
+    ])
+    
+    fig = go.Figure(data=go.Heatmap(
+        z=custos,
+        x=rotas,
+        y=modalidades,
+        colorscale='Blues',
+        showscale=True,
+        text=custos,
+        texttemplate="R$ %{text}",
+        textfont={"color": "#000000"}
+    ))
+    
+    fig.update_layout(
+        title=dict(text="Custo Operacional por Modalidade e Rota (R$/t)", font=dict(size=16, color='#000000')),
+        paper_bgcolor='#FFFFFF',
+        font=dict(color='#000000'),
+        height=350
+    )
+    
+    return fig
+
+def criar_grafico_receita_servicos_branco():
+    """Gráfico de receita por serviço - tema branco"""
+    servicos = ['DRE', 'DFC', 'Orçado vs Real', 'Análise Custos', 'Outros']
+    receitas = [4.2, 3.8, 2.9, 1.5, 0.4]
+    
+    fig = go.Figure(data=[go.Bar(
+        x=servicos, y=receitas,
+        marker=dict(color='#0D6EFD'),
+        text=receitas,
+        textposition='outside',
+        texttemplate='R$ %{text}M',
+        textfont=dict(color='#000000')
+    )])
+    
+    fig.update_layout(
+        title=dict(text="Receita por Tipo de Serviço", font=dict(size=16, color='#000000')),
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font=dict(color='#000000'),
+        height=350,
+        yaxis=dict(title='Receita (R$ Milhões)', color='#000000', gridcolor='#E9ECEF'),
+        xaxis=dict(color='#000000')
+    )
+    
+    return fig
+
+def criar_tabela_parcerias():
+    """Tabela de parcerias e infraestrutura"""
+    parcerias_data = {
+        'Parceiro': ['Terminal Cargill', 'Silo ADM', 'Armazém Bunge', 'Terminal Santos Brasil', 'Cooperativa Central'],
+        'Tipo': ['Terminal', 'Silo', 'Armazém', 'Terminal', 'Cooperativa'],
+        'Localização': ['Santos-SP', 'Rio Verde-GO', 'Jataí-GO', 'Santos-SP', 'Goiânia-GO'],
+        'Capacidade (t)': ['50.000', '25.000', '30.000', '75.000', '40.000'],
+        'Status': ['Ativo', 'Ativo', 'Ativo', 'Ativo', 'Ativo'],
+        'Performance': ['95%', '92%', '88%', '97%', '90%']
+    }
+    
+    df_parcerias = pd.DataFrame(parcerias_data)
+    st.dataframe(df_parcerias, use_container_width=True, height=200)
+
+def criar_pipeline_projetos():
+    """Pipeline de projetos em andamento"""
+    projetos = [
+        {'nome': 'DRE Fazenda Santa Maria', 'progresso': 85, 'status': 'Em andamento'},
+        {'nome': 'DFC Agropecuária Boa Vista', 'progresso': 60, 'status': 'Em andamento'},
+        {'nome': 'Orçado vs Real Cooperativa Central', 'progresso': 40, 'status': 'Iniciado'},
+        {'nome': 'Análise Custos Fazenda Progresso', 'progresso': 95, 'status': 'Finalizando'},
+        {'nome': 'Consultoria Fazenda Esperança', 'progresso': 25, 'status': 'Iniciado'}
+    ]
+    
+    for projeto in projetos:
+        cor_status = '#198754' if projeto['progresso'] > 80 else '#FD7E14' if projeto['progresso'] > 50 else '#DC3545'
+        
+        st.markdown(f'''
+        <div style="
+            margin: 1rem 0; 
+            padding: 1rem; 
+            background: #F8F9FA; 
+            border-radius: 8px;
+            border-left: 4px solid {cor_status};
+        ">
+            <div style="color: #000000; font-weight: 600; margin-bottom: 0.5rem;">{projeto['nome']}</div>
+            <div style="background: #E9ECEF; border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 0.5rem;">
+                <div style="background: {cor_status}; height: 100%; width: {projeto['progresso']}%; transition: width 0.3s;"></div>
+            </div>
+            <div style="color: #6C757D; font-size: 0.8rem;">
+                {projeto['progresso']}% concluído • {projeto['status']}
+            </div>
+        </div>
+        ''', unsafe_allow_html=True)
 
 # ============================================================================
 # FUNÇÃO PRINCIPAL
@@ -855,7 +1350,7 @@ def aplicar_css_premium():
 def main():
     """Função principal do dashboard"""
     configurar_pagina()
-    aplicar_css_premium()
+    aplicar_css_branco()  # Mudança para tema branco
     
     # Inicializar session state
     if 'show_welcome' not in st.session_state:
@@ -868,7 +1363,7 @@ def main():
         filtros = tela_boas_vindas(st.session_state.language)
     else:
         # Menu de navegação no topo
-        st.markdown(f'<h1 style="color: #FFFFFF; text-align: center; margin-bottom: 2rem;">{get_text("main_title", st.session_state.language)}</h1>', unsafe_allow_html=True)
+        st.markdown(f'<h1 style="color: #000000; text-align: center; margin-bottom: 2rem;">{get_text("main_title", st.session_state.language)}</h1>', unsafe_allow_html=True)
         
         # Controles de navegação
         col1, col2, col3, col4, col5 = st.columns([3, 2, 2, 1, 1])
@@ -878,6 +1373,7 @@ def main():
                 get_text('select_section', st.session_state.language),
                 [
                     get_text('consolidated_view', st.session_state.language),
+                    "Dashboards por Unidade",  # Nova opção
                     get_text('fox_graos_section', st.session_state.language), 
                     get_text('fox_log_section', st.session_state.language),
                     get_text('clube_fx_section', st.session_state.language),
@@ -936,7 +1432,7 @@ def main():
                 st.session_state.show_welcome = True
                 st.rerun()
         
-        st.markdown('<hr style="margin: 1.5rem 0; border: 1px solid #333333;">', unsafe_allow_html=True)
+        st.markdown('<hr style="margin: 1.5rem 0; border: 1px solid #DEE2E6;">', unsafe_allow_html=True)
         
         # Carregar dados
         dados_eda = carregar_dados_eda()
@@ -946,11 +1442,14 @@ def main():
         if opcao == get_text('consolidated_view', st.session_state.language):
             visao_consolidada(dados_eda, dados_financeiros, st.session_state.language)
         
+        elif opcao == "Dashboards por Unidade":
+            dashboards_unidades_negocio(st.session_state.language)
+        
         elif opcao == get_text('due_diligence', st.session_state.language):
             secao_due_diligence(st.session_state.language)
         
         else:
-            st.markdown(f'<h2 style="color: #FFFFFF;">🚧 {opcao}</h2>', unsafe_allow_html=True)
+            st.markdown(f'<h2 style="color: #000000;">🚧 {opcao}</h2>', unsafe_allow_html=True)
             st.info(get_text('in_development', st.session_state.language))
 
 if __name__ == "__main__":
