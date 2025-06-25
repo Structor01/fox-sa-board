@@ -114,20 +114,20 @@ def aplicar_filtros_contratos(df, grao, status, tipo_operacao, ano):
             # Supply: isBuying: false, isGrain: true
             df_filtrado = df_filtrado[
                 (df_filtrado['isBuying'] == False) & 
-                (df_filtrado.get('isGrain', False) == True)
+                (df_filtrado['isGrain'] == True)
             ]
         elif tipo_operacao == 'Originação':
             # Originação: isBuying: true, isGrain: true
             df_filtrado = df_filtrado[
                 (df_filtrado['isBuying'] == True) & 
-                (df_filtrado.get('isGrain', False) == True)
+                (df_filtrado['isGrain'] == True)
             ]
         elif tipo_operacao == 'Frete':
             # Frete: isFreight: true
-            df_filtrado = df_filtrado[df_filtrado.get('isFreight', False) == True]
+            df_filtrado = df_filtrado[df_filtrado['isFreight'] == True]
         elif tipo_operacao == 'Clube FX':
             # Clube FX: isService: true
-            df_filtrado = df_filtrado[df_filtrado.get('isService', False) == True]
+            df_filtrado = df_filtrado[df_filtrado['isService'] == True]
     
     # Filtro por ano
     if ano and ano != 'Todos':

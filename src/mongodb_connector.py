@@ -96,6 +96,9 @@ class FOXMongoConnector:
                         "amount": 1,
                         "bagPrice": 1,
                         "isBuying": 1,
+                        "isGrain": 1,
+                        "isFreight": 1,
+                        "isService": 1,
                         "isDone": 1,
                         "isInProgress": 1,
                         "amountDone": 1,
@@ -179,6 +182,14 @@ class FOXMongoConnector:
             df['sellerName'] = df['sellerName'].fillna('Não informado')
             df['financialRate'] = df['financialRate'].fillna(0)
             df['paymentDaysAfterDelivery'] = df['paymentDaysAfterDelivery'].fillna('0')
+            
+            # Garantir que campos booleanos existam com valores padrão
+            boolean_fields = ['isBuying', 'isGrain', 'isFreight', 'isService', 'isDone', 'isInProgress', 'isCif', 'isFob']
+            for field in boolean_fields:
+                if field not in df.columns:
+                    df[field] = False
+                else:
+                    df[field] = df[field].fillna(False).astype(bool)
             
             return df
             
@@ -713,4 +724,137 @@ def get_data_range():
             'max_date': datetime.now(),
             'total_contracts': 0
         }
+
+
+@st.cache_data(ttl=300)
+def load_finances_data(year=None):
+    """Carrega dados financeiros das collections finances e finances_categories"""
+    try:
+        connector = get_mongo_connector()
+        
+        # Pipeline de agregação para fazer join entre finances e finances_categories
+        pipeline = [
+            {
+                "$lookup": {
+                    "from": "finances_categories",
+                    "localField": "category",
+                    "foreignField": "_id",
+                    "as": "category_info"
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$category_info",
+                    "preserveNullAndEmptyArrays": True
+                }
+            },
+            {
+                "$addFields": {
+                    "categoryName": "$category_info.name",
+                    "categoryType": "$category_info.type"
+                }
+            }
+        ]
+        
+        # Filtrar por ano se especificado
+        if year:
+            pipeline.insert(0, {
+                "$match": {
+                    "date": {
+                        "$gte": datetime(year, 1, 1),
+                        "$lt": datetime(year + 1, 1, 1)
+                    }
+                }
+            })
+        
+        # Executar agregação
+        finances_data = list(connector.db.finances.aggregate(pipeline))
+        
+        if not finances_data:
+            return pd.DataFrame()
+        
+        # Converter para DataFrame
+        df = pd.DataFrame(finances_data)
+        
+        # Processar datas
+        if 'date' in df.columns:
+            df['date'] = pd.to_datetime(df['date'])
+            df['month'] = df['date'].dt.month
+            df['year'] = df['date'].dt.year
+        
+        # Garantir que amount seja numérico
+        if 'amount' in df.columns:
+            df['amount'] = pd.to_numeric(df['amount'], errors='coerce').fillna(0)
+        
+        return df
+        
+    except Exception as e:
+        st.error(f"Erro ao carregar dados financeiros: {str(e)}")
+        return pd.DataFrame()
+
+@st.cache_data(ttl=300)
+def calculate_financial_metrics(year=None):
+    """Calcula métricas financeiras baseadas nos dados de finances"""
+    df_finances = load_finances_data(year)
+    
+    if df_finances.empty:
+        return {}
+    
+    # Agrupar por mês e categoria
+    monthly_data = {}
+    
+    for mes in range(1, 13):
+        df_mes = df_finances[df_finances['month'] == mes]
+        
+        if df_mes.empty:
+            monthly_data[mes] = {
+                'receitas': 0,
+                'despesas': 0,
+                'despesas_operacionais': 0,
+                'despesas_financeiras': 0,
+                'investimentos': 0,
+                'emprestimos': 0,
+                'pagamentos_emprestimos': 0
+            }
+            continue
+        
+        # Categorizar por tipo de lançamento
+        receitas = df_mes[df_mes['amount'] > 0]['amount'].sum()
+        despesas_total = abs(df_mes[df_mes['amount'] < 0]['amount'].sum())
+        
+        # Categorizar despesas por tipo
+        despesas_operacionais = abs(df_mes[
+            (df_mes['amount'] < 0) & 
+            (df_mes['categoryType'].isin(['operational', 'administrative', 'personnel']))
+        ]['amount'].sum())
+        
+        despesas_financeiras = abs(df_mes[
+            (df_mes['amount'] < 0) & 
+            (df_mes['categoryType'] == 'financial')
+        ]['amount'].sum())
+        
+        # Investimentos e empréstimos
+        investimentos = df_mes[
+            df_mes['categoryType'] == 'investment'
+        ]['amount'].sum()
+        
+        emprestimos = df_mes[
+            (df_mes['categoryType'] == 'loan') & (df_mes['amount'] > 0)
+        ]['amount'].sum()
+        
+        pagamentos_emprestimos = abs(df_mes[
+            (df_mes['categoryType'] == 'loan') & (df_mes['amount'] < 0)
+        ]['amount'].sum())
+        
+        monthly_data[mes] = {
+            'receitas': receitas,
+            'despesas': despesas_total,
+            'despesas_operacionais': despesas_operacionais,
+            'despesas_financeiras': despesas_financeiras,
+            'investimentos': investimentos,
+            'emprestimos': emprestimos,
+            'pagamentos_emprestimos': pagamentos_emprestimos
+        }
+    
+    return monthly_data
 
