@@ -185,21 +185,21 @@ def exibir_kpis_contratos(df, tema):
     with col3:
         st.metric(
             "📈 Volume Comprado",
-            f"{volume_comprado:,.0f} unidade",
+            f"{volume_comprado:,.0f} un.",
             delta=f"{var_volume_comprado:+.1f}%" if var_volume_comprado != 0 else None
         )
     
     with col4:
         st.metric(
             "📉 Volume Vendido", 
-            f"{volume_vendido:,.0f} unidade",
+            f"{volume_vendido:,.0f} un.",
             delta=f"{var_volume_vendido:+.1f}%" if var_volume_vendido != 0 else None
         )
     
     with col5:
         st.metric(
             "💵 Preço Médio",
-            f"R$ {preco_medio:.2f}/unidade",
+            f"R$ {preco_medio:.2f}/un.",
             delta=f"{var_preco:+.1f}%" if var_preco != 0 else None
         )
 
