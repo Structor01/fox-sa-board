@@ -8,13 +8,299 @@ from src.gerar_dados_fox import *
 from src.auth import *
 
 # ============================================================================
+# SISTEMA DE IDIOMAS
+# ============================================================================
+
+TRANSLATIONS = {
+    'pt': {
+        # Tela de boas-vindas
+        'welcome_title': 'Painel de Resultados em Tempo Real',
+        'welcome_subtitle': 'Dashboard executivo para acompanhamento estratégico do agronegócio',
+        'dashboard_config': '⚙️ Configurações do Dashboard',
+        'period_analysis': '📅 Período de Análise',
+        'initial_date': 'Data Inicial:',
+        'final_date': 'Data Final:',
+        'business_units': '🏢 Unidades de Negócio',
+        'fox_graos_desc': 'Fox Grãos (Trade & Logística)',
+        'fox_log_desc': 'Fox Log (Transporte & Insumos)',
+        'clube_fx_desc': 'Clube FX (Consultoria)',
+        'data_status': '🔄 Status dos Dados',
+        'last_update': '📊 Última atualização:',
+        'update_data': '🔄 Atualizar Dados',
+        'access_dashboard': '🚀 Acessar Dashboard Completo',
+        
+        # Menu principal
+        'main_title': '🌾 FOX SA - Painel de Resultados em Tempo Real',
+        'select_section': '📊 Selecionar Seção:',
+        'period': '📅 Período:',
+        'visualization': '👁️ Visualização:',
+        'language': '🌐 Idioma:',
+        'home': '🏠 Início',
+        
+        # Seções do menu
+        'consolidated_view': 'Visão Consolidada',
+        'fox_graos_section': 'Fox Grãos - Trade & Logística',
+        'fox_log_section': 'Fox Log - Transporte & Insumos',
+        'clube_fx_section': 'Clube FX - Consultoria',
+        'financial_performance': 'Performance Financeira',
+        'dre_realtime': 'DRE em Tempo Real',
+        'insights_trends': 'Insights & Tendências',
+        'projections_scenarios': 'Projeções & Cenários',
+        'roadmap_actions': 'Roadmap & Ações',
+        'due_diligence': 'Due Diligence & Captação',
+        'settings': 'Configurações',
+        
+        # Períodos
+        'last_12_months': 'Últimos 12 meses',
+        'last_6_months': 'Últimos 6 meses',
+        'last_quarter': 'Último trimestre',
+        'custom': 'Personalizado',
+        
+        # Visualizações
+        'executive': 'Executiva',
+        'detailed': 'Detalhada',
+        'operational': 'Operacional',
+        
+        # KPIs
+        'gross_revenue': 'Receita Bruta',
+        'ebitda': 'EBITDA',
+        'operational_cashflow': 'Fluxo de Caixa Op.',
+        'active_clients': 'Clientes Ativos',
+        'vs_previous': 'vs período anterior',
+        
+        # Fox Grãos
+        'fox_graos_title': '🌾 Fox Grãos - Trade Triangular & Logística',
+        'triangular_trade': '📈 Operação de Trade Triangular',
+        'logistics_section': '🚛 Logística',
+        'negotiated_volume': 'Volume Negociado',
+        'trade_revenue': 'Receita Trade',
+        'trade_margin': 'Margem de Trade',
+        'average_cycle': 'Ciclo Médio',
+        'last_30_days': 'Últimos 30 dias',
+        'vs_previous_month': 'vs mês anterior',
+        'vs_average': 'vs média',
+        
+        # Fox Log
+        'fox_log_title': '🚛 Fox Log - Logística & Insumos',
+        'transport_revenue': 'Receita Transporte',
+        'storage_revenue': 'Receita Armazenagem',
+        'transported_volume': 'Volume Transportado',
+        'punctuality_sla': 'SLA Pontualidade',
+        
+        # Clube FX
+        'clube_fx_title': '💼 Clube FX - Consultoria',
+        'clients_served': 'Clientes Atendidos',
+        'consulting_revenue': 'Receita Consultoria',
+        'nps_score': 'NPS Score',
+        'retention_rate': 'Taxa Retenção',
+        'new_clients': 'novos clientes',
+        'vs_quarter': 'vs trimestre',
+        'ongoing_projects': 'Projetos em Andamento',
+        'completed': 'concluído',
+        
+        # Due Diligence
+        'due_diligence_title': '📋 Documentos para Due Diligence e Captação',
+        'financial_statements': '📊 Demonstrativos Financeiros',
+        'dre_detailed': 'DRE Detalhado por Unidade',
+        'balance_sheet': 'Balanço Patrimonial',
+        'corporate_structure': '🏢 Estrutura Corporativa',
+        'group_organogram': 'Organograma do Grupo',
+        'institutional_presentation': '📈 Apresentação Institucional',
+        'institutional_deck': 'Deck Institucional',
+        'download_pdf': 'Baixar PDF',
+        'download_excel': 'Baixar Excel',
+        'view_document': 'Visualizar Documento',
+        
+        # Gráficos
+        'revenue_ebitda_12m': 'Receita x EBITDA (Últimos 12 Meses)',
+        'investment_vs_capex': 'Investimento vs Capex por Mês',
+        'volume_by_grain': 'Volume por Tipo de Grão',
+        'contracts_by_month': 'Contratos Fechados por Mês',
+        'modalities_distribution': 'Distribuição de Modalidades',
+        'operational_cost_heatmap': 'Custo Operacional por Modalidade e Carga (R$/t)',
+        'revenue_by_service': 'Receita por Tipo de Serviço',
+        
+        # Unidades
+        'millions': 'Milhões',
+        'thousands_tons': 'mil toneladas',
+        'contracts_number': 'Número de Contratos',
+        'value_millions': 'Valor (R$ Milhões)',
+        
+        # Status
+        'in_development': 'Esta seção está em desenvolvimento. Em breve estará disponível!',
+        
+        # Documentos DRE
+        'dre_fox_graos': 'DRE Fox Grãos',
+        'dre_fox_log': 'DRE Fox Log', 
+        'dre_clube_fx': 'DRE Clube FX',
+        'dre_consolidated': 'DRE Consolidado',
+        'net_revenue': 'Receita Líquida',
+        'cost_goods_sold': 'Custo dos Produtos Vendidos',
+        'gross_profit': 'Lucro Bruto',
+        'operating_expenses': 'Despesas Operacionais',
+        'net_income': 'Lucro Líquido',
+        
+        # Balanço Patrimonial
+        'assets': 'Ativo',
+        'current_assets': 'Ativo Circulante',
+        'non_current_assets': 'Ativo Não Circulante',
+        'liabilities': 'Passivo',
+        'current_liabilities': 'Passivo Circulante',
+        'non_current_liabilities': 'Passivo Não Circulante',
+        'equity': 'Patrimônio Líquido'
+    },
+    
+    'en': {
+        # Welcome screen
+        'welcome_title': 'Real-Time Results Dashboard',
+        'welcome_subtitle': 'Executive dashboard for strategic agribusiness monitoring',
+        'dashboard_config': '⚙️ Dashboard Settings',
+        'period_analysis': '📅 Analysis Period',
+        'initial_date': 'Start Date:',
+        'final_date': 'End Date:',
+        'business_units': '🏢 Business Units',
+        'fox_graos_desc': 'Fox Grãos (Trade & Logistics)',
+        'fox_log_desc': 'Fox Log (Transport & Inputs)',
+        'clube_fx_desc': 'Clube FX (Consulting)',
+        'data_status': '🔄 Data Status',
+        'last_update': '📊 Last update:',
+        'update_data': '🔄 Update Data',
+        'access_dashboard': '🚀 Access Complete Dashboard',
+        
+        # Main menu
+        'main_title': '🌾 FOX SA - Real-Time Results Dashboard',
+        'select_section': '📊 Select Section:',
+        'period': '📅 Period:',
+        'visualization': '👁️ Visualization:',
+        'language': '🌐 Language:',
+        'home': '🏠 Home',
+        
+        # Menu sections
+        'consolidated_view': 'Consolidated View',
+        'fox_graos_section': 'Fox Grãos - Trade & Logistics',
+        'fox_log_section': 'Fox Log - Transport & Inputs',
+        'clube_fx_section': 'Clube FX - Consulting',
+        'financial_performance': 'Financial Performance',
+        'dre_realtime': 'Real-Time Income Statement',
+        'insights_trends': 'Insights & Trends',
+        'projections_scenarios': 'Projections & Scenarios',
+        'roadmap_actions': 'Roadmap & Actions',
+        'due_diligence': 'Due Diligence & Fundraising',
+        'settings': 'Settings',
+        
+        # Periods
+        'last_12_months': 'Last 12 months',
+        'last_6_months': 'Last 6 months',
+        'last_quarter': 'Last quarter',
+        'custom': 'Custom',
+        
+        # Visualizations
+        'executive': 'Executive',
+        'detailed': 'Detailed',
+        'operational': 'Operational',
+        
+        # KPIs
+        'gross_revenue': 'Gross Revenue',
+        'ebitda': 'EBITDA',
+        'operational_cashflow': 'Operational Cash Flow',
+        'active_clients': 'Active Clients',
+        'vs_previous': 'vs previous period',
+        
+        # Fox Grãos
+        'fox_graos_title': '🌾 Fox Grãos - Triangular Trade & Logistics',
+        'triangular_trade': '📈 Triangular Trade Operation',
+        'logistics_section': '🚛 Logistics',
+        'negotiated_volume': 'Negotiated Volume',
+        'trade_revenue': 'Trade Revenue',
+        'trade_margin': 'Trade Margin',
+        'average_cycle': 'Average Cycle',
+        'last_30_days': 'Last 30 days',
+        'vs_previous_month': 'vs previous month',
+        'vs_average': 'vs average',
+        
+        # Fox Log
+        'fox_log_title': '🚛 Fox Log - Logistics & Inputs',
+        'transport_revenue': 'Transport Revenue',
+        'storage_revenue': 'Storage Revenue',
+        'transported_volume': 'Transported Volume',
+        'punctuality_sla': 'Punctuality SLA',
+        
+        # Clube FX
+        'clube_fx_title': '💼 Clube FX - Consulting',
+        'clients_served': 'Clients Served',
+        'consulting_revenue': 'Consulting Revenue',
+        'nps_score': 'NPS Score',
+        'retention_rate': 'Retention Rate',
+        'new_clients': 'new clients',
+        'vs_quarter': 'vs quarter',
+        'ongoing_projects': 'Ongoing Projects',
+        'completed': 'completed',
+        
+        # Due Diligence
+        'due_diligence_title': '📋 Due Diligence & Fundraising Documents',
+        'financial_statements': '📊 Financial Statements',
+        'dre_detailed': 'Detailed Income Statement by Unit',
+        'balance_sheet': 'Balance Sheet',
+        'corporate_structure': '🏢 Corporate Structure',
+        'group_organogram': 'Group Organogram',
+        'institutional_presentation': '📈 Institutional Presentation',
+        'institutional_deck': 'Institutional Deck',
+        'download_pdf': 'Download PDF',
+        'download_excel': 'Download Excel',
+        'view_document': 'View Document',
+        
+        # Charts
+        'revenue_ebitda_12m': 'Revenue x EBITDA (Last 12 Months)',
+        'investment_vs_capex': 'Investment vs Capex by Month',
+        'volume_by_grain': 'Volume by Grain Type',
+        'contracts_by_month': 'Contracts Closed by Month',
+        'modalities_distribution': 'Modalities Distribution',
+        'operational_cost_heatmap': 'Operational Cost by Modality and Load (R$/t)',
+        'revenue_by_service': 'Revenue by Service Type',
+        
+        # Units
+        'millions': 'Millions',
+        'thousands_tons': 'thousand tons',
+        'contracts_number': 'Number of Contracts',
+        'value_millions': 'Value (R$ Millions)',
+        
+        # Status
+        'in_development': 'This section is under development. Coming soon!',
+        
+        # DRE Documents
+        'dre_fox_graos': 'Fox Grãos Income Statement',
+        'dre_fox_log': 'Fox Log Income Statement',
+        'dre_clube_fx': 'Clube FX Income Statement',
+        'dre_consolidated': 'Consolidated Income Statement',
+        'net_revenue': 'Net Revenue',
+        'cost_goods_sold': 'Cost of Goods Sold',
+        'gross_profit': 'Gross Profit',
+        'operating_expenses': 'Operating Expenses',
+        'net_income': 'Net Income',
+        
+        # Balance Sheet
+        'assets': 'Assets',
+        'current_assets': 'Current Assets',
+        'non_current_assets': 'Non-Current Assets',
+        'liabilities': 'Liabilities',
+        'current_liabilities': 'Current Liabilities',
+        'non_current_liabilities': 'Non-Current Liabilities',
+        'equity': 'Equity'
+    }
+}
+
+def get_text(key, lang='pt'):
+    """Função para obter texto traduzido"""
+    return TRANSLATIONS.get(lang, TRANSLATIONS['pt']).get(key, key)
+
+# ============================================================================
 # CONFIGURAÇÃO DA PÁGINA
 # ============================================================================
 
 def configurar_pagina():
     """Configuração inicial da página"""
     st.set_page_config(
-        page_title="FOX SA - Painel de Resultados em Tempo Real",
+        page_title="FOX SA - Real-Time Results Dashboard",
         page_icon="🌾",
         layout="wide",
         initial_sidebar_state="collapsed"
@@ -24,7 +310,7 @@ def configurar_pagina():
 # TELA DE BOAS-VINDAS
 # ============================================================================
 
-def tela_boas_vindas():
+def tela_boas_vindas(lang='pt'):
     """Tela de boas-vindas com filtros principais"""
     
     # Logo e título dinâmico
@@ -39,52 +325,52 @@ def tela_boas_vindas():
         """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("""
+        st.markdown(f"""
         <div style="padding: 2rem 0;">
-            <h1 style="color: #FFFFFF; font-size: 2.5rem; margin: 0;">Painel de Resultados em Tempo Real</h1>
-            <p style="color: #C0C0C0; font-size: 1.2rem; margin: 0.5rem 0;">Dashboard executivo para acompanhamento estratégico do agronegócio</p>
+            <h1 style="color: #FFFFFF; font-size: 2.5rem; margin: 0;">{get_text('welcome_title', lang)}</h1>
+            <p style="color: #C0C0C0; font-size: 1.2rem; margin: 0.5rem 0;">{get_text('welcome_subtitle', lang)}</p>
         </div>
         """, unsafe_allow_html=True)
     
     st.markdown('<hr style="margin: 2rem 0; border: 1px solid #333333;">', unsafe_allow_html=True)
     
     # Filtros principais
-    st.markdown('<h3 style="color: #FFFFFF; margin-bottom: 1rem;">⚙️ Configurações do Dashboard</h3>', unsafe_allow_html=True)
+    st.markdown(f'<h3 style="color: #FFFFFF; margin-bottom: 1rem;">{get_text("dashboard_config", lang)}</h3>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([2, 2, 2])
     
     with col1:
-        st.markdown("**📅 Período de Análise**")
+        st.markdown(f"**{get_text('period_analysis', lang)}**")
         data_inicial = st.date_input(
-            "Data Inicial:",
+            get_text('initial_date', lang),
             value=datetime.now() - timedelta(days=365),
             key="data_inicial"
         )
         data_final = st.date_input(
-            "Data Final:",
+            get_text('final_date', lang),
             value=datetime.now(),
             key="data_final"
         )
     
     with col2:
-        st.markdown("**🏢 Unidades de Negócio**")
-        fox_graos = st.checkbox("Fox Grãos (Trade & Logística)", value=True, key="fox_graos")
-        fox_log = st.checkbox("Fox Log (Transporte & Insumos)", value=True, key="fox_log")
-        clube_fx = st.checkbox("Clube FX (Consultoria)", value=True, key="clube_fx")
+        st.markdown(f"**{get_text('business_units', lang)}**")
+        fox_graos = st.checkbox(get_text('fox_graos_desc', lang), value=True, key="fox_graos")
+        fox_log = st.checkbox(get_text('fox_log_desc', lang), value=True, key="fox_log")
+        clube_fx = st.checkbox(get_text('clube_fx_desc', lang), value=True, key="clube_fx")
     
     with col3:
-        st.markdown("**🔄 Status dos Dados**")
+        st.markdown(f"**{get_text('data_status', lang)}**")
         ultima_atualizacao = datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
-        st.info(f"📊 Última atualização: {ultima_atualizacao}")
+        st.info(f"{get_text('last_update', lang)} {ultima_atualizacao}")
         
-        if st.button("🔄 Atualizar Dados", key="refresh_welcome"):
+        if st.button(get_text('update_data', lang), key="refresh_welcome"):
             st.rerun()
     
     # Botão para acessar dashboard
     st.markdown('<br>', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
-        if st.button("🚀 Acessar Dashboard Completo", key="access_dashboard", type="primary"):
+        if st.button(get_text('access_dashboard', lang), key="access_dashboard", type="primary"):
             st.session_state.show_welcome = False
             st.rerun()
     
@@ -99,22 +385,262 @@ def tela_boas_vindas():
     }
 
 # ============================================================================
-# VISÃO CONSOLIDADA
+# SEÇÃO DE DUE DILIGENCE
 # ============================================================================
 
-def visao_consolidada(dados_eda, dados_financeiros):
+def secao_due_diligence(lang='pt'):
+    """Seção de documentos para due diligence e captação"""
+    
+    st.markdown(f'<h2 style="color: #FFFFFF; border-bottom: 2px solid #FFD700; padding-bottom: 0.5rem;">{get_text("due_diligence_title", lang)}</h2>', unsafe_allow_html=True)
+    
+    # Demonstrativos Financeiros
+    st.markdown(f'<h3 style="color: #FFD700; margin: 2rem 0 1rem 0;">{get_text("financial_statements", lang)}</h3>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # DRE Detalhado
+        st.markdown(f'<h4 style="color: #FFFFFF;">{get_text("dre_detailed", lang)}</h4>', unsafe_allow_html=True)
+        
+        # Criar DRE por unidade
+        dre_data = criar_dre_detalhado(lang)
+        st.dataframe(dre_data, use_container_width=True, height=400)
+        
+        col_btn1, col_btn2 = st.columns(2)
+        with col_btn1:
+            if st.button(f"📄 {get_text('download_pdf', lang)}", key="dre_pdf"):
+                st.success("PDF gerado com sucesso!")
+        with col_btn2:
+            if st.button(f"📊 {get_text('download_excel', lang)}", key="dre_excel"):
+                st.success("Excel gerado com sucesso!")
+    
+    with col2:
+        # Balanço Patrimonial
+        st.markdown(f'<h4 style="color: #FFFFFF;">{get_text("balance_sheet", lang)}</h4>', unsafe_allow_html=True)
+        
+        # Criar Balanço
+        balanco_data = criar_balanco_patrimonial(lang)
+        st.dataframe(balanco_data, use_container_width=True, height=400)
+        
+        col_btn1, col_btn2 = st.columns(2)
+        with col_btn1:
+            if st.button(f"📄 {get_text('download_pdf', lang)}", key="balanco_pdf"):
+                st.success("PDF gerado com sucesso!")
+        with col_btn2:
+            if st.button(f"📊 {get_text('download_excel', lang)}", key="balanco_excel"):
+                st.success("Excel gerado com sucesso!")
+    
+    # Estrutura Corporativa
+    st.markdown(f'<h3 style="color: #FFD700; margin: 2rem 0 1rem 0;">{get_text("corporate_structure", lang)}</h3>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Organograma
+        st.markdown(f'<h4 style="color: #FFFFFF;">{get_text("group_organogram", lang)}</h4>', unsafe_allow_html=True)
+        criar_organograma(lang)
+        
+        if st.button(f"👁️ {get_text('view_document', lang)}", key="organograma_view"):
+            st.success("Organograma expandido!")
+    
+    with col2:
+        # Apresentação Institucional
+        st.markdown(f'<h4 style="color: #FFFFFF;">{get_text("institutional_presentation", lang)}</h4>', unsafe_allow_html=True)
+        criar_deck_institucional(lang)
+        
+        if st.button(f"📈 {get_text('view_document', lang)}", key="deck_view"):
+            st.success("Deck institucional aberto!")
+
+def criar_dre_detalhado(lang='pt'):
+    """Criar DRE detalhado por unidade de negócio"""
+    
+    dre_data = {
+        get_text('net_revenue', lang): {
+            get_text('dre_fox_graos', lang): 'R$ 89.200.000',
+            get_text('dre_fox_log', lang): 'R$ 64.000.000',
+            get_text('dre_clube_fx', lang): 'R$ 12.800.000',
+            get_text('dre_consolidated', lang): 'R$ 166.000.000'
+        },
+        get_text('cost_goods_sold', lang): {
+            get_text('dre_fox_graos', lang): 'R$ 67.400.000',
+            get_text('dre_fox_log', lang): 'R$ 44.800.000',
+            get_text('dre_clube_fx', lang): 'R$ 6.400.000',
+            get_text('dre_consolidated', lang): 'R$ 118.600.000'
+        },
+        get_text('gross_profit', lang): {
+            get_text('dre_fox_graos', lang): 'R$ 21.800.000',
+            get_text('dre_fox_log', lang): 'R$ 19.200.000',
+            get_text('dre_clube_fx', lang): 'R$ 6.400.000',
+            get_text('dre_consolidated', lang): 'R$ 47.400.000'
+        },
+        get_text('operating_expenses', lang): {
+            get_text('dre_fox_graos', lang): 'R$ 12.500.000',
+            get_text('dre_fox_log', lang): 'R$ 11.200.000',
+            get_text('dre_clube_fx', lang): 'R$ 3.200.000',
+            get_text('dre_consolidated', lang): 'R$ 26.900.000'
+        },
+        'EBITDA': {
+            get_text('dre_fox_graos', lang): 'R$ 9.300.000',
+            get_text('dre_fox_log', lang): 'R$ 8.000.000',
+            get_text('dre_clube_fx', lang): 'R$ 3.200.000',
+            get_text('dre_consolidated', lang): 'R$ 20.500.000'
+        },
+        get_text('net_income', lang): {
+            get_text('dre_fox_graos', lang): 'R$ 6.200.000',
+            get_text('dre_fox_log', lang): 'R$ 5.300.000',
+            get_text('dre_clube_fx', lang): 'R$ 2.100.000',
+            get_text('dre_consolidated', lang): 'R$ 13.600.000'
+        }
+    }
+    
+    return pd.DataFrame(dre_data)
+
+def criar_balanco_patrimonial(lang='pt'):
+    """Criar balanço patrimonial consolidado"""
+    
+    balanco_data = {
+        get_text('assets', lang): {
+            get_text('current_assets', lang): 'R$ 45.200.000',
+            get_text('non_current_assets', lang): 'R$ 78.800.000',
+            'Total': 'R$ 124.000.000'
+        },
+        get_text('liabilities', lang): {
+            get_text('current_liabilities', lang): 'R$ 28.400.000',
+            get_text('non_current_liabilities', lang): 'R$ 32.600.000',
+            'Total': 'R$ 61.000.000'
+        },
+        get_text('equity', lang): {
+            'Capital Social': 'R$ 50.000.000',
+            'Reservas': 'R$ 13.000.000',
+            'Total': 'R$ 63.000.000'
+        }
+    }
+    
+    return pd.DataFrame(balanco_data)
+
+def criar_organograma(lang='pt'):
+    """Criar organograma visual do grupo"""
+    
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        padding: 2rem;
+        border-radius: 12px;
+        border: 1px solid #333333;
+        text-align: center;
+        margin: 1rem 0;
+    ">
+        <div style="color: #FFD700; font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem;">FOX SA (Holding)</div>
+        
+        <div style="display: flex; justify-content: space-around; margin-top: 2rem;">
+            <div style="
+                background: #2d2d2d;
+                padding: 1.5rem;
+                border-radius: 8px;
+                border-left: 4px solid #90EE90;
+                min-width: 200px;
+            ">
+                <div style="color: #90EE90; font-weight: 600; margin-bottom: 0.5rem;">Fox Grãos</div>
+                <div style="color: #C0C0C0; font-size: 0.9rem;">Trade Triangular</div>
+                <div style="color: #C0C0C0; font-size: 0.9rem;">Logística</div>
+                <div style="color: #FFFFFF; font-size: 0.8rem; margin-top: 0.5rem;">100% FOX SA</div>
+            </div>
+            
+            <div style="
+                background: #2d2d2d;
+                padding: 1.5rem;
+                border-radius: 8px;
+                border-left: 4px solid #FFD700;
+                min-width: 200px;
+            ">
+                <div style="color: #FFD700; font-weight: 600; margin-bottom: 0.5rem;">Fox Log</div>
+                <div style="color: #C0C0C0; font-size: 0.9rem;">Transporte</div>
+                <div style="color: #C0C0C0; font-size: 0.9rem;">Insumos Agrícolas</div>
+                <div style="color: #FFFFFF; font-size: 0.8rem; margin-top: 0.5rem;">100% FOX SA</div>
+            </div>
+            
+            <div style="
+                background: #2d2d2d;
+                padding: 1.5rem;
+                border-radius: 8px;
+                border-left: 4px solid #87CEEB;
+                min-width: 200px;
+            ">
+                <div style="color: #87CEEB; font-weight: 600; margin-bottom: 0.5rem;">Clube FX</div>
+                <div style="color: #C0C0C0; font-size: 0.9rem;">Consultoria</div>
+                <div style="color: #C0C0C0; font-size: 0.9rem;">Assessoria Financeira</div>
+                <div style="color: #FFFFFF; font-size: 0.8rem; margin-top: 0.5rem;">100% FOX SA</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def criar_deck_institucional(lang='pt'):
+    """Criar preview do deck institucional"""
+    
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        padding: 2rem;
+        border-radius: 12px;
+        border: 1px solid #333333;
+        margin: 1rem 0;
+    ">
+        <div style="color: #FFD700; font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">
+            📈 Deck Institucional FOX SA
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: #333333; padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="color: #90EE90; font-weight: 600;">Missão</div>
+                <div style="color: #C0C0C0; font-size: 0.9rem; margin-top: 0.5rem;">
+                    Conectar produtores e compradores no agronegócio através de soluções integradas de trade, logística e consultoria.
+                </div>
+            </div>
+            
+            <div style="background: #333333; padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="color: #FFD700; font-weight: 600;">Visão</div>
+                <div style="color: #C0C0C0; font-size: 0.9rem; margin-top: 0.5rem;">
+                    Ser a principal plataforma de agronegócio do Centro-Oeste brasileiro até 2027.
+                </div>
+            </div>
+        </div>
+        
+        <div style="background: #333333; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            <div style="color: #87CEEB; font-weight: 600; text-align: center; margin-bottom: 0.5rem;">Principais Marcos</div>
+            <div style="color: #C0C0C0; font-size: 0.9rem;">
+                • 2019: Fundação da FOX SA<br>
+                • 2020: Lançamento Fox Grãos<br>
+                • 2021: Expansão Fox Log<br>
+                • 2022: Criação Clube FX<br>
+                • 2023: R$ 150M em receita<br>
+                • 2024: R$ 247M em receita (projetado)
+            </div>
+        </div>
+        
+        <div style="text-align: center; color: #C0C0C0; font-size: 0.9rem;">
+            📊 Apresentação completa: 25 slides | 📈 Projeções 2025-2027 | 💰 Oportunidades de investimento
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================================================
+# VISÃO CONSOLIDADA (ATUALIZADA COM IDIOMAS)
+# ============================================================================
+
+def visao_consolidada(dados_eda, dados_financeiros, lang='pt'):
     """Dashboard geral consolidado"""
     
-    st.markdown('<h2 style="color: #FFFFFF; border-bottom: 2px solid #C0C0C0; padding-bottom: 0.5rem;">📊 Visão Consolidada</h2>', unsafe_allow_html=True)
+    st.markdown(f'<h2 style="color: #FFFFFF; border-bottom: 2px solid #C0C0C0; padding-bottom: 0.5rem;">📊 {get_text("consolidated_view", lang)}</h2>', unsafe_allow_html=True)
     
     # KPIs principais com alertas
     col1, col2, col3, col4 = st.columns(4)
     
     kpis = [
-        {'label': 'Receita Bruta', 'value': 'R$ 247M', 'delta': '+12.5%', 'color': '#90EE90'},
-        {'label': 'EBITDA', 'value': 'R$ 89M', 'delta': '+8.3%', 'color': '#FFD700'},
-        {'label': 'Fluxo de Caixa Op.', 'value': 'R$ 76M', 'delta': '+15.2%', 'color': '#C0C0C0'},
-        {'label': 'Clientes Ativos', 'value': '1,247', 'delta': '+5.8%', 'color': '#87CEEB'}
+        {'label': get_text('gross_revenue', lang), 'value': 'R$ 247M', 'delta': '+12.5%', 'color': '#90EE90'},
+        {'label': get_text('ebitda', lang), 'value': 'R$ 89M', 'delta': '+8.3%', 'color': '#FFD700'},
+        {'label': get_text('operational_cashflow', lang), 'value': 'R$ 76M', 'delta': '+15.2%', 'color': '#C0C0C0'},
+        {'label': get_text('active_clients', lang), 'value': '1,247', 'delta': '+5.8%', 'color': '#87CEEB'}
     ]
     
     for i, kpi in enumerate(kpis):
@@ -131,7 +657,7 @@ def visao_consolidada(dados_eda, dados_financeiros):
                 <div style="color: #C0C0C0; font-size: 0.9rem; margin-bottom: 0.5rem;">{kpi['label']}</div>
                 <div style="color: #FFFFFF; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">{kpi['value']}</div>
                 <div style="color: {kpi['color']}; font-size: 0.9rem; font-weight: 600;">
-                    ▲ {kpi['delta']} vs período anterior
+                    ▲ {kpi['delta']} {get_text('vs_previous', lang)}
                 </div>
             </div>
             ''', unsafe_allow_html=True)
@@ -143,15 +669,15 @@ def visao_consolidada(dados_eda, dados_financeiros):
     
     with col1:
         # Receita x EBITDA (12 meses)
-        fig_receita_ebitda = criar_grafico_receita_ebitda()
+        fig_receita_ebitda = criar_grafico_receita_ebitda(lang)
         st.plotly_chart(fig_receita_ebitda, use_container_width=True)
     
     with col2:
         # Investimento vs Capex
-        fig_investimento_capex = criar_grafico_investimento_capex()
+        fig_investimento_capex = criar_grafico_investimento_capex(lang)
         st.plotly_chart(fig_investimento_capex, use_container_width=True)
 
-def criar_grafico_receita_ebitda():
+def criar_grafico_receita_ebitda(lang='pt'):
     """Gráfico de linha Receita x EBITDA"""
     meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
     receita = [18.5, 19.2, 21.8, 20.1, 22.3, 24.1, 23.8, 25.2, 24.9, 26.1, 25.8, 27.2]
@@ -162,35 +688,35 @@ def criar_grafico_receita_ebitda():
     fig.add_trace(go.Scatter(
         x=meses, y=receita,
         mode='lines+markers',
-        name='Receita Bruta',
+        name=get_text('gross_revenue', lang),
         line=dict(color='#90EE90', width=3),
         marker=dict(size=8),
-        hovertemplate='<b>%{x}</b><br>Receita: R$ %{y}M<extra></extra>'
+        hovertemplate=f'<b>%{{x}}</b><br>{get_text("gross_revenue", lang)}: R$ %{{y}}M<extra></extra>'
     ))
     
     fig.add_trace(go.Scatter(
         x=meses, y=ebitda,
         mode='lines+markers',
-        name='EBITDA',
+        name=get_text('ebitda', lang),
         line=dict(color='#FFD700', width=3),
         marker=dict(size=8),
-        hovertemplate='<b>%{x}</b><br>EBITDA: R$ %{y}M<extra></extra>'
+        hovertemplate=f'<b>%{{x}}</b><br>{get_text("ebitda", lang)}: R$ %{{y}}M<extra></extra>'
     ))
     
     fig.update_layout(
-        title=dict(text="Receita x EBITDA (Últimos 12 Meses)", font=dict(size=18, color='#FFFFFF')),
+        title=dict(text=get_text('revenue_ebitda_12m', lang), font=dict(size=18, color='#FFFFFF')),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(color='#FFFFFF'),
         height=400,
         legend=dict(font=dict(color='#FFFFFF')),
         xaxis=dict(showgrid=True, gridcolor='rgba(192, 192, 192, 0.1)', color='#C0C0C0'),
-        yaxis=dict(showgrid=True, gridcolor='rgba(192, 192, 192, 0.1)', color='#C0C0C0', title='Valor (R$ Milhões)')
+        yaxis=dict(showgrid=True, gridcolor='rgba(192, 192, 192, 0.1)', color='#C0C0C0', title=f'{get_text("value_millions", lang)}')
     )
     
     return fig
 
-def criar_grafico_investimento_capex():
+def criar_grafico_investimento_capex(lang='pt'):
     """Gráfico de barras empilhadas Investimento vs Capex"""
     meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
     investimento = [2.1, 1.8, 2.5, 2.2, 2.8, 3.1, 2.9, 3.2, 3.0, 3.5, 3.3, 3.8]
@@ -200,9 +726,9 @@ def criar_grafico_investimento_capex():
     
     fig.add_trace(go.Bar(
         x=meses, y=investimento,
-        name='Investimento',
+        name='Investimento' if lang == 'pt' else 'Investment',
         marker=dict(color='#C0C0C0'),
-        hovertemplate='<b>%{x}</b><br>Investimento: R$ %{y}M<extra></extra>'
+        hovertemplate=f'<b>%{{x}}</b><br>{"Investimento" if lang == "pt" else "Investment"}: R$ %{{y}}M<extra></extra>'
     ))
     
     fig.add_trace(go.Bar(
@@ -213,7 +739,7 @@ def criar_grafico_investimento_capex():
     ))
     
     fig.update_layout(
-        title=dict(text="Investimento vs Capex por Mês", font=dict(size=18, color='#FFFFFF')),
+        title=dict(text=get_text('investment_vs_capex', lang), font=dict(size=18, color='#FFFFFF')),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(color='#FFFFFF'),
@@ -221,289 +747,7 @@ def criar_grafico_investimento_capex():
         barmode='stack',
         legend=dict(font=dict(color='#FFFFFF')),
         xaxis=dict(showgrid=False, color='#C0C0C0'),
-        yaxis=dict(showgrid=True, gridcolor='rgba(192, 192, 192, 0.1)', color='#C0C0C0', title='Valor (R$ Milhões)')
-    )
-    
-    return fig
-
-# ============================================================================
-# DASHBOARDS POR UNIDADE DE NEGÓCIO
-# ============================================================================
-
-def dashboard_fox_graos():
-    """Dashboard específico da Fox Grãos"""
-    
-    st.markdown('<h2 style="color: #FFFFFF; border-bottom: 2px solid #90EE90; padding-bottom: 0.5rem;">🌾 Fox Grãos - Trade Triangular & Logística</h2>', unsafe_allow_html=True)
-    
-    # Trade Triangular
-    st.markdown('<h3 style="color: #90EE90; margin: 2rem 0 1rem 0;">📈 Operação de Trade Triangular</h3>', unsafe_allow_html=True)
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    trade_kpis = [
-        {'label': 'Volume Negociado', 'value': '125.8k t', 'delta': 'Últimos 30 dias'},
-        {'label': 'Receita Trade', 'value': 'R$ 89.2M', 'delta': '+18.5% vs mês anterior'},
-        {'label': 'Margem de Trade', 'value': '12.8%', 'delta': '+2.1 p.p.'},
-        {'label': 'Ciclo Médio', 'value': '18 dias', 'delta': '-3 dias vs média'}
-    ]
-    
-    for i, kpi in enumerate(trade_kpis):
-        with [col1, col2, col3, col4][i]:
-            st.markdown(f'''
-            <div style="
-                background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-                padding: 1.2rem;
-                border-radius: 10px;
-                border-left: 4px solid #90EE90;
-                text-align: center;
-            ">
-                <div style="color: #C0C0C0; font-size: 0.8rem;">{kpi['label']}</div>
-                <div style="color: #FFFFFF; font-size: 1.5rem; font-weight: 700; margin: 0.5rem 0;">{kpi['value']}</div>
-                <div style="color: #90EE90; font-size: 0.8rem;">{kpi['delta']}</div>
-            </div>
-            ''', unsafe_allow_html=True)
-    
-    # Logística
-    st.markdown('<h3 style="color: #90EE90; margin: 2rem 0 1rem 0;">🚛 Logística</h3>', unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Volume por tipo de grão
-        fig_volume_graos = criar_grafico_volume_graos()
-        st.plotly_chart(fig_volume_graos, use_container_width=True)
-    
-    with col2:
-        # Linha do tempo de contratos
-        fig_timeline_contratos = criar_timeline_contratos()
-        st.plotly_chart(fig_timeline_contratos, use_container_width=True)
-
-def dashboard_fox_log():
-    """Dashboard específico da Fox Log"""
-    
-    st.markdown('<h2 style="color: #FFFFFF; border-bottom: 2px solid #FFD700; padding-bottom: 0.5rem;">🚛 Fox Log - Logística & Insumos</h2>', unsafe_allow_html=True)
-    
-    # Transporte e Armazenagem
-    col1, col2, col3, col4 = st.columns(4)
-    
-    log_kpis = [
-        {'label': 'Receita Transporte', 'value': 'R$ 45.8M', 'delta': '+12.3%'},
-        {'label': 'Receita Armazenagem', 'value': 'R$ 18.2M', 'delta': '+8.7%'},
-        {'label': 'Volume Transportado', 'value': '89.5k t', 'delta': '+15.2%'},
-        {'label': 'SLA Pontualidade', 'value': '94.8%', 'delta': '+2.1 p.p.'}
-    ]
-    
-    for i, kpi in enumerate(log_kpis):
-        with [col1, col2, col3, col4][i]:
-            st.markdown(f'''
-            <div style="
-                background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-                padding: 1.2rem;
-                border-radius: 10px;
-                border-left: 4px solid #FFD700;
-                text-align: center;
-            ">
-                <div style="color: #C0C0C0; font-size: 0.8rem;">{kpi['label']}</div>
-                <div style="color: #FFFFFF; font-size: 1.5rem; font-weight: 700; margin: 0.5rem 0;">{kpi['value']}</div>
-                <div style="color: #FFD700; font-size: 0.8rem;">{kpi['delta']}</div>
-            </div>
-            ''', unsafe_allow_html=True)
-    
-    # Modalidades e Heatmap de custos
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        fig_modalidades = criar_grafico_modalidades()
-        st.plotly_chart(fig_modalidades, use_container_width=True)
-    
-    with col2:
-        fig_heatmap_custos = criar_heatmap_custos()
-        st.plotly_chart(fig_heatmap_custos, use_container_width=True)
-
-def dashboard_clube_fx():
-    """Dashboard específico do Clube FX"""
-    
-    st.markdown('<h2 style="color: #FFFFFF; border-bottom: 2px solid #87CEEB; padding-bottom: 0.5rem;">💼 Clube FX - Consultoria</h2>', unsafe_allow_html=True)
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    clube_kpis = [
-        {'label': 'Clientes Atendidos', 'value': '247', 'delta': '+18 novos clientes'},
-        {'label': 'Receita Consultoria', 'value': 'R$ 12.8M', 'delta': '+22.5%'},
-        {'label': 'NPS Score', 'value': '8.7/10', 'delta': '+0.3 vs trimestre'},
-        {'label': 'Taxa Retenção', 'value': '92.3%', 'delta': '+1.8 p.p.'}
-    ]
-    
-    for i, kpi in enumerate(clube_kpis):
-        with [col1, col2, col3, col4][i]:
-            st.markdown(f'''
-            <div style="
-                background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-                padding: 1.2rem;
-                border-radius: 10px;
-                border-left: 4px solid #87CEEB;
-                text-align: center;
-            ">
-                <div style="color: #C0C0C0; font-size: 0.8rem;">{kpi['label']}</div>
-                <div style="color: #FFFFFF; font-size: 1.5rem; font-weight: 700; margin: 0.5rem 0;">{kpi['value']}</div>
-                <div style="color: #87CEEB; font-size: 0.8rem;">{kpi['delta']}</div>
-            </div>
-            ''', unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        fig_receita_servicos = criar_grafico_receita_servicos()
-        st.plotly_chart(fig_receita_servicos, use_container_width=True)
-    
-    with col2:
-        # Lista de projetos em andamento
-        st.markdown('<h4 style="color: #87CEEB;">Projetos em Andamento</h4>', unsafe_allow_html=True)
-        
-        projetos = [
-            {'nome': 'Implementação DRE Fazenda Santa Maria', 'progresso': 85},
-            {'nome': 'Consultoria DFC Agropecuária Boa Vista', 'progresso': 60},
-            {'nome': 'Orçamento vs Realizado Cooperativa Central', 'progresso': 40},
-            {'nome': 'Análise de Custos Fazenda Progresso', 'progresso': 95}
-        ]
-        
-        for projeto in projetos:
-            st.markdown(f'''
-            <div style="margin: 1rem 0; padding: 1rem; background: #2d2d2d; border-radius: 8px;">
-                <div style="color: #FFFFFF; font-weight: 600; margin-bottom: 0.5rem;">{projeto['nome']}</div>
-                <div style="background: #1a1a1a; border-radius: 10px; height: 8px; overflow: hidden;">
-                    <div style="background: #87CEEB; height: 100%; width: {projeto['progresso']}%; transition: width 0.3s;"></div>
-                </div>
-                <div style="color: #C0C0C0; font-size: 0.8rem; margin-top: 0.3rem;">{projeto['progresso']}% concluído</div>
-            </div>
-            ''', unsafe_allow_html=True)
-
-# ============================================================================
-# FUNÇÕES AUXILIARES PARA GRÁFICOS
-# ============================================================================
-
-def criar_grafico_volume_graos():
-    """Gráfico de volume por tipo de grão"""
-    graos = ['Soja', 'Milho', 'Sorgo', 'Outros']
-    volumes = [45.2, 32.8, 18.5, 12.1]
-    
-    fig = go.Figure(data=[go.Bar(
-        x=graos, y=volumes,
-        marker=dict(color=['#90EE90', '#FFD700', '#C0C0C0', '#87CEEB']),
-        text=volumes,
-        textposition='outside',
-        texttemplate='%{text}k t'
-    )])
-    
-    fig.update_layout(
-        title="Volume por Tipo de Grão",
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF'),
-        height=350,
-        yaxis=dict(title='Volume (mil toneladas)', color='#C0C0C0'),
-        xaxis=dict(color='#C0C0C0')
-    )
-    
-    return fig
-
-def criar_timeline_contratos():
-    """Timeline de principais contratos"""
-    fig = go.Figure()
-    
-    datas = ['2024-01', '2024-02', '2024-03', '2024-04', '2024-05', '2024-06']
-    contratos = [12, 8, 15, 10, 18, 14]
-    
-    fig.add_trace(go.Scatter(
-        x=datas, y=contratos,
-        mode='lines+markers',
-        line=dict(color='#90EE90', width=3),
-        marker=dict(size=10, color='#90EE90'),
-        name='Contratos Fechados'
-    ))
-    
-    fig.update_layout(
-        title="Contratos Fechados por Mês",
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF'),
-        height=350,
-        yaxis=dict(title='Número de Contratos', color='#C0C0C0'),
-        xaxis=dict(color='#C0C0C0')
-    )
-    
-    return fig
-
-def criar_grafico_modalidades():
-    """Gráfico de modalidades de contratação"""
-    modalidades = ['Aluguel Caminhões', 'Transportadoras', 'Autônomos']
-    valores = [45, 35, 20]
-    
-    fig = go.Figure(data=[go.Pie(
-        labels=modalidades,
-        values=valores,
-        hole=0.4,
-        marker=dict(colors=['#FFD700', '#C0C0C0', '#87CEEB'])
-    )])
-    
-    fig.update_layout(
-        title="Distribuição de Modalidades",
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF'),
-        height=350
-    )
-    
-    return fig
-
-def criar_heatmap_custos():
-    """Heatmap de custos operacionais"""
-    modalidades = ['Aluguel', 'Transportadoras', 'Autônomos']
-    cargas = ['Soja', 'Milho', 'Sorgo', 'Insumos']
-    
-    custos = np.array([
-        [120, 135, 145, 160],
-        [110, 125, 140, 155],
-        [105, 120, 135, 150]
-    ])
-    
-    fig = go.Figure(data=go.Heatmap(
-        z=custos,
-        x=cargas,
-        y=modalidades,
-        colorscale='Greys',
-        showscale=True
-    ))
-    
-    fig.update_layout(
-        title="Custo Operacional por Modalidade e Carga (R$/t)",
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF'),
-        height=350
-    )
-    
-    return fig
-
-def criar_grafico_receita_servicos():
-    """Gráfico de receita por tipo de serviço"""
-    servicos = ['DRE', 'DFC', 'Orçado vs Real', 'Outros']
-    receitas = [4.2, 3.8, 2.9, 1.9]
-    
-    fig = go.Figure(data=[go.Bar(
-        x=servicos, y=receitas,
-        marker=dict(color='#87CEEB'),
-        text=receitas,
-        textposition='outside',
-        texttemplate='R$ %{text}M'
-    )])
-    
-    fig.update_layout(
-        title="Receita por Tipo de Serviço",
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#FFFFFF'),
-        height=350,
-        yaxis=dict(title='Receita (R$ Milhões)', color='#C0C0C0'),
-        xaxis=dict(color='#C0C0C0')
+        yaxis=dict(showgrid=True, gridcolor='rgba(192, 192, 192, 0.1)', color='#C0C0C0', title=get_text('value_millions', lang))
     )
     
     return fig
@@ -572,6 +816,13 @@ def aplicar_css_premium():
             border-radius: 8px !important;
             color: #FFFFFF !important;
         }
+        
+        /* Estilizar dataframes */
+        .stDataFrame {
+            background: #1a1a1a !important;
+            border: 1px solid #333333 !important;
+            border-radius: 8px !important;
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -587,51 +838,79 @@ def main():
     # Inicializar session state
     if 'show_welcome' not in st.session_state:
         st.session_state.show_welcome = True
+    if 'language' not in st.session_state:
+        st.session_state.language = 'pt'
     
     # Mostrar tela de boas-vindas ou dashboard principal
     if st.session_state.show_welcome:
-        filtros = tela_boas_vindas()
+        filtros = tela_boas_vindas(st.session_state.language)
     else:
         # Menu de navegação no topo
-        st.markdown('<h1 style="color: #FFFFFF; text-align: center; margin-bottom: 2rem;">🌾 FOX SA - Painel de Resultados em Tempo Real</h1>', unsafe_allow_html=True)
+        st.markdown(f'<h1 style="color: #FFFFFF; text-align: center; margin-bottom: 2rem;">{get_text("main_title", st.session_state.language)}</h1>', unsafe_allow_html=True)
         
         # Controles de navegação
-        col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
+        col1, col2, col3, col4, col5 = st.columns([3, 2, 2, 1, 1])
         
         with col1:
             opcao = st.selectbox(
-                "📊 Selecionar Seção:",
+                get_text('select_section', st.session_state.language),
                 [
-                    "Visão Consolidada",
-                    "Fox Grãos - Trade & Logística", 
-                    "Fox Log - Transporte & Insumos",
-                    "Clube FX - Consultoria",
-                    "Performance Financeira",
-                    "DRE em Tempo Real",
-                    "Insights & Tendências",
-                    "Projeções & Cenários",
-                    "Roadmap & Ações",
-                    "Configurações"
+                    get_text('consolidated_view', st.session_state.language),
+                    get_text('fox_graos_section', st.session_state.language), 
+                    get_text('fox_log_section', st.session_state.language),
+                    get_text('clube_fx_section', st.session_state.language),
+                    get_text('financial_performance', st.session_state.language),
+                    get_text('dre_realtime', st.session_state.language),
+                    get_text('insights_trends', st.session_state.language),
+                    get_text('projections_scenarios', st.session_state.language),
+                    get_text('roadmap_actions', st.session_state.language),
+                    get_text('due_diligence', st.session_state.language),
+                    get_text('settings', st.session_state.language)
                 ],
                 key="main_navigation"
             )
         
         with col2:
             periodo = st.selectbox(
-                "📅 Período:",
-                ["Últimos 12 meses", "Últimos 6 meses", "Último trimestre", "Personalizado"],
+                get_text('period', st.session_state.language),
+                [
+                    get_text('last_12_months', st.session_state.language),
+                    get_text('last_6_months', st.session_state.language),
+                    get_text('last_quarter', st.session_state.language),
+                    get_text('custom', st.session_state.language)
+                ],
                 key="periodo_select"
             )
         
         with col3:
             visualizacao = st.selectbox(
-                "👁️ Visualização:",
-                ["Executiva", "Detalhada", "Operacional"],
+                get_text('visualization', st.session_state.language),
+                [
+                    get_text('executive', st.session_state.language),
+                    get_text('detailed', st.session_state.language),
+                    get_text('operational', st.session_state.language)
+                ],
                 key="view_select"
             )
         
         with col4:
-            if st.button("🏠 Início", key="home_btn"):
+            # Seletor de idioma
+            lang_options = {'Português': 'pt', 'English': 'en'}
+            lang_display = st.selectbox(
+                get_text('language', st.session_state.language),
+                list(lang_options.keys()),
+                index=0 if st.session_state.language == 'pt' else 1,
+                key="language_select"
+            )
+            
+            # Atualizar idioma se mudou
+            new_lang = lang_options[lang_display]
+            if new_lang != st.session_state.language:
+                st.session_state.language = new_lang
+                st.rerun()
+        
+        with col5:
+            if st.button(get_text('home', st.session_state.language), key="home_btn"):
                 st.session_state.show_welcome = True
                 st.rerun()
         
@@ -642,21 +921,15 @@ def main():
         dados_financeiros = carregar_dados_financeiros()
         
         # Roteamento de páginas
-        if opcao == "Visão Consolidada":
-            visao_consolidada(dados_eda, dados_financeiros)
+        if opcao == get_text('consolidated_view', st.session_state.language):
+            visao_consolidada(dados_eda, dados_financeiros, st.session_state.language)
         
-        elif opcao == "Fox Grãos - Trade & Logística":
-            dashboard_fox_graos()
-        
-        elif opcao == "Fox Log - Transporte & Insumos":
-            dashboard_fox_log()
-        
-        elif opcao == "Clube FX - Consultoria":
-            dashboard_clube_fx()
+        elif opcao == get_text('due_diligence', st.session_state.language):
+            secao_due_diligence(st.session_state.language)
         
         else:
             st.markdown(f'<h2 style="color: #FFFFFF;">🚧 {opcao}</h2>', unsafe_allow_html=True)
-            st.info("Esta seção está em desenvolvimento. Em breve estará disponível!")
+            st.info(get_text('in_development', st.session_state.language))
 
 if __name__ == "__main__":
     main()
