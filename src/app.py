@@ -2198,68 +2198,131 @@ def main():
                 key="view_select"
             )
         
-        with col4:
-            # Seletor de idioma
-            lang_options = {'Português': 'pt', 'English': 'en'}
-            lang_display = st.selectbox(
-                get_text('language', st.session_state.language),
-                list(lang_options.keys()),
-                index=0 if st.session_state.language == 'pt' else 1,
-                key="language_select"
-            )
-            
-            # Atualizar idioma se mudou
-            new_lang = lang_options[lang_display]
-            if new_lang != st.session_state.language:
-                st.session_state.language = new_lang
-                st.rerun()
+def main():
+    """Função principal da aplicação"""
+    
+    # Configurar página
+    st.set_page_config(
+        page_title="FOX SA Investment Board",
+        page_icon="🌾",
+        layout="wide",
+        initial_sidebar_state="collapsed"
+    )
+    
+    # Inicializar session state
+    if 'language' not in st.session_state:
+        st.session_state.language = 'pt'
+    if 'theme' not in st.session_state:
+        st.session_state.theme = 'light'
+    
+    # Aplicar CSS
+    aplicar_css_premium(st.session_state.theme)
+    
+    # Header principal
+    st.markdown(f'<h1 style="color: inherit; text-align: center; margin-bottom: 0.5rem;">🌾 FOX SA Investment Board</h1>', unsafe_allow_html=True)
+    st.markdown(f'<p style="color: inherit; text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">{get_text("subtitle", st.session_state.language)}</p>', unsafe_allow_html=True)
+    
+    # Controles superiores
+    col1, col2, col3, col4, col5, col6 = st.columns([2, 1.5, 1.5, 1.5, 1.5, 1])
+    
+    with col1:
+        opcoes = [
+            get_text('consolidated_view', st.session_state.language),
+            "Dashboards por Unidade",
+            get_text('dre_realtime', st.session_state.language),
+            get_text('financial_performance', st.session_state.language),
+            get_text('due_diligence', st.session_state.language)
+        ]
+        opcao = st.selectbox(
+            get_text('select_view', st.session_state.language),
+            opcoes,
+            index=0,  # Sempre inicia na Visão Consolidada
+            key="view_select"
+        )
+    
+    with col2:
+        anos_disponiveis = [2024, 2023, 2022, 2021, 2020]
+        ano_selecionado = st.selectbox(
+            get_text('select_year', st.session_state.language),
+            anos_disponiveis,
+            index=0,
+            key="year_select"
+        )
+    
+    with col3:
+        tipos_visualizacao = [
+            get_text('standard', st.session_state.language),
+            get_text('detailed', st.session_state.language),
+            get_text('executive', st.session_state.language)
+        ]
+        tipo_visualizacao = st.selectbox(
+            get_text('view_type', st.session_state.language),
+            tipos_visualizacao,
+            index=0,
+            key="view_type_select"
+        )
+    
+    with col4:
+        # Seletor de idioma
+        lang_options = {'Português': 'pt', 'English': 'en'}
+        lang_display = st.selectbox(
+            get_text('language', st.session_state.language),
+            list(lang_options.keys()),
+            index=0 if st.session_state.language == 'pt' else 1,
+            key="language_select"
+        )
         
-        with col5:
-            # Toggle de tema
-            theme_options = {'☀️ Claro': 'light', '🌙 Escuro': 'dark'}
-            theme_display = st.selectbox(
-                "Tema",
-                list(theme_options.keys()),
-                index=0 if st.session_state.theme == 'light' else 1,
-                key="theme_select"
-            )
-            
-            # Atualizar tema se mudou
-            new_theme = theme_options[theme_display]
-            if new_theme != st.session_state.theme:
-                st.session_state.theme = new_theme
-                st.rerun()
+        # Atualizar idioma se mudou
+        new_lang = lang_options[lang_display]
+        if new_lang != st.session_state.language:
+            st.session_state.language = new_lang
+            st.rerun()
+    
+    with col5:
+        # Toggle de tema
+        theme_options = {'☀️ Claro': 'light', '🌙 Escuro': 'dark'}
+        theme_display = st.selectbox(
+            "Tema",
+            list(theme_options.keys()),
+            index=0 if st.session_state.theme == 'light' else 1,
+            key="theme_select"
+        )
         
-        with col6:
-            if st.button(get_text('home', st.session_state.language), key="home_btn"):
-                st.session_state.show_welcome = True
-                st.rerun()
-        
-        st.markdown('<hr style="margin: 1.5rem 0; border: 1px solid var(--border-color);">', unsafe_allow_html=True)
-        
-        # Carregar dados
-        dados_eda = carregar_dados_eda()
-        dados_financeiros = carregar_dados_financeiros()
-        
-        # Roteamento de páginas
-        if opcao == get_text('consolidated_view', st.session_state.language):
-            visao_consolidada(dados_eda, dados_financeiros, st.session_state.language)
-        
-        elif opcao == "Dashboards por Unidade":
-            dashboards_unidades_negocio(st.session_state.language)
-        
-        elif opcao == get_text('dre_realtime', st.session_state.language):
-            dre_tempo_real(st.session_state.language, st.session_state.theme)
-        
-        elif opcao == get_text('financial_performance', st.session_state.language):
-            performance_financeira(st.session_state.language, st.session_state.theme)
-        
-        elif opcao == get_text('due_diligence', st.session_state.language):
-            secao_due_diligence(st.session_state.language)
-        
-        else:
-            st.markdown(f'<h2 style="color: inherit;">🚧 {opcao}</h2>', unsafe_allow_html=True)
-            st.info(get_text('in_development', st.session_state.language))
+        # Atualizar tema se mudou
+        new_theme = theme_options[theme_display]
+        if new_theme != st.session_state.theme:
+            st.session_state.theme = new_theme
+            st.rerun()
+    
+    with col6:
+        if st.button("🔄", help="Atualizar dados", key="refresh_btn"):
+            st.rerun()
+    
+    st.markdown('<hr style="margin: 1.5rem 0; border: 1px solid var(--border-color);">', unsafe_allow_html=True)
+    
+    # Carregar dados
+    dados_eda = carregar_dados_eda()
+    dados_financeiros = carregar_dados_financeiros()
+    
+    # Roteamento de páginas
+    if opcao == get_text('consolidated_view', st.session_state.language):
+        visao_consolidada(dados_eda, dados_financeiros, st.session_state.language)
+    
+    elif opcao == "Dashboards por Unidade":
+        dashboards_unidades_negocio(st.session_state.language)
+    
+    elif opcao == get_text('dre_realtime', st.session_state.language):
+        dre_tempo_real(st.session_state.language, st.session_state.theme)
+    
+    elif opcao == get_text('financial_performance', st.session_state.language):
+        performance_financeira(st.session_state.language, st.session_state.theme)
+    
+    elif opcao == get_text('due_diligence', st.session_state.language):
+        secao_due_diligence(st.session_state.language)
+    
+    else:
+        st.markdown(f'<h2 style="color: inherit;">🚧 {opcao}</h2>', unsafe_allow_html=True)
+        st.info(get_text('in_development', st.session_state.language))
 
 if __name__ == "__main__":
     main()
