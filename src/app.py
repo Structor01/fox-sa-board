@@ -803,7 +803,7 @@ def criar_grafico_performance_real(dados_performance, tema, lang='pt'):
 # VISÃO CONSOLIDADA (ATUALIZADA COM IDIOMAS)
 # ============================================================================
 
-def visao_consolidada(dados_eda, dados_financeiros, lang='pt'):
+def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2024):
     """Dashboard geral consolidado com dados reais do MongoDB"""
     
     st.markdown(f'<h2 style="color: #FFFFFF; border-bottom: 2px solid #C0C0C0; padding-bottom: 0.5rem;">📊 {get_text("consolidated_view", lang)}</h2>', unsafe_allow_html=True)
@@ -812,7 +812,7 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt'):
     with st.spinner("Carregando dados consolidados..."):
         try:
             from mongodb_connector import load_consolidated_data
-            dados_consolidados = load_consolidated_data(year=2024)
+            dados_consolidados = load_consolidated_data(year=ano_selecionado)
             
             if not dados_consolidados:
                 st.warning("⚠️ Usando dados simulados - MongoDB indisponível")
@@ -2196,7 +2196,7 @@ def criar_grafico_margem_ebitda(dados, tema, lang):
 # PERFORMANCE FINANCEIRA
 # ============================================================================
 
-def performance_financeira(lang='pt', tema='light'):
+def performance_financeira(lang='pt', tema='light', ano_selecionado=2024):
     """Performance Financeira com dados reais do MongoDB"""
     
     st.markdown(f'<h2 style="color: inherit; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">💰 {get_text("financial_performance", lang)}</h2>', unsafe_allow_html=True)
@@ -2205,7 +2205,7 @@ def performance_financeira(lang='pt', tema='light'):
     with st.spinner("Carregando dados de performance..."):
         try:
             from mongodb_connector import load_performance_data_from_mongo
-            dados_performance_reais = load_performance_data_from_mongo(year=2024)
+            dados_performance_reais = load_performance_data_from_mongo(year=ano_selecionado)
             
             if dados_performance_reais:
                 st.success("✅ Dados de performance carregados do MongoDB")
@@ -2484,7 +2484,7 @@ def main():
     with col1:
         opcoes = [
             get_text('consolidated_view', st.session_state.language),
-            "📋 Contratos Reais (MongoDB)",
+            "📋 Contratos",
             "Dashboards por Unidade",
             get_text('dre_realtime', st.session_state.language),
             get_text('financial_performance', st.session_state.language),
@@ -2570,9 +2570,9 @@ def main():
     
     # Roteamento de páginas
     if opcao == get_text('consolidated_view', st.session_state.language):
-        visao_consolidada(dados_eda, dados_financeiros, st.session_state.language)
+        visao_consolidada(dados_eda, dados_financeiros, st.session_state.language, ano_selecionado)
     
-    elif opcao == "📋 Contratos Reais (MongoDB)":
+    elif opcao == "📋 Contratos":
         from contratos_reais import pagina_contratos_reais
         pagina_contratos_reais(st.session_state.theme)
     
@@ -2583,7 +2583,7 @@ def main():
         dre_tempo_real(st.session_state.language, st.session_state.theme)
     
     elif opcao == get_text('financial_performance', st.session_state.language):
-        performance_financeira(st.session_state.language, st.session_state.theme)
+        performance_financeira(st.session_state.language, st.session_state.theme, ano_selecionado)
     
     elif opcao == get_text('due_diligence', st.session_state.language):
         secao_due_diligence(st.session_state.language)
