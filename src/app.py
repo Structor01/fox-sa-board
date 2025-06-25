@@ -1659,7 +1659,13 @@ def exibir_tabela_dre_hierarquica(dados_dre, formato, tema):
     
     # Função para aplicar estilos
     def aplicar_estilos(row):
-        tipo = row['Tipo']
+        # Encontrar o tipo da linha baseado no índice
+        idx = row.name
+        if idx < len(dados_exibicao):
+            tipo = dados_exibicao[idx]['Tipo']
+        else:
+            tipo = 'linha'
+            
         styles = [''] * len(row)
         
         if tipo == 'macro':
