@@ -1363,6 +1363,3 @@ def load_expenses_from_finances(year=None, month=None):
             'despesas_operacionais': 0,
             'total_documentos': 0
         }
-
-
-@st.cache_data(ttl=300)
