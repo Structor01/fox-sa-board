@@ -1430,12 +1430,12 @@ def main():
 # ============================================================================
 
 def dre_tempo_real(lang='pt', tema='light'):
-    """DRE em tempo real com tabela por mês e filtros por unidade"""
+    """DRE em Tempo Real com tabela hierárquica"""
     
-    st.markdown(f'<h2 style="color: inherit; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">📊 {get_text("dre_realtime", lang)}</h2>', unsafe_allow_html=True)
+    st.markdown(f'<h2 style="color: inherit;">📊 {get_text("dre_realtime", lang)}</h2>', unsafe_allow_html=True)
     
     # Filtros
-    col1, col2, col3 = st.columns([2, 2, 2])
+    col1, col2, col3 = st.columns(3)
     
     with col1:
         unidade_filtro = st.selectbox(
@@ -1461,25 +1461,8 @@ def dre_tempo_real(lang='pt', tema='light'):
     # Gerar dados DRE
     dados_dre = gerar_dados_dre(unidade_filtro, ano_filtro)
     
-    # Aplicar formatação
-    dados_formatados = formatar_valores_dre(dados_dre, formato_valores)
-    
-    # Exibir tabela DRE
-    st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">📈 Demonstrativo de Resultados</h3>', unsafe_allow_html=True)
-    
-    # Criar DataFrame para exibição
-    df_dre = pd.DataFrame(dados_formatados)
-    
-    # Estilizar tabela
-    styled_df = df_dre.style.format({
-        col: lambda x: f"{x}" for col in df_dre.columns if col != 'Conta'
-    }).set_properties(**{
-        'background-color': '#F8F9FA' if tema == 'light' else '#2d2d2d',
-        'color': '#000000' if tema == 'light' else '#FFFFFF',
-        'border': '1px solid #DEE2E6' if tema == 'light' else '1px solid #444444'
-    })
-    
-    st.dataframe(styled_df, use_container_width=True, height=600)
+    # Exibir tabela hierárquica
+    exibir_tabela_dre_hierarquica(dados_dre, formato_valores, tema)
     
     # Gráfico de evolução mensal
     st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">📊 Evolução Mensal</h3>', unsafe_allow_html=True)
@@ -1488,13 +1471,251 @@ def dre_tempo_real(lang='pt', tema='light'):
     
     with col1:
         # Gráfico Receita vs EBITDA
-        fig_receita_ebitda = criar_grafico_dre_evolucao(dados_dre, ['Receita Líquida', 'EBITDA'], tema, lang)
+        fig_receita_ebitda = criar_grafico_dre_evolucao(dados_dre, ['= RECEITA LÍQUIDA', '= EBITDA'], tema, lang)
         st.plotly_chart(fig_receita_ebitda, use_container_width=True)
     
     with col2:
         # Gráfico Margem EBITDA
         fig_margem = criar_grafico_margem_ebitda(dados_dre, tema, lang)
         st.plotly_chart(fig_margem, use_container_width=True)
+
+def exibir_tabela_dre_hierarquica(dados_dre, formato, tema):
+    """Exibir tabela DRE com hierarquia e funcionalidade de expandir/recolher"""
+    
+    # Inicializar session state para controle de expansão
+    if 'dre_expanded_sections' not in st.session_state:
+        st.session_state.dre_expanded_sections = {
+            'receita_bruta': True,
+            'deducoes': True,
+            'cpv': True,
+            'despesas_op': True,
+            'resultado_fin': True
+        }
+    
+    # Definir estrutura hierárquica
+    estrutura_hierarquica = {
+        'RECEITA BRUTA': {
+            'tipo': 'macro',
+            'secao': 'receita_bruta',
+            'subcategorias': ['  Comercialização de Grãos', '  Serviços Logísticos', '  Consultoria']
+        },
+        '(-) DEDUÇÕES E IMPOSTOS': {
+            'tipo': 'macro',
+            'secao': 'deducoes',
+            'subcategorias': ['  ICMS sobre vendas', '  PIS/COFINS', '  ISS (serviços)', '  Outras deduções']
+        },
+        '= RECEITA LÍQUIDA': {
+            'tipo': 'resultado',
+            'secao': None,
+            'subcategorias': []
+        },
+        '(-) CPV': {
+            'tipo': 'macro',
+            'secao': 'cpv',
+            'subcategorias': ['  Compra de grãos', '  Frete de aquisição', '  Armazenagem inicial']
+        },
+        '= LUCRO BRUTO': {
+            'tipo': 'resultado',
+            'secao': None,
+            'subcategorias': []
+        },
+        '(-) DESPESAS OPERACIONAIS': {
+            'tipo': 'macro',
+            'secao': 'despesas_op',
+            'subcategorias': ['  Pessoal e benefícios', '  Marketing e vendas', '  Despesas administrativas']
+        },
+        '= EBITDA': {
+            'tipo': 'resultado',
+            'secao': None,
+            'subcategorias': []
+        },
+        '(-) Depreciação & Amortização': {
+            'tipo': 'linha',
+            'secao': None,
+            'subcategorias': []
+        },
+        '= RESULTADO OPERACIONAL': {
+            'tipo': 'resultado',
+            'secao': None,
+            'subcategorias': []
+        },
+        '(+/-) RESULTADO FINANCEIRO': {
+            'tipo': 'macro',
+            'secao': 'resultado_fin',
+            'subcategorias': ['  Receitas financeiras', '  Despesas financeiras']
+        },
+        '= LUCRO ANTES IR/CSLL': {
+            'tipo': 'resultado',
+            'secao': None,
+            'subcategorias': []
+        },
+        '(-) IR e CSLL': {
+            'tipo': 'linha',
+            'secao': None,
+            'subcategorias': []
+        },
+        '= LUCRO LÍQUIDO': {
+            'tipo': 'resultado_final',
+            'secao': None,
+            'subcategorias': []
+        }
+    }
+    
+    # Cores por tema e tipo
+    if tema == 'dark':
+        cores = {
+            'macro': '#2D3748',      # Cinza escuro
+            'resultado': '#1A365D',   # Azul escuro
+            'resultado_final': '#2D5016', # Verde escuro
+            'linha': '#4A5568',       # Cinza médio
+            'subcategoria': '#4A5568', # Cinza médio
+            'texto_macro': '#FFFFFF',
+            'texto_sub': '#E2E8F0'
+        }
+    else:
+        cores = {
+            'macro': '#E2E8F0',      # Cinza claro
+            'resultado': '#BEE3F8',   # Azul claro
+            'resultado_final': '#C6F6D5', # Verde claro
+            'linha': '#F7FAFC',       # Cinza muito claro
+            'subcategoria': '#F7FAFC', # Cinza muito claro
+            'texto_macro': '#1A202C',
+            'texto_sub': '#4A5568'
+        }
+    
+    # Controles de expansão
+    st.markdown("### 📊 Controles de Visualização")
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
+    
+    with col1:
+        if st.button("🔽 Expandir Tudo"):
+            for secao in st.session_state.dre_expanded_sections:
+                st.session_state.dre_expanded_sections[secao] = True
+            st.rerun()
+    
+    with col2:
+        if st.button("🔼 Recolher Tudo"):
+            for secao in st.session_state.dre_expanded_sections:
+                st.session_state.dre_expanded_sections[secao] = False
+            st.rerun()
+    
+    with col3:
+        icon = "🔽" if st.session_state.dre_expanded_sections['receita_bruta'] else "▶️"
+        if st.button(f"{icon} Receitas"):
+            st.session_state.dre_expanded_sections['receita_bruta'] = not st.session_state.dre_expanded_sections['receita_bruta']
+            st.rerun()
+    
+    with col4:
+        icon = "🔽" if st.session_state.dre_expanded_sections['deducoes'] else "▶️"
+        if st.button(f"{icon} Deduções"):
+            st.session_state.dre_expanded_sections['deducoes'] = not st.session_state.dre_expanded_sections['deducoes']
+            st.rerun()
+    
+    with col5:
+        icon = "🔽" if st.session_state.dre_expanded_sections['cpv'] else "▶️"
+        if st.button(f"{icon} CPV"):
+            st.session_state.dre_expanded_sections['cpv'] = not st.session_state.dre_expanded_sections['cpv']
+            st.rerun()
+    
+    with col6:
+        icon = "🔽" if st.session_state.dre_expanded_sections['despesas_op'] else "▶️"
+        if st.button(f"{icon} Despesas"):
+            st.session_state.dre_expanded_sections['despesas_op'] = not st.session_state.dre_expanded_sections['despesas_op']
+            st.rerun()
+    
+    st.markdown("---")
+    
+    # Construir dados para exibição
+    dados_exibicao = []
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    
+    for conta in dados_dre['Conta']:
+        idx = dados_dre['Conta'].index(conta)
+        
+        # Verificar se é macro categoria
+        if conta in estrutura_hierarquica:
+            info = estrutura_hierarquica[conta]
+            
+            # Adicionar macro categoria
+            linha = {'Conta': conta, 'Tipo': info['tipo'], 'Secao': info['secao']}
+            for mes in meses:
+                valor = dados_dre[mes][idx]
+                linha[mes] = formatar_valor_dre(valor, formato)
+            dados_exibicao.append(linha)
+            
+            # Adicionar subcategorias se expandido
+            if info['secao'] and st.session_state.dre_expanded_sections.get(info['secao'], True):
+                for sub in info['subcategorias']:
+                    if sub in dados_dre['Conta']:
+                        sub_idx = dados_dre['Conta'].index(sub)
+                        linha_sub = {'Conta': f"    {sub.strip()}", 'Tipo': 'subcategoria', 'Secao': info['secao']}
+                        for mes in meses:
+                            valor = dados_dre[mes][sub_idx]
+                            linha_sub[mes] = formatar_valor_dre(valor, formato)
+                        dados_exibicao.append(linha_sub)
+    
+    # Criar DataFrame
+    df_exibicao = pd.DataFrame(dados_exibicao)
+    
+    # Função para aplicar estilos
+    def aplicar_estilos(row):
+        tipo = row['Tipo']
+        styles = [''] * len(row)
+        
+        if tipo == 'macro':
+            bg_color = cores['macro']
+            text_color = cores['texto_macro']
+            font_weight = 'bold'
+            font_size = '14px'
+        elif tipo == 'resultado':
+            bg_color = cores['resultado']
+            text_color = cores['texto_macro']
+            font_weight = 'bold'
+            font_size = '14px'
+        elif tipo == 'resultado_final':
+            bg_color = cores['resultado_final']
+            text_color = cores['texto_macro']
+            font_weight = 'bold'
+            font_size = '16px'
+        elif tipo == 'subcategoria':
+            bg_color = cores['subcategoria']
+            text_color = cores['texto_sub']
+            font_weight = 'normal'
+            font_size = '12px'
+        else:  # linha
+            bg_color = cores['linha']
+            text_color = cores['texto_macro']
+            font_weight = 'normal'
+            font_size = '13px'
+        
+        for i in range(len(styles)):
+            styles[i] = f'background-color: {bg_color}; color: {text_color}; font-weight: {font_weight}; font-size: {font_size};'
+            if i == 0 and tipo == 'subcategoria':  # Primeira coluna (Conta)
+                styles[i] += ' text-align: left; padding-left: 30px;'
+            elif i == 0:  # Primeira coluna para outros tipos
+                styles[i] += ' text-align: left; padding-left: 10px;'
+            else:  # Colunas de valores
+                styles[i] += ' text-align: right; padding-right: 10px;'
+        
+        return styles
+    
+    # Aplicar estilos e exibir tabela
+    df_styled = df_exibicao.drop(['Tipo', 'Secao'], axis=1).style.apply(aplicar_estilos, axis=1)
+    
+    st.markdown("### 📋 Demonstrativo de Resultado do Exercício (DRE)")
+    st.dataframe(df_styled, use_container_width=True, height=800)
+
+def formatar_valor_dre(valor, formato):
+    """Formatar valores do DRE conforme seleção"""
+    if valor == 0:
+        return "0,0"
+    
+    if formato == "R$ Milhões":
+        return f"{valor:,.1f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    elif formato == "R$ Milhares":
+        return f"{valor*1000:,.0f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    else:  # Valores Absolutos
+        return f"R$ {valor*1000000:,.0f}".replace(',', 'X').replace('.', ',').replace('X', '.')
 
 def gerar_dados_dre(unidade, ano):
     """Gerar dados simulados de DRE por mês com estrutura específica do agronegócio"""
@@ -1709,10 +1930,14 @@ def criar_grafico_margem_ebitda(dados, tema, lang):
     
     meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
     
-    idx_receita = dados['Conta'].index('Receita Líquida')
-    idx_ebitda = dados['Conta'].index('EBITDA')
+    try:
+        idx_receita = dados['Conta'].index('= RECEITA LÍQUIDA')
+        idx_ebitda = dados['Conta'].index('= EBITDA')
+    except ValueError:
+        # Fallback se não encontrar
+        return go.Figure()
     
-    margens = [round((dados[mes][idx_ebitda] / dados[mes][idx_receita]) * 100, 1) for mes in meses]
+    margens = [round((dados[mes][idx_ebitda] / dados[mes][idx_receita]) * 100, 1) if dados[mes][idx_receita] != 0 else 0 for mes in meses]
     
     fig = go.Figure()
     
