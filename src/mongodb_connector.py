@@ -17,10 +17,20 @@ from datetime import datetime, timedelta
 import streamlit as st
 from typing import Dict, List, Optional
 import logging
+from bson import ObjectId
 
 # Configuração de logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+def convert_objectid_to_string(value):
+    """Converte ObjectId para string, mantendo outros tipos inalterados"""
+    if isinstance(value, ObjectId):
+        return str(value)
+    elif value is None:
+        return 'Não informado'
+    else:
+        return str(value)
+
 
 class FOXMongoConnector:
     """Conector para MongoDB da FOX SA"""
@@ -191,13 +201,15 @@ class FOXMongoConnector:
                 else:
                     df[field] = df[field].fillna(False).astype(bool)
             
-            # GARANTIR CAMPOS DE TEXTO TAMBÉM
+            # GARANTIR CAMPOS DE TEXTO TAMBÉM E CONVERTER OBJECTIDS
             text_fields = ['grainName', 'buyerName', 'sellerName', 'toCity', 'fromCity', 'toState', 'fromState']
             for field in text_fields:
                 if field not in df.columns:
                     df[field] = 'Não informado'
                     logger.info(f"Campo de texto {field} adicionado com valor padrão 'Não informado'")
                 else:
+                    # Converter ObjectIds para strings usando função helper
+                    df[field] = df[field].apply(convert_objectid_to_string)
                     df[field] = df[field].fillna('Não informado')
             
             # GARANTIR CAMPOS DE LOCALIZAÇÃO (COORDENADAS)

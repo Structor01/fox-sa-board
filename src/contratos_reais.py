@@ -513,6 +513,11 @@ def exibir_tabela_contratos(df):
     # Aplicar renomeação apenas para colunas existentes
     df_tabela.columns = [rename_dict.get(col, col) for col in df_tabela.columns]
     
+    # Converter ObjectIds para strings em todas as colunas object
+    for col in df_tabela.columns:
+        if df_tabela[col].dtype == 'object':
+            df_tabela[col] = df_tabela[col].apply(lambda x: str(x) if x is not None else 'N/A')
+    
     # Exibir tabela
     st.dataframe(
         df_tabela,
