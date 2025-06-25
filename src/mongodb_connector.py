@@ -548,3 +548,137 @@ def load_units_data_from_mongo(year=None):
     
     return units_data
 
+
+@st.cache_data(ttl=300)
+def get_available_years():
+    """Busca anos disponíveis nos dados reais do MongoDB"""
+    try:
+        connector = get_mongo_connector()
+        df = connector.get_contracts_summary(limit=5000)
+        
+        if df.empty:
+            # Fallback para anos padrão se não houver dados
+            return [2025, 2024, 2023, 2022, 2021]
+        
+        # Extrair anos únicos dos contratos
+        anos_disponveis = sorted(df['closeDate'].dt.year.unique(), reverse=True)
+        
+        # Garantir que pelo menos o ano atual esteja incluído
+        ano_atual = datetime.now().year
+        if ano_atual not in anos_disponveis:
+            anos_disponveis.insert(0, ano_atual)
+        
+        return anos_disponveis
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar anos disponíveis: {str(e)}")
+        # Fallback em caso de erro
+        return [2025, 2024, 2023, 2022, 2021]
+
+@st.cache_data(ttl=300)
+def get_available_grains():
+    """Busca grãos disponíveis nos dados reais do MongoDB"""
+    try:
+        connector = get_mongo_connector()
+        df = connector.get_contracts_summary(limit=5000)
+        
+        if df.empty:
+            return ['Milho', 'Soja', 'Trigo', 'Sorgo']
+        
+        # Extrair grãos únicos, removendo valores nulos
+        graos_disponveis = df['grainName'].dropna().unique().tolist()
+        graos_disponveis = [g for g in graos_disponveis if g != 'Não informado']
+        
+        return sorted(graos_disponveis)
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar grãos disponíveis: {str(e)}")
+        return ['Milho', 'Soja', 'Trigo', 'Sorgo']
+
+@st.cache_data(ttl=300)
+def get_available_buyers():
+    """Busca compradores disponíveis nos dados reais do MongoDB"""
+    try:
+        connector = get_mongo_connector()
+        df = connector.get_contracts_summary(limit=5000)
+        
+        if df.empty:
+            return []
+        
+        # Extrair compradores únicos, removendo valores nulos
+        compradores_disponveis = df['buyerName'].dropna().unique().tolist()
+        compradores_disponveis = [c for c in compradores_disponveis if c != 'Não informado']
+        
+        return sorted(compradores_disponveis)
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar compradores disponíveis: {str(e)}")
+        return []
+
+@st.cache_data(ttl=300)
+def get_available_sellers():
+    """Busca vendedores disponíveis nos dados reais do MongoDB"""
+    try:
+        connector = get_mongo_connector()
+        df = connector.get_contracts_summary(limit=5000)
+        
+        if df.empty:
+            return []
+        
+        # Extrair vendedores únicos, removendo valores nulos
+        vendedores_disponveis = df['sellerName'].dropna().unique().tolist()
+        vendedores_disponveis = [v for v in vendedores_disponveis if v != 'Não informado']
+        
+        return sorted(vendedores_disponveis)
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar vendedores disponíveis: {str(e)}")
+        return []
+
+@st.cache_data(ttl=300)
+def get_available_status():
+    """Busca status disponíveis nos dados reais do MongoDB"""
+    try:
+        connector = get_mongo_connector()
+        df = connector.get_contracts_summary(limit=5000)
+        
+        if df.empty:
+            return ['Concluído', 'Em Andamento', 'Ativo', 'Vencido']
+        
+        # Extrair status únicos
+        status_disponveis = df['status'].unique().tolist()
+        
+        return sorted(status_disponveis)
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar status disponíveis: {str(e)}")
+        return ['Concluído', 'Em Andamento', 'Ativo', 'Vencido']
+
+@st.cache_data(ttl=300)
+def get_data_range():
+    """Busca range de datas disponíveis nos dados reais"""
+    try:
+        connector = get_mongo_connector()
+        df = connector.get_contracts_summary(limit=5000)
+        
+        if df.empty:
+            return {
+                'min_date': datetime.now() - timedelta(days=365),
+                'max_date': datetime.now(),
+                'total_contracts': 0
+            }
+        
+        return {
+            'min_date': df['closeDate'].min(),
+            'max_date': df['closeDate'].max(),
+            'total_contracts': len(df)
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar range de datas: {str(e)}")
+        return {
+            'min_date': datetime.now() - timedelta(days=365),
+            'max_date': datetime.now(),
+            'total_contracts': 0
+        }
+

@@ -32,33 +32,34 @@ def pagina_contratos_reais(tema='escuro'):
             st.error(f"❌ Erro ao carregar dados: {str(e)}")
             return
     
-    # Filtros
+    # Filtros baseados nos dados reais carregados
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        # Filtro por grão
-        graos_disponiveis = ['Todos'] + sorted(df_contratos['grainName'].unique().tolist())
+        # Filtro por grão - usando dados reais
+        graos_disponiveis = ['Todos'] + sorted([g for g in df_contratos['grainName'].unique() if pd.notna(g) and g != 'Não informado'])
         grao_selecionado = st.selectbox("🌾 Grão", graos_disponiveis)
     
     with col2:
-        # Filtro por status
-        status_disponiveis = ['Todos'] + sorted(df_contratos['status'].unique().tolist())
+        # Filtro por status - usando dados reais
+        status_disponiveis = ['Todos'] + sorted([s for s in df_contratos['status'].unique() if pd.notna(s)])
         status_selecionado = st.selectbox("📊 Status", status_disponiveis)
     
     with col3:
-        # Filtro por tipo de operação
-        tipos_operacao = ['Todos'] + sorted(df_contratos['tipoOperacao'].unique().tolist())
+        # Filtro por tipo de operação - usando dados reais
+        tipos_operacao = ['Todos'] + sorted([t for t in df_contratos['tipoOperacao'].unique() if pd.notna(t)])
         tipo_selecionado = st.selectbox("🔄 Operação", tipos_operacao)
     
     with col4:
-        # Filtro por período
-        periodo_opcoes = ['Últimos 30 dias', 'Últimos 90 dias', 'Último ano', 'Todos']
-        periodo_selecionado = st.selectbox("📅 Período", periodo_opcoes)
+        # Filtro por ano - baseado nos dados reais
+        anos_contratos = sorted(df_contratos['closeDate'].dt.year.unique(), reverse=True)
+        anos_opcoes = ['Todos'] + [str(ano) for ano in anos_contratos]
+        ano_selecionado = st.selectbox("📅 Ano", anos_opcoes)
     
     # Aplicar filtros
     df_filtrado = aplicar_filtros_contratos(df_contratos, grao_selecionado, 
                                           status_selecionado, tipo_selecionado, 
-                                          periodo_selecionado)
+                                          ano_selecionado)
     
     # KPIs principais
     exibir_kpis_contratos(df_filtrado, tema)
@@ -96,7 +97,7 @@ def pagina_contratos_reais(tema='escuro'):
     st.divider()
     exibir_analises_avancadas(df_filtrado, tema)
 
-def aplicar_filtros_contratos(df, grao, status, tipo_operacao, periodo):
+def aplicar_filtros_contratos(df, grao, status, tipo_operacao, ano):
     """Aplica filtros aos dados dos contratos"""
     df_filtrado = df.copy()
     
@@ -112,17 +113,10 @@ def aplicar_filtros_contratos(df, grao, status, tipo_operacao, periodo):
     if tipo_operacao != 'Todos':
         df_filtrado = df_filtrado[df_filtrado['tipoOperacao'] == tipo_operacao]
     
-    # Filtro por período
-    hoje = datetime.now()
-    if periodo == 'Últimos 30 dias':
-        data_limite = hoje - timedelta(days=30)
-        df_filtrado = df_filtrado[df_filtrado['closeDate'] >= data_limite]
-    elif periodo == 'Últimos 90 dias':
-        data_limite = hoje - timedelta(days=90)
-        df_filtrado = df_filtrado[df_filtrado['closeDate'] >= data_limite]
-    elif periodo == 'Último ano':
-        data_limite = hoje - timedelta(days=365)
-        df_filtrado = df_filtrado[df_filtrado['closeDate'] >= data_limite]
+    # Filtro por ano
+    if ano != 'Todos':
+        ano_int = int(ano)
+        df_filtrado = df_filtrado[df_filtrado['closeDate'].dt.year == ano_int]
     
     return df_filtrado
 

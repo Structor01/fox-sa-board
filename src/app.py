@@ -1634,9 +1634,17 @@ def dre_tempo_real(lang='pt', tema='light'):
         )
     
     with col2:
+        # Carregar anos disponíveis dos dados reais
+        try:
+            from mongodb_connector import get_available_years
+            anos_dre_disponiveis = get_available_years()
+        except:
+            # Fallback se houver erro
+            anos_dre_disponiveis = [2025, 2024, 2023, 2022]
+        
         ano_filtro = st.selectbox(
             "Ano" if lang == 'pt' else "Year",
-            [2024, 2023, 2022],
+            anos_dre_disponiveis,
             key="dre_ano_filter"
         )
     
@@ -2493,7 +2501,14 @@ def main():
         )
     
     with col2:
-        anos_disponiveis = [2024, 2023, 2022, 2021, 2020]
+        # Carregar anos disponíveis dos dados reais
+        try:
+            from mongodb_connector import get_available_years
+            anos_disponiveis = get_available_years()
+        except:
+            # Fallback se houver erro
+            anos_disponiveis = [2025, 2024, 2023, 2022, 2021, 2020]
+        
         ano_selecionado = st.selectbox(
             get_text('select_year', st.session_state.language),
             anos_disponiveis,
