@@ -1290,7 +1290,8 @@ def load_expenses_from_finances(year=None, month=None):
             {'$unwind': {'path': '$category_info', 'preserveNullAndEmptyArrays': True}},
             {
                 '$match': {
-                    'value': {'$lt': 0}  # Apenas despesas (valores negativos)
+                    'value': {'$lt': 0},  # Apenas despesas (valores negativos)
+                    'category_info.category': 'DESPESAS ADMINISTRATIVAS'  # Apenas esta categoria
                 }
             },
             {
@@ -1323,27 +1324,22 @@ def load_expenses_from_finances(year=None, month=None):
         df = pd.DataFrame(finances_data)
         df['value'] = df['value'].abs()  # Converter para valores positivos
         
-        # Categorizar despesas baseado na category_name e category_item
+        # Subcategorizar baseado no campo category_item
         pessoal_beneficios = df[
-            df['category_name'].str.contains('PESSOAL|SALARIO|BENEFICIO', case=False, na=False) |
-            df['category_item'].str.contains('PESSOAL|SALARIO|BENEFICIO|FUNCIONARIO', case=False, na=False)
+            df['category_item'].str.contains('PESSOAL|SALARIO|BENEFICIO|FUNCIONARIO|RH', case=False, na=False)
         ]['value'].sum()
         
         marketing_vendas = df[
-            df['category_name'].str.contains('MARKETING|VENDAS|COMERCIAL', case=False, na=False) |
-            df['category_item'].str.contains('MARKETING|VENDAS|COMERCIAL|PUBLICIDADE', case=False, na=False)
+            df['category_item'].str.contains('MARKETING|VENDAS|COMERCIAL|PUBLICIDADE|PROPAGANDA', case=False, na=False)
         ]['value'].sum()
         
         despesas_admin = df[
-            (df['category_name'].str.contains('DESPESAS ADMINISTRATIVAS', case=False, na=False)) |
-            (df['category_name'].str.contains('ADMINISTRATIV|ESCRITORIO|ALUGUEL', case=False, na=False)) |
-            (df['category_item'].str.contains('ADMINISTRATIV|ESCRITORIO|ALUGUEL|TELEFONE|INTERNET', case=False, na=False))
+            df['category_item'].str.contains('ADMINISTRATIV|ESCRITORIO|ALUGUEL|TELEFONE|INTERNET|CONTABILIDADE|JURIDICO|CONSULTORIA', case=False, na=False)
         ]['value'].sum()
         
-        # Outras despesas operacionais (que não se encaixam nas categorias acima)
+        # Outras despesas operacionais (itens que não se encaixam nas categorias acima)
         outras_operacionais = df[
-            ~((df['category_name'].str.contains('PESSOAL|SALARIO|BENEFICIO|MARKETING|VENDAS|COMERCIAL|DESPESAS ADMINISTRATIVAS|ADMINISTRATIV|ESCRITORIO|ALUGUEL', case=False, na=False)) |
-              (df['category_item'].str.contains('PESSOAL|SALARIO|BENEFICIO|FUNCIONARIO|MARKETING|VENDAS|COMERCIAL|PUBLICIDADE|ADMINISTRATIV|ESCRITORIO|ALUGUEL|TELEFONE|INTERNET', case=False, na=False)))
+            ~(df['category_item'].str.contains('PESSOAL|SALARIO|BENEFICIO|FUNCIONARIO|RH|MARKETING|VENDAS|COMERCIAL|PUBLICIDADE|PROPAGANDA|ADMINISTRATIV|ESCRITORIO|ALUGUEL|TELEFONE|INTERNET|CONTABILIDADE|JURIDICO|CONSULTORIA', case=False, na=False))
         ]['value'].sum()
         
         despesas_operacionais = pessoal_beneficios + marketing_vendas + despesas_admin + outras_operacionais
