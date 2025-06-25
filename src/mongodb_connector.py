@@ -152,6 +152,24 @@ class FOXMongoConnector:
                 if col in df.columns:
                     df[col] = pd.to_datetime(df[col], errors='coerce')
             
+            # GARANTIR CAMPOS BOOLEANOS PRIMEIRO (ANTES DE QUALQUER PROCESSAMENTO)
+            boolean_fields = ['isBuying', 'isGrain', 'isFreight', 'isService', 'isDone', 'isInProgress', 'isCif', 'isFob']
+            for field in boolean_fields:
+                if field not in df.columns:
+                    df[field] = False
+                    logger.info(f"Campo booleano {field} adicionado com valor padrão False")
+                else:
+                    df[field] = df[field].fillna(False).astype(bool)
+            
+            # GARANTIR CAMPOS DE TEXTO TAMBÉM
+            text_fields = ['grainName', 'buyerName', 'sellerName']
+            for field in text_fields:
+                if field not in df.columns:
+                    df[field] = 'Não informado'
+                    logger.info(f"Campo de texto {field} adicionado com valor padrão 'Não informado'")
+                else:
+                    df[field] = df[field].fillna('Não informado')
+            
             # Calcular valor total do contrato
             df['valorTotal'] = df['amount'] * df['bagPrice']
             
@@ -176,20 +194,9 @@ class FOXMongoConnector:
             # Modalidade de frete
             df['modalidadeFrete'] = df.apply(lambda x: 'CIF' if x['isCif'] else 'FOB', axis=1)
             
-            # Preencher valores nulos
-            df['grainName'] = df['grainName'].fillna('Não informado')
-            df['buyerName'] = df['buyerName'].fillna('Não informado')
-            df['sellerName'] = df['sellerName'].fillna('Não informado')
+            # Preencher outros valores nulos
             df['financialRate'] = df['financialRate'].fillna(0)
             df['paymentDaysAfterDelivery'] = df['paymentDaysAfterDelivery'].fillna('0')
-            
-            # Garantir que campos booleanos existam com valores padrão
-            boolean_fields = ['isBuying', 'isGrain', 'isFreight', 'isService', 'isDone', 'isInProgress', 'isCif', 'isFob']
-            for field in boolean_fields:
-                if field not in df.columns:
-                    df[field] = False
-                else:
-                    df[field] = df[field].fillna(False).astype(bool)
             
             return df
             
