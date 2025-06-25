@@ -775,130 +775,169 @@ def criar_grafico_investimento_capex(lang='pt'):
     return fig
 
 # ============================================================================
-# CSS TEMA BRANCO
+# SISTEMA DE TEMAS
 # ============================================================================
 
-def aplicar_css_branco():
-    """CSS tema branco para o dashboard"""
-    st.markdown("""
+def aplicar_css_tema(tema='light'):
+    """CSS dinâmico baseado no tema selecionado"""
+    
+    if tema == 'light':
+        # Tema Claro
+        bg_color = '#FFFFFF'
+        text_color = '#000000'
+        card_bg = '#F8F9FA'
+        border_color = '#DEE2E6'
+        grid_color = '#E9ECEF'
+        secondary_text = '#6C757D'
+        input_bg = '#F8F9FA'
+        hover_color = '#6C757D'
+    else:
+        # Tema Escuro
+        bg_color = 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)'
+        text_color = '#FFFFFF'
+        card_bg = '#2d2d2d'
+        border_color = '#444444'
+        grid_color = 'rgba(192, 192, 192, 0.1)'
+        secondary_text = '#C0C0C0'
+        input_bg = '#2d2d2d'
+        hover_color = '#C0C0C0'
+    
+    st.markdown(f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        .stApp {
-            background: #FFFFFF;
-            color: #000000;
+        .stApp {{
+            background: {bg_color};
+            color: {text_color};
             font-family: 'Inter', sans-serif;
-        }
+        }}
         
         /* Esconder sidebar */
-        section[data-testid="stSidebar"] {
+        section[data-testid="stSidebar"] {{
             display: none !important;
-        }
+        }}
         
-        .main .block-container {
+        .main .block-container {{
             padding-top: 2rem;
             padding-bottom: 2rem;
             max-width: 100% !important;
             padding-left: 2rem !important;
             padding-right: 2rem !important;
-        }
+        }}
+        
+        /* Títulos sempre com cor do tema */
+        h1, h2, h3, h4, h5, h6 {{
+            color: {text_color} !important;
+        }}
         
         /* Estilizar selectboxes */
-        .stSelectbox > div > div {
-            background: #F8F9FA !important;
-            border: 1px solid #DEE2E6 !important;
+        .stSelectbox > div > div {{
+            background: {input_bg} !important;
+            border: 1px solid {border_color} !important;
             border-radius: 8px !important;
-            color: #000000 !important;
-        }
+            color: {text_color} !important;
+        }}
         
         /* Estilizar botões */
-        .stButton > button {
-            background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%) !important;
-            border: 1px solid #DEE2E6 !important;
+        .stButton > button {{
+            background: linear-gradient(135deg, {card_bg} 0%, {input_bg} 100%) !important;
+            border: 1px solid {border_color} !important;
             border-radius: 8px !important;
-            color: #000000 !important;
+            color: {text_color} !important;
             font-weight: 500 !important;
             transition: all 0.3s ease !important;
-        }
+        }}
         
-        .stButton > button:hover {
-            border-color: #6C757D !important;
+        .stButton > button:hover {{
+            border-color: {hover_color} !important;
             box-shadow: 0 0 10px rgba(108, 117, 125, 0.3) !important;
-        }
+        }}
         
         /* Estilizar checkboxes */
-        .stCheckbox > label {
-            color: #000000 !important;
-        }
+        .stCheckbox > label {{
+            color: {text_color} !important;
+        }}
         
         /* Estilizar date inputs */
-        .stDateInput > div > div > input {
-            background: #F8F9FA !important;
-            border: 1px solid #DEE2E6 !important;
+        .stDateInput > div > div > input {{
+            background: {input_bg} !important;
+            border: 1px solid {border_color} !important;
             border-radius: 8px !important;
-            color: #000000 !important;
-        }
+            color: {text_color} !important;
+        }}
         
         /* Estilizar dataframes */
-        .stDataFrame {
-            background: #FFFFFF !important;
-            border: 1px solid #DEE2E6 !important;
+        .stDataFrame {{
+            background: {bg_color if tema == 'light' else '#1a1a1a'} !important;
+            border: 1px solid {border_color} !important;
             border-radius: 8px !important;
-        }
+        }}
         
         /* Estilizar tabs */
-        .stTabs [data-baseweb="tab-list"] {
+        .stTabs [data-baseweb="tab-list"] {{
             gap: 8px;
-        }
+        }}
         
-        .stTabs [data-baseweb="tab"] {
-            background: #F8F9FA;
-            border: 1px solid #DEE2E6;
+        .stTabs [data-baseweb="tab"] {{
+            background: {card_bg};
+            border: 1px solid {border_color};
             border-radius: 8px 8px 0 0;
-            color: #000000;
+            color: {text_color};
             font-weight: 500;
             padding: 12px 24px;
-        }
+        }}
         
-        .stTabs [aria-selected="true"] {
-            background: #FFFFFF;
-            border-bottom: 1px solid #FFFFFF;
-            color: #000000;
+        .stTabs [aria-selected="true"] {{
+            background: {bg_color if tema == 'light' else '#333333'};
+            border-bottom: 1px solid {bg_color if tema == 'light' else '#333333'};
+            color: {text_color};
             font-weight: 600;
-        }
+        }}
         
         /* Cards personalizados */
-        .metric-card {
-            background: #F8F9FA;
+        .metric-card {{
+            background: {card_bg};
             padding: 1.5rem;
             border-radius: 12px;
-            border: 1px solid #DEE2E6;
+            border: 1px solid {border_color};
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, {'0.1' if tema == 'light' else '0.3'});
             margin-bottom: 1rem;
-        }
+        }}
         
-        .metric-value {
+        .metric-value {{
             font-size: 2rem;
             font-weight: 700;
-            color: #000000;
+            color: {text_color};
             margin: 0.5rem 0;
-        }
+        }}
         
-        .metric-label {
+        .metric-label {{
             font-size: 0.9rem;
-            color: #6C757D;
+            color: {secondary_text};
             margin-bottom: 0.5rem;
-        }
+        }}
         
-        .metric-delta {
+        .metric-delta {{
             font-size: 0.9rem;
             font-weight: 600;
-        }
+        }}
         
-        .delta-positive { color: #198754; }
-        .delta-negative { color: #DC3545; }
-        .delta-neutral { color: #6C757D; }
+        .delta-positive {{ color: #198754; }}
+        .delta-negative {{ color: #DC3545; }}
+        .delta-neutral {{ color: {secondary_text}; }}
+        
+        /* Toggle de tema */
+        .theme-toggle {{
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: {card_bg};
+            border: 1px solid {border_color};
+            border-radius: 8px;
+            color: {text_color};
+        }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -1350,38 +1389,443 @@ def criar_pipeline_projetos():
 def main():
     """Função principal do dashboard"""
     configurar_pagina()
-    aplicar_css_branco()  # Mudança para tema branco
     
     # Inicializar session state
     if 'show_welcome' not in st.session_state:
         st.session_state.show_welcome = True
     if 'language' not in st.session_state:
         st.session_state.language = 'pt'
+    if 'theme' not in st.session_state:
+        st.session_state.theme = 'light'
+    
+    # Aplicar tema
+    aplicar_css_tema(st.session_state.theme)
     
     # Mostrar tela de boas-vindas ou dashboard principal
     if st.session_state.show_welcome:
         filtros = tela_boas_vindas(st.session_state.language)
     else:
         # Menu de navegação no topo
-        st.markdown(f'<h1 style="color: #000000; text-align: center; margin-bottom: 2rem;">{get_text("main_title", st.session_state.language)}</h1>', unsafe_allow_html=True)
+        st.markdown(f'<h1 style="color: inherit; text-align: center; margin-bottom: 2rem;">{get_text("main_title", st.session_state.language)}</h1>', unsafe_allow_html=True)
         
         # Controles de navegação
-        col1, col2, col3, col4, col5 = st.columns([3, 2, 2, 1, 1])
+        col1, col2, col3, col4, col5, col6 = st.columns([3, 2, 2, 1, 1, 1])
         
         with col1:
             opcao = st.selectbox(
                 get_text('select_section', st.session_state.language),
                 [
                     get_text('consolidated_view', st.session_state.language),
-                    "Dashboards por Unidade",  # Nova opção
-                    get_text('fox_graos_section', st.session_state.language), 
-                    get_text('fox_log_section', st.session_state.language),
-                    get_text('clube_fx_section', st.session_state.language),
-                    get_text('financial_performance', st.session_state.language),
+                    "Dashboards por Unidade",
                     get_text('dre_realtime', st.session_state.language),
-                    get_text('insights_trends', st.session_state.language),
-                    get_text('projections_scenarios', st.session_state.language),
-                    get_text('roadmap_actions', st.session_state.language),
+                    get_text('financial_performance', st.session_state.language),
+                    get_text('due_diligence', st.session_state.language),
+                    get_text('settings', st.session_state.language)
+                ],
+                key="main_navigation"
+            )
+
+# ============================================================================
+# DRE EM TEMPO REAL
+# ============================================================================
+
+def dre_tempo_real(lang='pt', tema='light'):
+    """DRE em tempo real com tabela por mês e filtros por unidade"""
+    
+    st.markdown(f'<h2 style="color: inherit; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">📊 {get_text("dre_realtime", lang)}</h2>', unsafe_allow_html=True)
+    
+    # Filtros
+    col1, col2, col3 = st.columns([2, 2, 2])
+    
+    with col1:
+        unidade_filtro = st.selectbox(
+            "Unidade de Negócio" if lang == 'pt' else "Business Unit",
+            ["Consolidado", "Fox Grãos", "Fox Log", "Clube FX"],
+            key="dre_unidade_filter"
+        )
+    
+    with col2:
+        ano_filtro = st.selectbox(
+            "Ano" if lang == 'pt' else "Year",
+            [2024, 2023, 2022],
+            key="dre_ano_filter"
+        )
+    
+    with col3:
+        formato_valores = st.selectbox(
+            "Formato" if lang == 'pt' else "Format",
+            ["R$ Milhões", "R$ Milhares", "Valores Absolutos"],
+            key="dre_formato_filter"
+        )
+    
+    # Gerar dados DRE
+    dados_dre = gerar_dados_dre(unidade_filtro, ano_filtro)
+    
+    # Aplicar formatação
+    dados_formatados = formatar_valores_dre(dados_dre, formato_valores)
+    
+    # Exibir tabela DRE
+    st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">📈 Demonstrativo de Resultados</h3>', unsafe_allow_html=True)
+    
+    # Criar DataFrame para exibição
+    df_dre = pd.DataFrame(dados_formatados)
+    
+    # Estilizar tabela
+    styled_df = df_dre.style.format({
+        col: lambda x: f"{x}" for col in df_dre.columns if col != 'Conta'
+    }).set_properties(**{
+        'background-color': '#F8F9FA' if tema == 'light' else '#2d2d2d',
+        'color': '#000000' if tema == 'light' else '#FFFFFF',
+        'border': '1px solid #DEE2E6' if tema == 'light' else '1px solid #444444'
+    })
+    
+    st.dataframe(styled_df, use_container_width=True, height=600)
+    
+    # Gráfico de evolução mensal
+    st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">📊 Evolução Mensal</h3>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Gráfico Receita vs EBITDA
+        fig_receita_ebitda = criar_grafico_dre_evolucao(dados_dre, ['Receita Líquida', 'EBITDA'], tema, lang)
+        st.plotly_chart(fig_receita_ebitda, use_container_width=True)
+    
+    with col2:
+        # Gráfico Margem EBITDA
+        fig_margem = criar_grafico_margem_ebitda(dados_dre, tema, lang)
+        st.plotly_chart(fig_margem, use_container_width=True)
+
+def gerar_dados_dre(unidade, ano):
+    """Gerar dados simulados de DRE por mês"""
+    
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    
+    # Multiplicadores por unidade
+    if unidade == "Fox Grãos":
+        mult = 1.0
+    elif unidade == "Fox Log":
+        mult = 0.7
+    elif unidade == "Clube FX":
+        mult = 0.15
+    else:  # Consolidado
+        mult = 1.85
+    
+    # Dados base (em milhões)
+    receita_bruta = [round((18.5 + i * 0.8) * mult, 1) for i in range(12)]
+    deducoes = [round(rb * 0.08, 1) for rb in receita_bruta]
+    receita_liquida = [round(rb - d, 1) for rb, d in zip(receita_bruta, deducoes)]
+    cpv = [round(rl * 0.65, 1) for rl in receita_liquida]
+    lucro_bruto = [round(rl - c, 1) for rl, c in zip(receita_liquida, cpv)]
+    despesas_vendas = [round(rl * 0.08, 1) for rl in receita_liquida]
+    despesas_admin = [round(rl * 0.05, 1) for rl in receita_liquida]
+    ebitda = [round(lb - dv - da, 1) for lb, dv, da in zip(lucro_bruto, despesas_vendas, despesas_admin)]
+    depreciacao = [round(rl * 0.02, 1) for rl in receita_liquida]
+    ebit = [round(e - d, 1) for e, d in zip(ebitda, depreciacao)]
+    resultado_financeiro = [round(rl * -0.01, 1) for rl in receita_liquida]
+    lucro_liquido = [round(e + rf, 1) for e, rf in zip(ebit, resultado_financeiro)]
+    
+    return {
+        'Conta': [
+            'Receita Bruta', 'Deduções', 'Receita Líquida', 'CPV', 'Lucro Bruto',
+            'Despesas de Vendas', 'Despesas Administrativas', 'EBITDA', 
+            'Depreciação', 'EBIT', 'Resultado Financeiro', 'Lucro Líquido'
+        ],
+        **{mes: [rb, -d, rl, -c, lb, -dv, -da, e, -dep, ebit_val, rf, ll] 
+           for mes, rb, d, rl, c, lb, dv, da, e, dep, ebit_val, rf, ll in 
+           zip(meses, receita_bruta, deducoes, receita_liquida, cpv, lucro_bruto,
+               despesas_vendas, despesas_admin, ebitda, depreciacao, ebit, 
+               resultado_financeiro, lucro_liquido)}
+    }
+
+def formatar_valores_dre(dados, formato):
+    """Formatar valores conforme seleção do usuário"""
+    dados_formatados = dados.copy()
+    
+    for coluna in dados_formatados.keys():
+        if coluna != 'Conta':
+            if formato == "R$ Milhões":
+                dados_formatados[coluna] = [f"R$ {v:.1f}M" for v in dados_formatados[coluna]]
+            elif formato == "R$ Milhares":
+                dados_formatados[coluna] = [f"R$ {v*1000:.0f}k" for v in dados_formatados[coluna]]
+            else:  # Valores Absolutos
+                dados_formatados[coluna] = [f"R$ {v*1000000:,.0f}" for v in dados_formatados[coluna]]
+    
+    return dados_formatados
+
+def criar_grafico_dre_evolucao(dados, metricas, tema, lang):
+    """Gráfico de evolução das métricas DRE"""
+    
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    
+    fig = go.Figure()
+    
+    cores = ['#198754', '#0D6EFD', '#FD7E14', '#6F42C1']
+    
+    for i, metrica in enumerate(metricas):
+        idx = dados['Conta'].index(metrica)
+        valores = [dados[mes][idx] for mes in meses]
+        
+        fig.add_trace(go.Scatter(
+            x=meses, y=valores,
+            mode='lines+markers',
+            name=metrica,
+            line=dict(color=cores[i % len(cores)], width=3),
+            marker=dict(size=8),
+            hovertemplate=f'<b>%{{x}}</b><br>{metrica}: R$ %{{y}}M<extra></extra>'
+        ))
+    
+    bg_color = '#FFFFFF' if tema == 'light' else 'rgba(0,0,0,0)'
+    text_color = '#000000' if tema == 'light' else '#FFFFFF'
+    grid_color = '#E9ECEF' if tema == 'light' else 'rgba(192, 192, 192, 0.1)'
+    
+    fig.update_layout(
+        title=dict(text="Evolução Mensal", font=dict(size=16, color=text_color)),
+        paper_bgcolor=bg_color,
+        plot_bgcolor=bg_color,
+        font=dict(color=text_color),
+        height=350,
+        legend=dict(font=dict(color=text_color)),
+        xaxis=dict(showgrid=True, gridcolor=grid_color, color=text_color),
+        yaxis=dict(showgrid=True, gridcolor=grid_color, color=text_color, title='R$ Milhões')
+    )
+    
+    return fig
+
+def criar_grafico_margem_ebitda(dados, tema, lang):
+    """Gráfico de margem EBITDA"""
+    
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    
+    idx_receita = dados['Conta'].index('Receita Líquida')
+    idx_ebitda = dados['Conta'].index('EBITDA')
+    
+    margens = [round((dados[mes][idx_ebitda] / dados[mes][idx_receita]) * 100, 1) for mes in meses]
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Bar(
+        x=meses, y=margens,
+        marker=dict(color='#198754'),
+        text=margens,
+        textposition='outside',
+        texttemplate='%{text}%',
+        hovertemplate='<b>%{x}</b><br>Margem EBITDA: %{y}%<extra></extra>'
+    ))
+    
+    bg_color = '#FFFFFF' if tema == 'light' else 'rgba(0,0,0,0)'
+    text_color = '#000000' if tema == 'light' else '#FFFFFF'
+    grid_color = '#E9ECEF' if tema == 'light' else 'rgba(192, 192, 192, 0.1)'
+    
+    fig.update_layout(
+        title=dict(text="Margem EBITDA (%)", font=dict(size=16, color=text_color)),
+        paper_bgcolor=bg_color,
+        plot_bgcolor=bg_color,
+        font=dict(color=text_color),
+        height=350,
+        xaxis=dict(showgrid=False, color=text_color),
+        yaxis=dict(showgrid=True, gridcolor=grid_color, color=text_color, title='%')
+    )
+    
+    return fig
+
+# ============================================================================
+# PERFORMANCE FINANCEIRA
+# ============================================================================
+
+def performance_financeira(lang='pt', tema='light'):
+    """Performance Financeira com tabela pivot e gráfico de área empilhada"""
+    
+    st.markdown(f'<h2 style="color: inherit; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">💰 {get_text("financial_performance", lang)}</h2>', unsafe_allow_html=True)
+    
+    # Tabela dinâmica pivot
+    st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">📊 Tabela Dinâmica - Métricas Financeiras</h3>', unsafe_allow_html=True)
+    
+    # Gerar dados para tabela pivot
+    dados_pivot = gerar_dados_pivot_financeiro()
+    df_pivot = pd.DataFrame(dados_pivot)
+    
+    # Estilizar tabela
+    styled_pivot = df_pivot.style.format({
+        col: lambda x: f"R$ {x:.1f}M" for col in df_pivot.columns if col != 'Métrica'
+    }).set_properties(**{
+        'background-color': '#F8F9FA' if tema == 'light' else '#2d2d2d',
+        'color': '#000000' if tema == 'light' else '#FFFFFF',
+        'border': '1px solid #DEE2E6' if tema == 'light' else '1px solid #444444'
+    })
+    
+    st.dataframe(styled_pivot, use_container_width=True, height=400)
+    
+    # Gráfico de área empilhada
+    st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">📈 Composição de Custos e Despesas</h3>', unsafe_allow_html=True)
+    
+    fig_area = criar_grafico_area_empilhada(tema, lang)
+    st.plotly_chart(fig_area, use_container_width=True)
+    
+    # KPIs resumo
+    st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">🎯 KPIs Principais</h3>', unsafe_allow_html=True)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Receita Anual</div>
+            <div class="metric-value">R$ 289.5M</div>
+            <div class="metric-delta delta-positive">+18.2% vs ano anterior</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">EBITDA Anual</div>
+            <div class="metric-value">R$ 89.2M</div>
+            <div class="metric-delta delta-positive">+22.1% vs ano anterior</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Margem EBITDA</div>
+            <div class="metric-value">30.8%</div>
+            <div class="metric-delta delta-positive">+1.2 p.p. vs ano anterior</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-label">Fluxo Caixa Livre</div>
+            <div class="metric-value">R$ 76.3M</div>
+            <div class="metric-delta delta-positive">+25.8% vs ano anterior</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+def gerar_dados_pivot_financeiro():
+    """Gerar dados para tabela pivot financeira"""
+    
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    
+    # Dados simulados (em milhões)
+    receita = [18.5, 19.2, 21.8, 20.1, 22.3, 24.1, 23.8, 25.2, 24.9, 26.1, 25.8, 27.2]
+    cpv = [12.1, 12.5, 14.2, 13.1, 14.5, 15.7, 15.5, 16.4, 16.2, 17.0, 16.8, 17.7]
+    sga = [2.8, 2.9, 3.3, 3.0, 3.4, 3.6, 3.6, 3.8, 3.7, 3.9, 3.9, 4.1]
+    ebitda = [r - c - s for r, c, s in zip(receita, cpv, sga)]
+    lucro_liquido = [round(e * 0.75, 1) for e in ebitda]
+    fluxo_caixa_livre = [round(ll * 1.1, 1) for ll in lucro_liquido]
+    
+    return {
+        'Métrica': ['Receita', 'CPV', 'SG&A', 'EBITDA', 'Lucro Líquido', 'Fluxo Caixa Livre'],
+        **{mes: [r, c, s, e, ll, fcl] for mes, r, c, s, e, ll, fcl in 
+           zip(meses, receita, cpv, sga, ebitda, lucro_liquido, fluxo_caixa_livre)}
+    }
+
+def criar_grafico_area_empilhada(tema, lang):
+    """Gráfico de área empilhada para composição de custos"""
+    
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    
+    # Dados de custos e despesas (em milhões)
+    cpv = [12.1, 12.5, 14.2, 13.1, 14.5, 15.7, 15.5, 16.4, 16.2, 17.0, 16.8, 17.7]
+    despesas_vendas = [1.5, 1.5, 1.7, 1.6, 1.8, 1.9, 1.9, 2.0, 2.0, 2.1, 2.1, 2.2]
+    despesas_admin = [1.3, 1.4, 1.6, 1.4, 1.6, 1.7, 1.7, 1.8, 1.7, 1.8, 1.8, 1.9]
+    outras_despesas = [0.8, 0.8, 0.9, 0.8, 0.9, 1.0, 1.0, 1.0, 1.0, 1.1, 1.1, 1.1]
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Scatter(
+        x=meses, y=cpv,
+        fill='tonexty',
+        mode='none',
+        name='CPV',
+        fillcolor='rgba(220, 53, 69, 0.6)',
+        hovertemplate='<b>%{x}</b><br>CPV: R$ %{y}M<extra></extra>'
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=meses, y=[c + d for c, d in zip(cpv, despesas_vendas)],
+        fill='tonexty',
+        mode='none',
+        name='Despesas de Vendas',
+        fillcolor='rgba(253, 126, 20, 0.6)',
+        hovertemplate='<b>%{x}</b><br>Desp. Vendas: R$ %{y}M<extra></extra>'
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=meses, y=[c + dv + da for c, dv, da in zip(cpv, despesas_vendas, despesas_admin)],
+        fill='tonexty',
+        mode='none',
+        name='Despesas Administrativas',
+        fillcolor='rgba(13, 110, 253, 0.6)',
+        hovertemplate='<b>%{x}</b><br>Desp. Admin: R$ %{y}M<extra></extra>'
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=meses, y=[c + dv + da + o for c, dv, da, o in zip(cpv, despesas_vendas, despesas_admin, outras_despesas)],
+        fill='tonexty',
+        mode='none',
+        name='Outras Despesas',
+        fillcolor='rgba(108, 117, 125, 0.6)',
+        hovertemplate='<b>%{x}</b><br>Outras: R$ %{y}M<extra></extra>'
+    ))
+    
+    bg_color = '#FFFFFF' if tema == 'light' else 'rgba(0,0,0,0)'
+    text_color = '#000000' if tema == 'light' else '#FFFFFF'
+    grid_color = '#E9ECEF' if tema == 'light' else 'rgba(192, 192, 192, 0.1)'
+    
+    fig.update_layout(
+        title=dict(text="Composição de Custos e Despesas", font=dict(size=18, color=text_color)),
+        paper_bgcolor=bg_color,
+        plot_bgcolor=bg_color,
+        font=dict(color=text_color),
+        height=450,
+        legend=dict(font=dict(color=text_color)),
+        xaxis=dict(showgrid=True, gridcolor=grid_color, color=text_color),
+        yaxis=dict(showgrid=True, gridcolor=grid_color, color=text_color, title='R$ Milhões'),
+        hovermode='x unified'
+    )
+    
+    return fig
+
+# ============================================================================
+# FUNÇÃO PRINCIPAL
+# ============================================================================
+
+def main():
+    """Função principal do dashboard"""
+    configurar_pagina()
+    
+    # Inicializar session state
+    if 'show_welcome' not in st.session_state:
+        st.session_state.show_welcome = True
+    if 'language' not in st.session_state:
+        st.session_state.language = 'pt'
+    if 'theme' not in st.session_state:
+        st.session_state.theme = 'light'
+    
+    # Aplicar tema
+    aplicar_css_tema(st.session_state.theme)
+    
+    # Mostrar tela de boas-vindas ou dashboard principal
+    if st.session_state.show_welcome:
+        filtros = tela_boas_vindas(st.session_state.language)
+    else:
+        # Menu de navegação no topo
+        st.markdown(f'<h1 style="color: inherit; text-align: center; margin-bottom: 2rem;">{get_text("main_title", st.session_state.language)}</h1>', unsafe_allow_html=True)
+        
+        # Controles de navegação
+        col1, col2, col3, col4, col5, col6 = st.columns([3, 2, 2, 1, 1, 1])
+        
+        with col1:
+            opcao = st.selectbox(
+                get_text('select_section', st.session_state.language),
+                [
+                    get_text('consolidated_view', st.session_state.language),
+                    "Dashboards por Unidade",
+                    get_text('dre_realtime', st.session_state.language),
+                    get_text('financial_performance', st.session_state.language),
                     get_text('due_diligence', st.session_state.language),
                     get_text('settings', st.session_state.language)
                 ],
@@ -1428,11 +1872,27 @@ def main():
                 st.rerun()
         
         with col5:
+            # Toggle de tema
+            theme_options = {'☀️ Claro': 'light', '🌙 Escuro': 'dark'}
+            theme_display = st.selectbox(
+                "Tema",
+                list(theme_options.keys()),
+                index=0 if st.session_state.theme == 'light' else 1,
+                key="theme_select"
+            )
+            
+            # Atualizar tema se mudou
+            new_theme = theme_options[theme_display]
+            if new_theme != st.session_state.theme:
+                st.session_state.theme = new_theme
+                st.rerun()
+        
+        with col6:
             if st.button(get_text('home', st.session_state.language), key="home_btn"):
                 st.session_state.show_welcome = True
                 st.rerun()
         
-        st.markdown('<hr style="margin: 1.5rem 0; border: 1px solid #DEE2E6;">', unsafe_allow_html=True)
+        st.markdown('<hr style="margin: 1.5rem 0; border: 1px solid var(--border-color);">', unsafe_allow_html=True)
         
         # Carregar dados
         dados_eda = carregar_dados_eda()
@@ -1445,11 +1905,17 @@ def main():
         elif opcao == "Dashboards por Unidade":
             dashboards_unidades_negocio(st.session_state.language)
         
+        elif opcao == get_text('dre_realtime', st.session_state.language):
+            dre_tempo_real(st.session_state.language, st.session_state.theme)
+        
+        elif opcao == get_text('financial_performance', st.session_state.language):
+            performance_financeira(st.session_state.language, st.session_state.theme)
+        
         elif opcao == get_text('due_diligence', st.session_state.language):
             secao_due_diligence(st.session_state.language)
         
         else:
-            st.markdown(f'<h2 style="color: #000000;">🚧 {opcao}</h2>', unsafe_allow_html=True)
+            st.markdown(f'<h2 style="color: inherit;">🚧 {opcao}</h2>', unsafe_allow_html=True)
             st.info(get_text('in_development', st.session_state.language))
 
 if __name__ == "__main__":
