@@ -2219,8 +2219,7 @@ def main():
     aplicar_css_tema(st.session_state.theme)
     
     # Header principal
-    st.markdown(f'<h1 style="color: inherit; text-align: center; margin-bottom: 0.5rem;">🌾 FOX SA Investment Board</h1>', unsafe_allow_html=True)
-    st.markdown(f'<p style="color: inherit; text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">{get_text("subtitle", st.session_state.language)}</p>', unsafe_allow_html=True)
+    st.markdown(f'<h1 style="color: inherit; text-align: center; margin-bottom: 2rem;">🌾 FOX SA Investment Board</h1>', unsafe_allow_html=True)
     
     # Controles superiores
     col1, col2, col3, col4, col5, col6 = st.columns([2, 1.5, 1.5, 1.5, 1.5, 1])
