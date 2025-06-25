@@ -51,8 +51,8 @@ def pagina_contratos_reais(tema='escuro'):
         tipo_selecionado = st.selectbox("🔄 Operação", tipos_operacao)
     
     with col4:
-        # Filtro por ano - baseado nos dados reais
-        anos_contratos = sorted(df_contratos['closeDate'].dt.year.unique(), reverse=True)
+        # Filtro por ano - baseado nos dados reais, garantindo inteiros
+        anos_contratos = sorted([int(ano) for ano in df_contratos['closeDate'].dt.year.unique()], reverse=True)
         anos_opcoes = ['Todos'] + [str(ano) for ano in anos_contratos]
         ano_selecionado = st.selectbox("📅 Ano", anos_opcoes)
     
@@ -114,13 +114,13 @@ def aplicar_filtros_contratos(df, grao, status, tipo_operacao, ano):
         df_filtrado = df_filtrado[df_filtrado['tipoOperacao'] == tipo_operacao]
     
     # Filtro por ano
-    if ano and str(ano).strip() != 'Todos':
+    if ano and ano != 'Todos':
         try:
-            ano_int = int(str(ano).strip())
+            ano_int = int(ano)
             df_filtrado = df_filtrado[df_filtrado['closeDate'].dt.year == ano_int]
-        except (ValueError, TypeError, AttributeError):
+        except (ValueError, TypeError):
             # Se não conseguir converter para int, ignora o filtro
-            st.warning(f"⚠️ Valor de ano inválido: {ano}")
+            st.warning(f"⚠️ Valor de ano inválido: {ano} (tipo: {type(ano)})")
             pass
     
     return df_filtrado

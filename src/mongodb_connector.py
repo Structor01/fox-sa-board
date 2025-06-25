@@ -591,11 +591,11 @@ def get_available_years():
             # Fallback para anos padrão se não houver dados
             return [2025, 2024, 2023, 2022, 2021]
         
-        # Extrair anos únicos dos contratos
-        anos_disponveis = sorted(df['closeDate'].dt.year.unique(), reverse=True)
+        # Extrair anos únicos dos contratos e garantir que sejam inteiros
+        anos_disponveis = sorted([int(ano) for ano in df['closeDate'].dt.year.unique()], reverse=True)
         
         # Garantir que pelo menos o ano atual esteja incluído
-        ano_atual = datetime.now().year
+        ano_atual = int(datetime.now().year)
         if ano_atual not in anos_disponveis:
             anos_disponveis.insert(0, ano_atual)
         
