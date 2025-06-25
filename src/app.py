@@ -190,7 +190,7 @@ TRANSLATIONS = {
         'access_dashboard': 'Access Complete Dashboard',
         
         # Main menu
-        'main_title': 'FOX SA - Real-Time Results Dashboard',',
+        'main_title': 'FOX SA - Real-Time Results Dashboard',
         'select_section': '📊 Select Section:',
         'period': '📅 Period:',
         'visualization': '👁️ Visualization:',
