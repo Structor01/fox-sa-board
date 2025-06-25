@@ -2466,18 +2466,15 @@ def main():
     # Aplicar CSS
     aplicar_css_tema(st.session_state.theme)
     
-    # Header principal com logo
-    col_logo, col_title = st.columns([1, 4])
+    # Header principal com logo centralizada
+    col1, col2, col3 = st.columns([1, 1, 1])
     
-    with col_logo:
+    with col2:
         try:
-            st.image("assets/fox_logo.png", width=120)
+            st.image("assets/fox_logo.png", width=150)
         except:
             # Fallback se a imagem não for encontrada
-            st.markdown("🌾")
-    
-    with col_title:
-        st.markdown(f'<h1 style="color: inherit; text-align: left; margin-bottom: 0; margin-top: 1rem;">FOX SA Investment Board</h1>', unsafe_allow_html=True)
+            st.markdown('<div style="text-align: center; font-size: 2rem;">🌾</div>', unsafe_allow_html=True)
     
     st.markdown('<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True)
     

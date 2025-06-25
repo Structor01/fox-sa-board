@@ -331,21 +331,36 @@ def load_consolidated_data(year=None):
     if year:
         df = df[df['closeDate'].dt.year == year]
     
+    # Separar por tipo de operação usando os campos reais
+    df_grain = df[df.get('isGrain', False) == True]  # Comercialização (Fox Grãos)
+    df_freight = df[df.get('isFreight', False) == True]  # Frete (Fox Log)
+    df_service = df[df.get('isService', False) == True]  # Serviços (Clube FX)
+    
     # Calcular métricas consolidadas
     consolidated = {
         'receita_total': df['valorTotal'].sum(),
         'volume_total': df['amount'].sum(),
         'numero_contratos': len(df),
-        'preco_medio': df['bagPrice'].mean(),
+        'preco_medio': df['bagPrice'].mean() if not df.empty else 0,
         'receita_mensal': df.groupby(df['closeDate'].dt.to_period('M'))['valorTotal'].sum().to_dict(),
         'volume_mensal': df.groupby(df['closeDate'].dt.to_period('M'))['amount'].sum().to_dict(),
         'contratos_mensais': df.groupby(df['closeDate'].dt.to_period('M')).size().to_dict(),
         'receita_por_grao': df.groupby('grainName')['valorTotal'].sum().to_dict(),
         'volume_por_grao': df.groupby('grainName')['amount'].sum().to_dict(),
         'receita_por_empresa': {
-            'Fox Grãos': df[df['isBuying'] == False]['valorTotal'].sum(),  # Vendas
-            'Fox Log': df['valorTotal'].sum() * 0.15,  # Estimativa logística
-            'Clube FX': df['valorTotal'].sum() * 0.05   # Estimativa consultoria
+            'Fox Grãos': df_grain['valorTotal'].sum(),  # Comercialização
+            'Fox Log': df_freight['valorTotal'].sum(),  # Frete
+            'Clube FX': df_service['valorTotal'].sum()  # Serviços
+        },
+        'contratos_por_empresa': {
+            'Fox Grãos': len(df_grain),
+            'Fox Log': len(df_freight),
+            'Clube FX': len(df_service)
+        },
+        'volume_por_empresa': {
+            'Fox Grãos': df_grain['amount'].sum(),
+            'Fox Log': df_freight['amount'].sum(),  # Volume transportado
+            'Clube FX': 0  # Serviços não têm volume físico
         }
     }
     
@@ -364,15 +379,14 @@ def load_dre_data_from_mongo(year=None, unidade='Consolidado'):
     if year:
         df = df[df['closeDate'].dt.year == year]
     
-    # Filtrar por unidade se especificado
+    # Filtrar por unidade usando os campos reais
     if unidade == 'Fox Grãos':
-        df = df[df['isBuying'] == False]  # Apenas vendas
+        df = df[df.get('isGrain', False) == True]  # Apenas comercialização
     elif unidade == 'Fox Log':
-        # Para Fox Log, usar uma estimativa baseada em todos os contratos
-        pass
+        df = df[df.get('isFreight', False) == True]  # Apenas frete
     elif unidade == 'Clube FX':
-        # Para Clube FX, usar uma estimativa menor
-        pass
+        df = df[df.get('isService', False) == True]  # Apenas serviços
+    # Se 'Consolidado', usa todos os dados
     
     # Calcular DRE por mês
     dre_mensal = {}
@@ -385,15 +399,32 @@ def load_dre_data_from_mongo(year=None, unidade='Consolidado'):
         else:
             receita_bruta = df_mes['valorTotal'].sum()
         
-        # Calcular componentes do DRE baseados na receita bruta
-        comercializacao_graos = receita_bruta * 0.85 if unidade in ['Consolidado', 'Fox Grãos'] else 0
-        servicos_logisticos = receita_bruta * 0.12 if unidade in ['Consolidado', 'Fox Log'] else 0
-        consultoria = receita_bruta * 0.03 if unidade in ['Consolidado', 'Clube FX'] else 0
+        # Calcular componentes do DRE baseados na unidade e receita bruta
+        if unidade == 'Fox Grãos' or (unidade == 'Consolidado' and receita_bruta > 0):
+            # Para Fox Grãos (comercialização)
+            df_grain_mes = df_mes[df_mes.get('isGrain', False) == True] if unidade == 'Consolidado' else df_mes
+            comercializacao_graos = df_grain_mes['valorTotal'].sum()
+        else:
+            comercializacao_graos = 0
+            
+        if unidade == 'Fox Log' or (unidade == 'Consolidado' and receita_bruta > 0):
+            # Para Fox Log (frete)
+            df_freight_mes = df_mes[df_mes.get('isFreight', False) == True] if unidade == 'Consolidado' else df_mes
+            servicos_logisticos = df_freight_mes['valorTotal'].sum()
+        else:
+            servicos_logisticos = 0
+            
+        if unidade == 'Clube FX' or (unidade == 'Consolidado' and receita_bruta > 0):
+            # Para Clube FX (serviços)
+            df_service_mes = df_mes[df_mes.get('isService', False) == True] if unidade == 'Consolidado' else df_mes
+            consultoria = df_service_mes['valorTotal'].sum()
+        else:
+            consultoria = 0
         
         # Deduções e impostos
-        icms = receita_bruta * 0.045
-        pis_cofins = receita_bruta * 0.0365
-        iss = (servicos_logisticos + consultoria) * 0.05
+        icms = comercializacao_graos * 0.045  # ICMS apenas sobre comercialização
+        pis_cofins = receita_bruta * 0.0365  # PIS/COFINS sobre toda receita
+        iss = (servicos_logisticos + consultoria) * 0.05  # ISS sobre serviços
         outras_deducoes = receita_bruta * 0.015
         
         receita_liquida = receita_bruta - icms - pis_cofins - iss - outras_deducoes
@@ -406,7 +437,7 @@ def load_dre_data_from_mongo(year=None, unidade='Consolidado'):
         
         lucro_bruto = receita_liquida - cpv_total
         
-        # Despesas operacionais
+        # Despesas operacionais (proporcionais à receita líquida)
         pessoal_beneficios = receita_liquida * 0.08
         marketing_vendas = receita_liquida * 0.03
         despesas_admin = receita_liquida * 0.04
