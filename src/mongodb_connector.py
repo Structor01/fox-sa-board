@@ -188,8 +188,20 @@ class FOXMongoConnector:
             # Trimestre de fechamento
             df['trimestreFechamento'] = df['closeDate'].dt.to_period('Q')
             
-            # Tipo de operação
-            df['tipoOperacao'] = df['isBuying'].apply(lambda x: 'Compra' if x else 'Venda')
+            # Tipo de operação baseado nas regras de negócio
+            def determinar_tipo_operacao(row):
+                if row['isService']:
+                    return 'Clube FX'
+                elif row['isFreight']:
+                    return 'Frete'
+                elif row['isGrain'] and row['isBuying']:
+                    return 'Originação'
+                elif row['isGrain'] and not row['isBuying']:
+                    return 'Supply'
+                else:
+                    return 'Outros'
+            
+            df['tipoOperacao'] = df.apply(determinar_tipo_operacao, axis=1)
             
             # Modalidade de frete
             df['modalidadeFrete'] = df.apply(lambda x: 'CIF' if x['isCif'] else 'FOB', axis=1)
