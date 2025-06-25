@@ -1610,7 +1610,7 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
                 
                 st.plotly_chart(fig, use_container_width=True)
             else:
-            pass  # Empty else block
+                pass  # Empty else block
 
         with col2:
             st.markdown("#### 💼 Métricas Financeiras")
