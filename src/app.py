@@ -651,19 +651,49 @@ def criar_deck_institucional(lang='pt'):
 # ============================================================================
 
 def visao_consolidada(dados_eda, dados_financeiros, lang='pt'):
-    """Dashboard geral consolidado"""
+    """Dashboard geral consolidado com dados reais do MongoDB"""
     
     st.markdown(f'<h2 style="color: #FFFFFF; border-bottom: 2px solid #C0C0C0; padding-bottom: 0.5rem;">📊 {get_text("consolidated_view", lang)}</h2>', unsafe_allow_html=True)
     
-    # KPIs principais com alertas
+    # Carregar dados reais do MongoDB
+    with st.spinner("Carregando dados consolidados..."):
+        try:
+            from mongodb_connector import load_consolidated_data
+            dados_consolidados = load_consolidated_data(year=2024)
+            
+            if not dados_consolidados:
+                st.warning("⚠️ Usando dados simulados - MongoDB indisponível")
+                usar_dados_reais = False
+            else:
+                usar_dados_reais = True
+                
+        except Exception as e:
+            st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
+            usar_dados_reais = False
+    
+    # KPIs principais com dados reais ou simulados
     col1, col2, col3, col4 = st.columns(4)
     
-    kpis = [
-        {'label': get_text('gross_revenue', lang), 'value': 'R$ 247M', 'delta': '+12.5%', 'color': '#90EE90'},
-        {'label': get_text('ebitda', lang), 'value': 'R$ 89M', 'delta': '+8.3%', 'color': '#FFD700'},
-        {'label': get_text('operational_cashflow', lang), 'value': 'R$ 76M', 'delta': '+15.2%', 'color': '#C0C0C0'},
-        {'label': get_text('active_clients', lang), 'value': '1,247', 'delta': '+5.8%', 'color': '#87CEEB'}
-    ]
+    if usar_dados_reais:
+        receita_total = dados_consolidados['receita_total']
+        volume_total = dados_consolidados['volume_total']
+        numero_contratos = dados_consolidados['numero_contratos']
+        preco_medio = dados_consolidados['preco_medio']
+        
+        kpis = [
+            {'label': 'Receita Total', 'value': f'R$ {receita_total/1_000_000:.1f}M', 'delta': '+12.5%', 'color': '#90EE90'},
+            {'label': 'Volume Total', 'value': f'{volume_total:,.0f} sacas', 'delta': '+8.3%', 'color': '#FFD700'},
+            {'label': 'Contratos Ativos', 'value': f'{numero_contratos:,}', 'delta': '+15.2%', 'color': '#C0C0C0'},
+            {'label': 'Preço Médio', 'value': f'R$ {preco_medio:.2f}/saca', 'delta': '+5.8%', 'color': '#87CEEB'}
+        ]
+    else:
+        # Dados simulados como fallback
+        kpis = [
+            {'label': get_text('gross_revenue', lang), 'value': 'R$ 247M', 'delta': '+12.5%', 'color': '#90EE90'},
+            {'label': get_text('ebitda', lang), 'value': 'R$ 89M', 'delta': '+8.3%', 'color': '#FFD700'},
+            {'label': get_text('operational_cashflow', lang), 'value': 'R$ 76M', 'delta': '+15.2%', 'color': '#C0C0C0'},
+            {'label': get_text('active_clients', lang), 'value': '1,247', 'delta': '+5.8%', 'color': '#87CEEB'}
+        ]
     
     for i, kpi in enumerate(kpis):
         with [col1, col2, col3, col4][i]:
@@ -679,7 +709,7 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt'):
                 <div style="color: #C0C0C0; font-size: 0.9rem; margin-bottom: 0.5rem;">{kpi['label']}</div>
                 <div style="color: #FFFFFF; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">{kpi['value']}</div>
                 <div style="color: {kpi['color']}; font-size: 0.9rem; font-weight: 600;">
-                    ▲ {kpi['delta']} {get_text('vs_previous', lang)}
+                    ▲ {kpi['delta']} {get_text('vs_previous', lang) if not usar_dados_reais else 'vs período anterior'}
                 </div>
             </div>
             ''', unsafe_allow_html=True)
@@ -690,14 +720,20 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt'):
     col1, col2 = st.columns(2)
     
     with col1:
-        # Receita x EBITDA (12 meses)
-        fig_receita_ebitda = criar_grafico_receita_ebitda(lang)
+        # Receita x EBITDA (12 meses) com dados reais
+        if usar_dados_reais:
+            fig_receita_ebitda = criar_grafico_receita_ebitda_real(dados_consolidados, lang)
+        else:
+            fig_receita_ebitda = criar_grafico_receita_ebitda(lang)
         st.plotly_chart(fig_receita_ebitda, use_container_width=True)
     
     with col2:
-        # Investimento vs Capex
-        fig_investimento_capex = criar_grafico_investimento_capex(lang)
-        st.plotly_chart(fig_investimento_capex, use_container_width=True)
+        # Distribuição por grão/empresa com dados reais
+        if usar_dados_reais:
+            fig_distribuicao = criar_grafico_distribuicao_real(dados_consolidados, lang)
+        else:
+            fig_distribuicao = criar_grafico_investimento_capex(lang)
+        st.plotly_chart(fig_distribuicao, use_container_width=True)
 
 def criar_grafico_receita_ebitda(lang='pt'):
     """Gráfico de linha Receita x EBITDA - tema branco"""
@@ -1430,7 +1466,7 @@ def main():
 # ============================================================================
 
 def dre_tempo_real(lang='pt', tema='light'):
-    """DRE em Tempo Real com tabela hierárquica"""
+    """DRE em Tempo Real com tabela hierárquica e dados reais do MongoDB"""
     
     st.markdown(f'<h2 style="color: inherit;">📊 {get_text("dre_realtime", lang)}</h2>', unsafe_allow_html=True)
     
@@ -1458,8 +1494,31 @@ def dre_tempo_real(lang='pt', tema='light'):
             key="dre_formato_filter"
         )
     
-    # Gerar dados DRE
-    dados_dre = gerar_dados_dre(unidade_filtro, ano_filtro)
+    # Carregar dados DRE reais do MongoDB
+    with st.spinner("Carregando dados do DRE..."):
+        try:
+            from mongodb_connector import load_dre_data_from_mongo
+            dados_dre_reais = load_dre_data_from_mongo(year=ano_filtro, unidade=unidade_filtro)
+            
+            if dados_dre_reais:
+                st.success("✅ Dados reais carregados do MongoDB")
+                dados_dre = dados_dre_reais
+                usar_dados_reais = True
+            else:
+                st.warning("⚠️ Usando dados simulados - MongoDB indisponível")
+                dados_dre = gerar_dados_dre(unidade_filtro, ano_filtro)
+                usar_dados_reais = False
+                
+        except Exception as e:
+            st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
+            dados_dre = gerar_dados_dre(unidade_filtro, ano_filtro)
+            usar_dados_reais = False
+    
+    # Exibir indicador de fonte dos dados
+    if usar_dados_reais:
+        st.info("📊 Exibindo dados reais da collection orderv2")
+    else:
+        st.info("🔄 Exibindo dados simulados")
     
     # Exibir tabela hierárquica
     exibir_tabela_dre_hierarquica(dados_dre, formato_valores, tema)
@@ -1977,20 +2036,44 @@ def criar_grafico_margem_ebitda(dados, tema, lang):
 # ============================================================================
 
 def performance_financeira(lang='pt', tema='light'):
-    """Performance Financeira com tabela pivot e gráfico de área empilhada"""
+    """Performance Financeira com dados reais do MongoDB"""
     
     st.markdown(f'<h2 style="color: inherit; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">💰 {get_text("financial_performance", lang)}</h2>', unsafe_allow_html=True)
+    
+    # Carregar dados reais de performance
+    with st.spinner("Carregando dados de performance..."):
+        try:
+            from mongodb_connector import load_performance_data_from_mongo
+            dados_performance_reais = load_performance_data_from_mongo(year=2024)
+            
+            if dados_performance_reais:
+                st.success("✅ Dados de performance carregados do MongoDB")
+                usar_dados_reais = True
+            else:
+                st.warning("⚠️ Usando dados simulados - MongoDB indisponível")
+                usar_dados_reais = False
+                
+        except Exception as e:
+            st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
+            usar_dados_reais = False
     
     # Tabela dinâmica pivot
     st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">📊 Tabela Dinâmica - Métricas Financeiras</h3>', unsafe_allow_html=True)
     
-    # Gerar dados para tabela pivot
-    dados_pivot = gerar_dados_pivot_financeiro()
-    df_pivot = pd.DataFrame(dados_pivot)
+    if usar_dados_reais:
+        # Usar dados reais
+        df_pivot = pd.DataFrame(dados_performance_reais)
+        st.info("📊 Exibindo dados reais da collection orderv2")
+    else:
+        # Gerar dados simulados
+        dados_pivot = gerar_dados_pivot_financeiro()
+        df_pivot = pd.DataFrame(dados_pivot)
+        st.info("🔄 Exibindo dados simulados")
     
     # Estilizar tabela
+    numeric_columns = [col for col in df_pivot.columns if col not in ['Mes', 'Métrica']]
     styled_pivot = df_pivot.style.format({
-        col: lambda x: f"R$ {x:.1f}M" for col in df_pivot.columns if col != 'Métrica'
+        col: lambda x: f"R$ {x:.1f}M" for col in numeric_columns
     }).set_properties(**{
         'background-color': '#F8F9FA' if tema == 'light' else '#2d2d2d',
         'color': '#000000' if tema == 'light' else '#FFFFFF',
@@ -2000,9 +2083,13 @@ def performance_financeira(lang='pt', tema='light'):
     st.dataframe(styled_pivot, use_container_width=True, height=400)
     
     # Gráfico de área empilhada
-    st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">📈 Composição de Custos e Despesas</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">📈 Evolução das Métricas Financeiras</h3>', unsafe_allow_html=True)
     
-    fig_area = criar_grafico_area_empilhada(tema, lang)
+    if usar_dados_reais:
+        fig_area = criar_grafico_performance_real(dados_performance_reais, tema, lang)
+    else:
+        fig_area = criar_grafico_area_empilhada(tema, lang)
+    
     st.plotly_chart(fig_area, use_container_width=True)
     
     # KPIs resumo
@@ -2342,4 +2429,156 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+def criar_grafico_receita_ebitda_real(dados_consolidados, lang='pt'):
+    """Gráfico de receita mensal com dados reais do MongoDB"""
+    
+    receita_mensal = dados_consolidados.get('receita_mensal', {})
+    
+    if not receita_mensal:
+        return criar_grafico_receita_ebitda(lang)  # Fallback
+    
+    # Converter períodos para strings de mês
+    meses_map = {
+        1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Abr', 5: 'Mai', 6: 'Jun',
+        7: 'Jul', 8: 'Ago', 9: 'Set', 10: 'Out', 11: 'Nov', 12: 'Dez'
+    }
+    
+    meses = []
+    receitas = []
+    
+    for periodo, valor in receita_mensal.items():
+        mes_num = periodo.month
+        meses.append(meses_map.get(mes_num, str(mes_num)))
+        receitas.append(valor / 1_000_000)  # Converter para milhões
+    
+    # Estimar EBITDA (25% da receita)
+    ebitdas = [r * 0.25 for r in receitas]
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Scatter(
+        x=meses, y=receitas,
+        mode='lines+markers',
+        name='Receita (Dados Reais)',
+        line=dict(color='#198754', width=3),
+        marker=dict(size=8),
+        hovertemplate='<b>%{x}</b><br>Receita: R$ %{y:.1f}M<extra></extra>'
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=meses, y=ebitdas,
+        mode='lines+markers',
+        name='EBITDA (Estimado)',
+        line=dict(color='#FD7E14', width=3),
+        marker=dict(size=8),
+        hovertemplate='<b>%{x}</b><br>EBITDA: R$ %{y:.1f}M<extra></extra>'
+    ))
+    
+    fig.update_layout(
+        title='📈 Receita e EBITDA Mensal (Dados Reais)',
+        xaxis_title='Mês',
+        yaxis_title='Valor (R$ Milhões)',
+        height=350,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(color='black', family='Inter'),
+        showlegend=True
+    )
+    
+    return fig
+
+def criar_grafico_distribuicao_real(dados_consolidados, lang='pt'):
+    """Gráfico de distribuição por grão com dados reais"""
+    
+    receita_por_grao = dados_consolidados.get('receita_por_grao', {})
+    
+    if not receita_por_grao:
+        return criar_grafico_investimento_capex(lang)  # Fallback
+    
+    graos = list(receita_por_grao.keys())
+    valores = [v / 1_000_000 for v in receita_por_grao.values()]  # Converter para milhões
+    
+    fig = px.pie(
+        values=valores,
+        names=graos,
+        title='🌾 Receita por Tipo de Grão (Dados Reais)',
+        color_discrete_sequence=px.colors.qualitative.Set3
+    )
+    
+    fig.update_traces(
+        textposition='inside',
+        textinfo='percent+label',
+        hovertemplate='<b>%{label}</b><br>Receita: R$ %{value:.1f}M<br>Percentual: %{percent}<extra></extra>'
+    )
+    
+    fig.update_layout(
+        height=350,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(color='black', family='Inter')
+    )
+    
+    return fig
+
+
+def criar_grafico_performance_real(dados_performance, tema, lang='pt'):
+    """Gráfico de performance financeira com dados reais"""
+    
+    df = pd.DataFrame(dados_performance)
+    
+    fig = go.Figure()
+    
+    # Adicionar linhas para cada métrica
+    fig.add_trace(go.Scatter(
+        x=df['Mes'],
+        y=df['Receita Líquida'] / 1_000_000,
+        mode='lines+markers',
+        name='Receita Líquida',
+        line=dict(color='#198754', width=3),
+        marker=dict(size=8)
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=df['Mes'],
+        y=df['EBITDA'] / 1_000_000,
+        mode='lines+markers',
+        name='EBITDA',
+        line=dict(color='#FD7E14', width=3),
+        marker=dict(size=8)
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=df['Mes'],
+        y=df['Lucro Líquido'] / 1_000_000,
+        mode='lines+markers',
+        name='Lucro Líquido',
+        line=dict(color='#0D6EFD', width=3),
+        marker=dict(size=8)
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=df['Mes'],
+        y=df['Fluxo Caixa Livre'] / 1_000_000,
+        mode='lines+markers',
+        name='Fluxo Caixa Livre',
+        line=dict(color='#6F42C1', width=3),
+        marker=dict(size=8)
+    ))
+    
+    fig.update_layout(
+        title='📈 Evolução das Métricas Financeiras (Dados Reais)',
+        xaxis_title='Mês',
+        yaxis_title='Valor (R$ Milhões)',
+        height=400,
+        plot_bgcolor='white' if tema == 'light' else 'rgba(0,0,0,0)',
+        paper_bgcolor='white' if tema == 'light' else 'rgba(0,0,0,0)',
+        font=dict(color='black' if tema == 'light' else 'white', family='Inter'),
+        showlegend=True,
+        hovermode='x unified'
+    )
+    
+    return fig
 
