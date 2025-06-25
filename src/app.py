@@ -647,6 +647,159 @@ def criar_deck_institucional(lang='pt'):
     """, unsafe_allow_html=True)
 
 # ============================================================================
+# FUNÇÕES DE GRÁFICOS COM DADOS REAIS
+# ============================================================================
+
+def criar_grafico_receita_ebitda_real(dados_consolidados, lang='pt'):
+    """Gráfico de receita mensal com dados reais do MongoDB"""
+    
+    receita_mensal = dados_consolidados.get('receita_mensal', {})
+    
+    if not receita_mensal:
+        return criar_grafico_receita_ebitda(lang)  # Fallback
+    
+    # Converter períodos para strings de mês
+    meses_map = {
+        1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Abr', 5: 'Mai', 6: 'Jun',
+        7: 'Jul', 8: 'Ago', 9: 'Set', 10: 'Out', 11: 'Nov', 12: 'Dez'
+    }
+    
+    meses = []
+    receitas = []
+    
+    for periodo, valor in receita_mensal.items():
+        mes_num = periodo.month
+        meses.append(meses_map.get(mes_num, str(mes_num)))
+        receitas.append(valor / 1_000_000)  # Converter para milhões
+    
+    # Estimar EBITDA (25% da receita)
+    ebitdas = [r * 0.25 for r in receitas]
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Scatter(
+        x=meses, y=receitas,
+        mode='lines+markers',
+        name='Receita (Dados Reais)',
+        line=dict(color='#198754', width=3),
+        marker=dict(size=8),
+        hovertemplate='<b>%{x}</b><br>Receita: R$ %{y:.1f}M<extra></extra>'
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=meses, y=ebitdas,
+        mode='lines+markers',
+        name='EBITDA (Estimado)',
+        line=dict(color='#FD7E14', width=3),
+        marker=dict(size=8),
+        hovertemplate='<b>%{x}</b><br>EBITDA: R$ %{y:.1f}M<extra></extra>'
+    ))
+    
+    fig.update_layout(
+        title='📈 Receita e EBITDA Mensal (Dados Reais)',
+        xaxis_title='Mês',
+        yaxis_title='Valor (R$ Milhões)',
+        height=350,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(color='black', family='Inter'),
+        showlegend=True
+    )
+    
+    return fig
+
+def criar_grafico_distribuicao_real(dados_consolidados, lang='pt'):
+    """Gráfico de distribuição por grão com dados reais"""
+    
+    receita_por_grao = dados_consolidados.get('receita_por_grao', {})
+    
+    if not receita_por_grao:
+        return criar_grafico_investimento_capex(lang)  # Fallback
+    
+    graos = list(receita_por_grao.keys())
+    valores = [v / 1_000_000 for v in receita_por_grao.values()]  # Converter para milhões
+    
+    fig = px.pie(
+        values=valores,
+        names=graos,
+        title='🌾 Receita por Tipo de Grão (Dados Reais)',
+        color_discrete_sequence=px.colors.qualitative.Set3
+    )
+    
+    fig.update_traces(
+        textposition='inside',
+        textinfo='percent+label',
+        hovertemplate='<b>%{label}</b><br>Receita: R$ %{value:.1f}M<br>Percentual: %{percent}<extra></extra>'
+    )
+    
+    fig.update_layout(
+        height=350,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(color='black', family='Inter')
+    )
+    
+    return fig
+
+def criar_grafico_performance_real(dados_performance, tema, lang='pt'):
+    """Gráfico de performance financeira com dados reais"""
+    
+    df = pd.DataFrame(dados_performance)
+    
+    fig = go.Figure()
+    
+    # Adicionar linhas para cada métrica
+    fig.add_trace(go.Scatter(
+        x=df['Mes'],
+        y=df['Receita Líquida'] / 1_000_000,
+        mode='lines+markers',
+        name='Receita Líquida',
+        line=dict(color='#198754', width=3),
+        marker=dict(size=8)
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=df['Mes'],
+        y=df['EBITDA'] / 1_000_000,
+        mode='lines+markers',
+        name='EBITDA',
+        line=dict(color='#FD7E14', width=3),
+        marker=dict(size=8)
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=df['Mes'],
+        y=df['Lucro Líquido'] / 1_000_000,
+        mode='lines+markers',
+        name='Lucro Líquido',
+        line=dict(color='#0D6EFD', width=3),
+        marker=dict(size=8)
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=df['Mes'],
+        y=df['Fluxo Caixa Livre'] / 1_000_000,
+        mode='lines+markers',
+        name='Fluxo Caixa Livre',
+        line=dict(color='#6F42C1', width=3),
+        marker=dict(size=8)
+    ))
+    
+    fig.update_layout(
+        title='📈 Evolução das Métricas Financeiras (Dados Reais)',
+        xaxis_title='Mês',
+        yaxis_title='Valor (R$ Milhões)',
+        height=400,
+        plot_bgcolor='white' if tema == 'light' else 'rgba(0,0,0,0)',
+        paper_bgcolor='white' if tema == 'light' else 'rgba(0,0,0,0)',
+        font=dict(color='black' if tema == 'light' else 'white', family='Inter'),
+        showlegend=True,
+        hovermode='x unified'
+    )
+    
+    return fig
+
+# ============================================================================
 # VISÃO CONSOLIDADA (ATUALIZADA COM IDIOMAS)
 # ============================================================================
 
@@ -2428,157 +2581,6 @@ def main():
         st.info(get_text('in_development', st.session_state.language))
 
 if __name__ == "__main__":
+
     main()
-
-
-
-def criar_grafico_receita_ebitda_real(dados_consolidados, lang='pt'):
-    """Gráfico de receita mensal com dados reais do MongoDB"""
-    
-    receita_mensal = dados_consolidados.get('receita_mensal', {})
-    
-    if not receita_mensal:
-        return criar_grafico_receita_ebitda(lang)  # Fallback
-    
-    # Converter períodos para strings de mês
-    meses_map = {
-        1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Abr', 5: 'Mai', 6: 'Jun',
-        7: 'Jul', 8: 'Ago', 9: 'Set', 10: 'Out', 11: 'Nov', 12: 'Dez'
-    }
-    
-    meses = []
-    receitas = []
-    
-    for periodo, valor in receita_mensal.items():
-        mes_num = periodo.month
-        meses.append(meses_map.get(mes_num, str(mes_num)))
-        receitas.append(valor / 1_000_000)  # Converter para milhões
-    
-    # Estimar EBITDA (25% da receita)
-    ebitdas = [r * 0.25 for r in receitas]
-    
-    fig = go.Figure()
-    
-    fig.add_trace(go.Scatter(
-        x=meses, y=receitas,
-        mode='lines+markers',
-        name='Receita (Dados Reais)',
-        line=dict(color='#198754', width=3),
-        marker=dict(size=8),
-        hovertemplate='<b>%{x}</b><br>Receita: R$ %{y:.1f}M<extra></extra>'
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=meses, y=ebitdas,
-        mode='lines+markers',
-        name='EBITDA (Estimado)',
-        line=dict(color='#FD7E14', width=3),
-        marker=dict(size=8),
-        hovertemplate='<b>%{x}</b><br>EBITDA: R$ %{y:.1f}M<extra></extra>'
-    ))
-    
-    fig.update_layout(
-        title='📈 Receita e EBITDA Mensal (Dados Reais)',
-        xaxis_title='Mês',
-        yaxis_title='Valor (R$ Milhões)',
-        height=350,
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-        font=dict(color='black', family='Inter'),
-        showlegend=True
-    )
-    
-    return fig
-
-def criar_grafico_distribuicao_real(dados_consolidados, lang='pt'):
-    """Gráfico de distribuição por grão com dados reais"""
-    
-    receita_por_grao = dados_consolidados.get('receita_por_grao', {})
-    
-    if not receita_por_grao:
-        return criar_grafico_investimento_capex(lang)  # Fallback
-    
-    graos = list(receita_por_grao.keys())
-    valores = [v / 1_000_000 for v in receita_por_grao.values()]  # Converter para milhões
-    
-    fig = px.pie(
-        values=valores,
-        names=graos,
-        title='🌾 Receita por Tipo de Grão (Dados Reais)',
-        color_discrete_sequence=px.colors.qualitative.Set3
-    )
-    
-    fig.update_traces(
-        textposition='inside',
-        textinfo='percent+label',
-        hovertemplate='<b>%{label}</b><br>Receita: R$ %{value:.1f}M<br>Percentual: %{percent}<extra></extra>'
-    )
-    
-    fig.update_layout(
-        height=350,
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-        font=dict(color='black', family='Inter')
-    )
-    
-    return fig
-
-
-def criar_grafico_performance_real(dados_performance, tema, lang='pt'):
-    """Gráfico de performance financeira com dados reais"""
-    
-    df = pd.DataFrame(dados_performance)
-    
-    fig = go.Figure()
-    
-    # Adicionar linhas para cada métrica
-    fig.add_trace(go.Scatter(
-        x=df['Mes'],
-        y=df['Receita Líquida'] / 1_000_000,
-        mode='lines+markers',
-        name='Receita Líquida',
-        line=dict(color='#198754', width=3),
-        marker=dict(size=8)
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=df['Mes'],
-        y=df['EBITDA'] / 1_000_000,
-        mode='lines+markers',
-        name='EBITDA',
-        line=dict(color='#FD7E14', width=3),
-        marker=dict(size=8)
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=df['Mes'],
-        y=df['Lucro Líquido'] / 1_000_000,
-        mode='lines+markers',
-        name='Lucro Líquido',
-        line=dict(color='#0D6EFD', width=3),
-        marker=dict(size=8)
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=df['Mes'],
-        y=df['Fluxo Caixa Livre'] / 1_000_000,
-        mode='lines+markers',
-        name='Fluxo Caixa Livre',
-        line=dict(color='#6F42C1', width=3),
-        marker=dict(size=8)
-    ))
-    
-    fig.update_layout(
-        title='📈 Evolução das Métricas Financeiras (Dados Reais)',
-        xaxis_title='Mês',
-        yaxis_title='Valor (R$ Milhões)',
-        height=400,
-        plot_bgcolor='white' if tema == 'light' else 'rgba(0,0,0,0)',
-        paper_bgcolor='white' if tema == 'light' else 'rgba(0,0,0,0)',
-        font=dict(color='black' if tema == 'light' else 'white', family='Inter'),
-        showlegend=True,
-        hovermode='x unified'
-    )
-    
-    return fig
 
