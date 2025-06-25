@@ -51,8 +51,9 @@ def pagina_contratos_reais(tema='escuro'):
         tipo_selecionado = st.selectbox("🔄 Operação", tipos_operacao)
     
     with col4:
-        # Filtro por ano - baseado nos dados reais, garantindo inteiros
-        anos_contratos = sorted([int(ano) for ano in df_contratos['closeDate'].dt.year.unique()], reverse=True)
+        # Filtro por ano - baseado nos dados reais, garantindo inteiros e filtrando nulos
+        anos_validos = df_contratos['closeDate'].dt.year.dropna().unique()
+        anos_contratos = sorted([int(ano) for ano in anos_validos if pd.notna(ano)], reverse=True)
         anos_opcoes = ['Todos'] + [str(ano) for ano in anos_contratos]
         ano_selecionado = st.selectbox("📅 Ano", anos_opcoes)
     
