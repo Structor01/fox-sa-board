@@ -115,8 +115,12 @@ def aplicar_filtros_contratos(df, grao, status, tipo_operacao, ano):
     
     # Filtro por ano
     if ano != 'Todos':
-        ano_int = int(ano)
-        df_filtrado = df_filtrado[df_filtrado['closeDate'].dt.year == ano_int]
+        try:
+            ano_int = int(ano)
+            df_filtrado = df_filtrado[df_filtrado['closeDate'].dt.year == ano_int]
+        except (ValueError, TypeError):
+            # Se não conseguir converter para int, ignora o filtro
+            pass
     
     return df_filtrado
 
