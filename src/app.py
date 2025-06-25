@@ -39,25 +39,25 @@ TRANSLATIONS = {
         'welcome_title': 'Painel de Resultados em Tempo Real',
         'welcome_subtitle': 'Dashboard executivo para acompanhamento estratégico do agronegócio',
         'dashboard_config': '⚙️ Configurações do Dashboard',
-        'period_analysis': '📅 Período de Análise',
-        'initial_date': 'Data Inicial:',
-        'final_date': 'Data Final:',
-        'business_units': '🏢 Unidades de Negócio',
-        'fox_graos_desc': 'Fox Grãos (Trading)',
-        'fox_log_desc': 'Fox Log (Transporte & Insumos)',
-        'clube_fx_desc': 'Clube FX (Consultoria)',
-        'data_status': '🔄 Status dos Dados',
-        'last_update': '📊 Última atualização:',
-        'update_data': '🔄 Atualizar Dados',
-        'access_dashboard': '🚀 Acessar Dashboard Completo',
+         'period_analysis': 'Período de Análise',
+        'data_source': 'Fonte de Dados',
+        'real_data': 'Dados Reais',
+        'business_units': 'Unidades de Negócio',
+        'financial_metrics': 'Métricas Financeiras',
+        'operational_metrics': 'Métricas Operacionais',
+        'market_analysis': 'Análise de Mercado',
+        'data_status': 'Status dos Dados',
+        'last_update': 'Última atualização:',
+        'update_data': 'Atualizar Dados',
+        'access_dashboard': 'Acessar Dashboard Completo',
         
         # Menu principal
-        'main_title': '🌾 FOX SA - Painel de Resultados em Tempo Real',
-        'select_section': '📊 Selecionar Seção:',
-        'period': '📅 Período:',
-        'visualization': '👁️ Visualização:',
-        'language': '🌐 Idioma:',
-        'home': '🏠 Início',
+        'main_title': 'FOX SA - Painel de Resultados em Tempo Real',
+        'select_section': 'Selecionar Seção:',
+        'period': 'Período:',
+        'visualization': 'Visualização:',
+        'language': 'Idioma:',
+        'home': 'Início',
         
         # Seções do menu
         'consolidated_view': 'Visão Consolidada',
@@ -91,9 +91,9 @@ TRANSLATIONS = {
         'vs_previous': 'vs período anterior',
         
         # Fox Grãos
-        'fox_graos_title': '🌾 Fox Grãos (Trading)',
-        'triangular_trade': '📈 Operação de Trade Triangular',
-        'logistics_section': '🚛 Logística',
+        'fox_graos_title': 'Fox Grãos (Trading)',
+        'triangular_trade': 'Operação de Trade Triangular',
+        'logistics_section': 'Logística',
         'negotiated_volume': 'Volume Negociado',
         'trade_revenue': 'Receita Trade',
         'trade_margin': 'Margem de Trade',
@@ -103,14 +103,14 @@ TRANSLATIONS = {
         'vs_average': 'vs média',
         
         # Fox Log
-        'fox_log_title': '🚛 Fox Log - Logística & Insumos',
+        'fox_log_title': 'Fox Log - Logística & Insumos',
         'transport_revenue': 'Receita Transporte',
         'storage_revenue': 'Receita Armazenagem',
         'transported_volume': 'Volume Transportado',
         'punctuality_sla': 'SLA Pontualidade',
         
         # Clube FX
-        'clube_fx_title': '💼 Clube FX - Consultoria',
+        'clube_fx_title': 'Clube FX - Consultoria',
         'clients_served': 'Clientes Atendidos',
         'consulting_revenue': 'Receita Consultoria',
         'nps_score': 'NPS Score',
@@ -121,13 +121,13 @@ TRANSLATIONS = {
         'completed': 'concluído',
         
         # Due Diligence
-        'due_diligence_title': '📋 Documentos para Due Diligence e Captação',
-        'financial_statements': '📊 Demonstrativos Financeiros',
+        'due_diligence_title': 'Documentos para Due Diligence e Captação',
+        'financial_statements': 'Demonstrativos Financeiros',
         'dre_detailed': 'DRE Detalhado por Unidade',
         'balance_sheet': 'Balanço Patrimonial',
-        'corporate_structure': '🏢 Estrutura Corporativa',
+        'corporate_structure': 'Estrutura Corporativa',
         'group_organogram': 'Organograma do Grupo',
-        'institutional_presentation': '📈 Apresentação Institucional',
+        'institutional_presentation': 'Apresentação Institucional',
         'institutional_deck': 'Deck Institucional',
         'download_pdf': 'Baixar PDF',
         'download_excel': 'Baixar Excel',
@@ -184,13 +184,13 @@ TRANSLATIONS = {
         'fox_graos_desc': 'Fox Grãos (Trade & Logistics)',
         'fox_log_desc': 'Fox Log (Transport & Inputs)',
         'clube_fx_desc': 'Clube FX (Consulting)',
-        'data_status': '🔄 Data Status',
-        'last_update': '📊 Last update:',
-        'update_data': '🔄 Update Data',
-        'access_dashboard': '🚀 Access Complete Dashboard',
+          'data_status': 'Data Status',
+        'last_update': 'Last update:',
+        'update_data': 'Update Data',
+        'access_dashboard': 'Access Complete Dashboard',
         
         # Main menu
-        'main_title': '🌾 FOX SA - Real-Time Results Dashboard',
+        'main_title': 'FOX SA - Real-Time Results Dashboard',',
         'select_section': '📊 Select Section:',
         'period': '📅 Period:',
         'visualization': '👁️ Visualization:',
@@ -383,7 +383,8 @@ def tela_boas_vindas(lang='pt'):
     with col3:
         st.markdown(f"**{get_text('data_status', lang)}**")
         ultima_atualizacao = datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
-        st.info(f"{get_text('last_update', lang)} {ultima_atualizacao}")
+        # Informação de última atualização (removida)
+        pass
         
         if st.button(get_text('update_data', lang), key="refresh_welcome"):
             st.rerun()
@@ -431,10 +432,8 @@ def secao_due_diligence(lang='pt'):
         col_btn1, col_btn2 = st.columns(2)
         with col_btn1:
             if st.button(f"📄 {get_text('download_pdf', lang)}", key="dre_pdf"):
-                st.success("PDF gerado com sucesso!")
         with col_btn2:
             if st.button(f"📊 {get_text('download_excel', lang)}", key="dre_excel"):
-                st.success("Excel gerado com sucesso!")
     
     with col2:
         # Balanço Patrimonial
@@ -447,10 +446,8 @@ def secao_due_diligence(lang='pt'):
         col_btn1, col_btn2 = st.columns(2)
         with col_btn1:
             if st.button(f"📄 {get_text('download_pdf', lang)}", key="balanco_pdf"):
-                st.success("PDF gerado com sucesso!")
         with col_btn2:
             if st.button(f"📊 {get_text('download_excel', lang)}", key="balanco_excel"):
-                st.success("Excel gerado com sucesso!")
     
     # Estrutura Corporativa
     st.markdown(f'<h3 style="color: #FFD700; margin: 2rem 0 1rem 0;">{get_text("corporate_structure", lang)}</h3>', unsafe_allow_html=True)
@@ -463,7 +460,6 @@ def secao_due_diligence(lang='pt'):
         criar_organograma(lang)
         
         if st.button(f"👁️ {get_text('view_document', lang)}", key="organograma_view"):
-            st.success("Organograma expandido!")
     
     with col2:
         # Apresentação Institucional
@@ -471,7 +467,6 @@ def secao_due_diligence(lang='pt'):
         criar_deck_institucional(lang)
         
         if st.button(f"📈 {get_text('view_document', lang)}", key="deck_view"):
-            st.success("Deck institucional aberto!")
 
 def criar_dre_detalhado(lang='pt'):
     """Criar DRE detalhado por unidade de negócio"""
@@ -815,14 +810,11 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
             dados_consolidados = load_consolidated_data(year=ano_selecionado)
             
             if not dados_consolidados:
-                st.warning("⚠️ Usando dados simulados - MongoDB indisponível")
                 usar_dados_reais = False
             else:
                 usar_dados_reais = True
-                st.success("✅ Dados reais carregados do MongoDB")
                 
         except Exception as e:
-            st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
             usar_dados_reais = False
     
     # === MÉTRICAS FINANCEIRAS PRINCIPAIS ===
@@ -902,7 +894,6 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
                 fig_receita.update_layout(height=300, showlegend=True)
                 st.plotly_chart(fig_receita, use_container_width=True)
             else:
-                st.info("Sem dados de receita por unidade disponíveis")
         
         with col2:
             st.markdown("#### 💰 Estrutura de Custos e Despesas")
@@ -1035,7 +1026,6 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
         # Gráfico de evolução das margens (se houver dados mensais)
         if dados_consolidados.get('receita_mensal'):
             st.markdown("#### 📈 Evolução das Margens")
-            st.info("💡 Gráfico de evolução mensal das margens será implementado com dados históricos")
     
     # === RESUMO EXECUTIVO ===
     if usar_dados_reais:
@@ -1059,7 +1049,6 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
         """)
     else:
         st.markdown("### 📋 Resumo Executivo")
-        st.info("📊 Resumo executivo será exibido quando os dados reais estiverem disponíveis")
 
 def criar_grafico_receita_ebitda(lang='pt'):
     """Gráfico de linha Receita x EBITDA - tema branco"""
@@ -1319,15 +1308,12 @@ def dashboards_unidades_negocio(lang='pt'):
             dados_unidades = load_units_data_from_mongo(year=2025)
             
             if dados_unidades:
-                st.success("✅ Dados reais carregados por unidade de negócio")
                 usar_dados_reais = True
             else:
-                st.warning("⚠️ Usando dados simulados - MongoDB indisponível")
                 dados_unidades = {}
                 usar_dados_reais = False
                 
         except Exception as e:
-            st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
             dados_unidades = {}
             usar_dados_reais = False
     
@@ -1510,12 +1496,9 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
             usar_dados_reais = bool(clube_fx_data)
             
             if usar_dados_reais:
-                st.success("✅ Dados reais carregados do MongoDB")
             else:
-                st.warning("⚠️ Usando dados simulados - MongoDB indisponível")
                 
         except Exception as e:
-            st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
             usar_dados_reais = False
     
     # KPIs principais
@@ -1610,7 +1593,6 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
                 
                 st.plotly_chart(fig, use_container_width=True)
             else:
-                st.info("Dados mensais não disponíveis")
         
         with col2:
             st.markdown("#### 💼 Métricas Financeiras")
@@ -1702,7 +1684,6 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
     
     else:
         st.markdown("### 📈 Resultados e Impacto")
-        st.info("📊 Métricas de impacto serão exibidas quando os dados reais estiverem disponíveis")
 
 # ============================================================================
 # FUNÇÕES DE GRÁFICOS TEMA BRANCO
@@ -2004,24 +1985,19 @@ def dre_tempo_real(lang='pt', tema='light'):
             dados_dre_reais = load_dre_data_from_mongo(year=ano_filtro, unidade=unidade_filtro)
             
             if dados_dre_reais:
-                st.success("✅ Dados reais carregados do MongoDB")
                 dados_dre = dados_dre_reais
                 usar_dados_reais = True
             else:
-                st.warning("⚠️ Usando dados simulados - MongoDB indisponível")
                 dados_dre = gerar_dados_dre(unidade_filtro, ano_filtro)
                 usar_dados_reais = False
                 
         except Exception as e:
-            st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
             dados_dre = gerar_dados_dre(unidade_filtro, ano_filtro)
             usar_dados_reais = False
     
     # Exibir indicador de fonte dos dados
     if usar_dados_reais:
-        st.info("📊 Exibindo dados reais da collection orderv2")
     else:
-        st.info("🔄 Exibindo dados simulados")
     
     # Exibir tabela hierárquica
     exibir_tabela_dre_hierarquica(dados_dre, formato_valores, tema)
@@ -2550,14 +2526,11 @@ def performance_financeira(lang='pt', tema='light', ano_selecionado=2024):
             dados_performance_reais = load_performance_data_from_mongo(year=ano_selecionado)
             
             if dados_performance_reais:
-                st.success("✅ Dados de performance carregados do MongoDB")
                 usar_dados_reais = True
             else:
-                st.warning("⚠️ Usando dados simulados - MongoDB indisponível")
                 usar_dados_reais = False
                 
         except Exception as e:
-            st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
             usar_dados_reais = False
     
     # Tabela dinâmica pivot
@@ -2570,11 +2543,9 @@ def performance_financeira(lang='pt', tema='light', ano_selecionado=2024):
             dados_finances = load_finances_data_from_mongo(year=ano_filtro)
             
             if dados_finances:
-                st.success("✅ Dados reais carregados da collection finances")
                 df_pivot = pd.DataFrame(dados_finances)
                 usar_dados_finances = True
             else:
-                st.warning("⚠️ Collection finances indisponível, usando dados de contratos")
                 # Fallback para dados de performance dos contratos
                 if usar_dados_reais:
                     df_pivot = pd.DataFrame(dados_performance_reais)
@@ -2584,7 +2555,6 @@ def performance_financeira(lang='pt', tema='light', ano_selecionado=2024):
                 usar_dados_finances = False
                 
         except Exception as e:
-            st.warning(f"⚠️ Erro ao carregar collection finances: {str(e)}")
             # Fallback para dados simulados
             if usar_dados_reais:
                 df_pivot = pd.DataFrame(dados_performance_reais)
@@ -2595,11 +2565,8 @@ def performance_financeira(lang='pt', tema='light', ano_selecionado=2024):
     
     # Exibir fonte dos dados
     if usar_dados_finances:
-        st.info("📊 Exibindo dados reais da collection finances")
     elif usar_dados_reais:
-        st.info("📊 Exibindo dados calculados dos contratos (orderv2)")
     else:
-        st.info("🔄 Exibindo dados simulados")
     
     # Estilizar tabela
     numeric_columns = [col for col in df_pivot.columns if col not in ['Mes', 'Métrica']]
@@ -2858,7 +2825,7 @@ def main():
     with col1:
         opcoes = [
             get_text('consolidated_view', st.session_state.language),
-            "📋 Contratos",
+            "Contratos",
             "Dashboards por Unidade",
             get_text('dre_realtime', st.session_state.language),
             get_text('due_diligence', st.session_state.language)
@@ -2888,11 +2855,11 @@ def main():
     
     with col3:
         # Seletor de idioma
-        lang_options = {'Português': 'pt', 'English': 'en'}
+        lang_options = {'Português': 'pt', 'English': 'en', '中文': 'zh'}
         lang_display = st.selectbox(
             get_text('language', st.session_state.language),
             list(lang_options.keys()),
-            index=0 if st.session_state.language == 'pt' else 1,
+            index=0 if st.session_state.language == 'pt' else (1 if st.session_state.language == 'en' else 2),
             key="language_select"
         )
         
@@ -2932,7 +2899,7 @@ def main():
     if opcao == get_text('consolidated_view', st.session_state.language):
         visao_consolidada(dados_eda, dados_financeiros, st.session_state.language, ano_selecionado)
     
-    elif opcao == "📋 Contratos":
+    elif opcao == "Contratos":
         from contratos_reais import pagina_contratos_reais
         pagina_contratos_reais(st.session_state.theme)
     
@@ -2947,7 +2914,6 @@ def main():
     
     else:
         st.markdown(f'<h2 style="color: inherit;">🚧 {opcao}</h2>', unsafe_allow_html=True)
-        st.info(get_text('in_development', st.session_state.language))
 
 if __name__ == "__main__":
 

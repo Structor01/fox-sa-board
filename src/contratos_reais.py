@@ -14,7 +14,7 @@ def pagina_contratos_reais(tema='escuro'):
     """Página principal dos contratos reais"""
     
     # Título da página
-    st.markdown("## 📋 Contratos Reais - OrderV2")
+    st.markdown("## Contratos")
     st.markdown("*Dados em tempo real do MongoDB da FOX SA*")
     
     # Carregar dados
