@@ -452,25 +452,63 @@ def exibir_tabela_contratos(df):
     colunas_exibicao = [
         'orderId', 'closeDate', 'grainName', 'amount', 'bagPrice', 
         'valorTotal', 'status', 'tipoOperacao', 'modalidadeFrete',
-        'deliveryDeadline', 'deliveryDeadlineEnd', 'buyerName', 'sellerName'
+        'deliveryDeadline', 'deliveryDeadlineEnd', 'buyerName', 'sellerName',
+        'fromCity', 'fromState', 'fromLat', 'fromLng',
+        'toCity', 'toState', 'toLat', 'toLng'
     ]
     
-    df_tabela = df[colunas_exibicao].copy()
+    # Verificar se as colunas existem no DataFrame
+    colunas_existentes = [col for col in colunas_exibicao if col in df.columns]
+    df_tabela = df[colunas_existentes].copy()
     
     # Formatação
-    df_tabela['closeDate'] = df_tabela['closeDate'].dt.strftime('%d/%m/%Y')
-    df_tabela['deliveryDeadline'] = df_tabela['deliveryDeadline'].dt.strftime('%d/%m/%Y')
-    df_tabela['deliveryDeadlineEnd'] = df_tabela['deliveryDeadlineEnd'].dt.strftime('%d/%m/%Y')
-    df_tabela['valorTotal'] = df_tabela['valorTotal'].apply(lambda x: f"R$ {x:,.2f}")
-    df_tabela['bagPrice'] = df_tabela['bagPrice'].apply(lambda x: f"R$ {x:.2f}")
-    df_tabela['amount'] = df_tabela['amount'].apply(lambda x: f"{x:,.0f}")
+    if 'closeDate' in df_tabela.columns:
+        df_tabela['closeDate'] = df_tabela['closeDate'].dt.strftime('%d/%m/%Y')
+    if 'deliveryDeadline' in df_tabela.columns:
+        df_tabela['deliveryDeadline'] = df_tabela['deliveryDeadline'].dt.strftime('%d/%m/%Y')
+    if 'deliveryDeadlineEnd' in df_tabela.columns:
+        df_tabela['deliveryDeadlineEnd'] = df_tabela['deliveryDeadlineEnd'].dt.strftime('%d/%m/%Y')
+    if 'valorTotal' in df_tabela.columns:
+        df_tabela['valorTotal'] = df_tabela['valorTotal'].apply(lambda x: f"R$ {x:,.2f}")
+    if 'bagPrice' in df_tabela.columns:
+        df_tabela['bagPrice'] = df_tabela['bagPrice'].apply(lambda x: f"R$ {x:.2f}")
+    if 'amount' in df_tabela.columns:
+        df_tabela['amount'] = df_tabela['amount'].apply(lambda x: f"{x:,.0f}")
+    
+    # Formatação das coordenadas
+    for coord_col in ['fromLat', 'fromLng', 'toLat', 'toLng']:
+        if coord_col in df_tabela.columns:
+            df_tabela[coord_col] = df_tabela[coord_col].apply(
+                lambda x: f"{x:.6f}" if pd.notna(x) else "N/A"
+            )
     
     # Renomear colunas
-    df_tabela.columns = [
-        'ID Pedido', 'Data Fechamento', 'Grão', 'Quantidade', 'Preço/Saca',
-        'Valor Total', 'Status', 'Operação', 'Frete',
-        'Entrega Início', 'Entrega Fim', 'Comprador', 'Vendedor'
-    ]
+    rename_dict = {
+        'orderId': 'ID Pedido',
+        'closeDate': 'Data Fechamento',
+        'grainName': 'Produto',
+        'amount': 'Quantidade',
+        'bagPrice': 'Preço/Un.',
+        'valorTotal': 'Valor Total',
+        'status': 'Status',
+        'tipoOperacao': 'Operação',
+        'modalidadeFrete': 'Frete',
+        'deliveryDeadline': 'Entrega Início',
+        'deliveryDeadlineEnd': 'Entrega Fim',
+        'buyerName': 'Comprador',
+        'sellerName': 'Vendedor',
+        'fromCity': 'Cidade Origem',
+        'fromState': 'Estado Origem',
+        'fromLat': 'Lat Origem',
+        'fromLng': 'Lng Origem',
+        'toCity': 'Cidade Destino',
+        'toState': 'Estado Destino',
+        'toLat': 'Lat Destino',
+        'toLng': 'Lng Destino'
+    }
+    
+    # Aplicar renomeação apenas para colunas existentes
+    df_tabela.columns = [rename_dict.get(col, col) for col in df_tabela.columns]
     
     # Exibir tabela
     st.dataframe(

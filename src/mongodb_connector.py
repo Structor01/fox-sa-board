@@ -204,6 +204,28 @@ class FOXMongoConnector:
             # Calcular valor total do contrato
             df['valorTotal'] = df['amount'] * df['bagPrice']
             
+            # Extrair coordenadas lat/lng dos campos de localização
+            def extrair_coordenadas(location_field, lat_col, lng_col):
+                """Extrai lat/lng do campo GeoJSON do MongoDB"""
+                for idx, row in df.iterrows():
+                    location = row.get(location_field)
+                    if location and isinstance(location, dict) and 'coordinates' in location:
+                        coords = location['coordinates']
+                        if len(coords) >= 2:
+                            # MongoDB usa [longitude, latitude]
+                            df.at[idx, lng_col] = coords[0]  # longitude
+                            df.at[idx, lat_col] = coords[1]  # latitude
+                        else:
+                            df.at[idx, lng_col] = None
+                            df.at[idx, lat_col] = None
+                    else:
+                        df.at[idx, lng_col] = None
+                        df.at[idx, lat_col] = None
+            
+            # Extrair coordenadas de origem (from) e destino (to)
+            extrair_coordenadas('fromLocation', 'fromLat', 'fromLng')
+            extrair_coordenadas('toLocation', 'toLat', 'toLng')
+            
             # Calcular dias para entrega
             df['diasParaEntrega'] = (df['deliveryDeadline'] - datetime.now()).dt.days
             
