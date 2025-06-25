@@ -99,6 +99,32 @@ def pagina_contratos_reais(tema='escuro'):
         # Modalidade de frete
         criar_grafico_modalidade_frete(df_filtrado, tema)
     
+    # Mapa de localizações
+    st.markdown("---")
+    st.subheader("📍 Mapa de Localizações")
+    
+    # Filtrar apenas Supply e Originação para o mapa
+    df_mapa = df_filtrado[df_filtrado['tipoOperacao'].isin(['Supply', 'Originação'])]
+    
+    if not df_mapa.empty:
+        fig_mapa = criar_mapa_contratos(df_mapa, tema)
+        if fig_mapa:
+            st.plotly_chart(fig_mapa, use_container_width=True)
+            
+            # Estatísticas do mapa
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                supply_count = len(df_mapa[df_mapa['tipoOperacao'] == 'Supply'])
+                st.metric("🔴 Pontos Supply", supply_count)
+            with col2:
+                originacao_count = len(df_mapa[df_mapa['tipoOperacao'] == 'Originação'])
+                st.metric("🔵 Pontos Originação", originacao_count)
+            with col3:
+                total_volume = df_mapa['amount'].sum()
+                st.metric("📦 Volume Total", f"{total_volume:,.0f} un.")
+    else:
+        st.info("📍 Nenhum contrato de Supply ou Originação encontrado para exibir no mapa.")
+    
     st.divider()
     
     # Tabela detalhada dos contratos
@@ -520,4 +546,115 @@ def exibir_analises_avancadas(df, tema):
     )
     
     st.plotly_chart(fig, use_container_width=True)
+
+
+def criar_mapa_contratos(df, tema='plotly'):
+    """Cria mapa com localizações dos contratos de Supply e Originação"""
+    try:
+        import plotly.express as px
+        import pandas as pd
+        
+        # Preparar dados para o mapa
+        map_data = []
+        
+        for _, row in df.iterrows():
+            tipo_operacao = row.get('tipoOperacao', '')
+            
+            # Para Supply, usar destino (to)
+            if tipo_operacao == 'Supply' and row.get('toLocation') is not None:
+                location = row['toLocation']
+                if isinstance(location, dict) and 'coordinates' in location:
+                    coords = location['coordinates']
+                    if len(coords) >= 2:
+                        map_data.append({
+                            'lat': coords[1],  # MongoDB usa [longitude, latitude]
+                            'lon': coords[0],
+                            'quantidade': row.get('amount', 0),
+                            'valor': row.get('valorTotal', 0),
+                            'tipo': 'Supply',
+                            'cidade': row.get('toCity', 'Não informado'),
+                            'estado': row.get('toState', 'Não informado'),
+                            'produto': row.get('grainName', 'Não informado'),
+                            'preco': row.get('bagPrice', 0)
+                        })
+            
+            # Para Originação, usar origem (from)
+            elif tipo_operacao == 'Originação' and row.get('fromLocation') is not None:
+                location = row['fromLocation']
+                if isinstance(location, dict) and 'coordinates' in location:
+                    coords = location['coordinates']
+                    if len(coords) >= 2:
+                        map_data.append({
+                            'lat': coords[1],  # MongoDB usa [longitude, latitude]
+                            'lon': coords[0],
+                            'quantidade': row.get('amount', 0),
+                            'valor': row.get('valorTotal', 0),
+                            'tipo': 'Originação',
+                            'cidade': row.get('fromCity', 'Não informado'),
+                            'estado': row.get('fromState', 'Não informado'),
+                            'produto': row.get('grainName', 'Não informado'),
+                            'preco': row.get('bagPrice', 0)
+                        })
+        
+        if not map_data:
+            st.info("📍 Nenhum contrato com localização disponível para exibir no mapa.")
+            return None
+        
+        # Converter para DataFrame
+        df_map = pd.DataFrame(map_data)
+        
+        # Agregar por localização para evitar sobreposição
+        df_map_agg = df_map.groupby(['lat', 'lon', 'cidade', 'estado', 'tipo']).agg({
+            'quantidade': 'sum',
+            'valor': 'sum',
+            'produto': lambda x: ', '.join(x.unique()),
+            'preco': 'mean'
+        }).reset_index()
+        
+        # Criar o mapa
+        fig = px.scatter_mapbox(
+            df_map_agg,
+            lat='lat',
+            lon='lon',
+            size='quantidade',
+            color='tipo',
+            hover_name='cidade',
+            hover_data={
+                'estado': True,
+                'quantidade': ':,',
+                'valor': ':,.2f',
+                'produto': True,
+                'preco': ':,.2f',
+                'lat': False,
+                'lon': False
+            },
+            color_discrete_map={
+                'Supply': '#FF6B6B',
+                'Originação': '#4ECDC4'
+            },
+            size_max=50,
+            zoom=4,
+            center={'lat': -15.7801, 'lon': -47.9292},  # Centro do Brasil
+            mapbox_style='open-street-map',
+            title='📍 Mapa de Contratos - Supply e Originação'
+        )
+        
+        # Configurar layout
+        fig.update_layout(
+            height=600,
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            )
+        )
+        
+        return fig
+        
+    except Exception as e:
+        st.error(f"❌ Erro ao criar mapa: {str(e)}")
+        return None
 

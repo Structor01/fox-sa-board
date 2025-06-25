@@ -88,6 +88,22 @@ class FOXMongoConnector:
                     }
                 },
                 {
+                    "$lookup": {
+                        "from": "addresses",
+                        "localField": "to",
+                        "foreignField": "_id",
+                        "as": "toAddress"
+                    }
+                },
+                {
+                    "$lookup": {
+                        "from": "addresses",
+                        "localField": "from",
+                        "foreignField": "_id",
+                        "as": "fromAddress"
+                    }
+                },
+                {
                     "$project": {
                         "orderId": 1,
                         "closeDate": 1,
@@ -107,9 +123,16 @@ class FOXMongoConnector:
                         "isCif": 1,
                         "isFob": 1,
                         "paymentDaysAfterDelivery": 1,
-                        "grainName": {"$arrayElemAt": ["$grainInfo.name", 0]},
                         "buyerName": {"$arrayElemAt": ["$buyerInfo.name", 0]},
                         "sellerName": {"$arrayElemAt": ["$sellerInfo.name", 0]},
+                        "grainName": {"$arrayElemAt": ["$grainInfo.name", 0]},
+                        # Campos de localização
+                        "toLocation": {"$arrayElemAt": ["$toAddress.location", 0]},
+                        "fromLocation": {"$arrayElemAt": ["$fromAddress.location", 0]},
+                        "toCity": {"$arrayElemAt": ["$toAddress.city", 0]},
+                        "fromCity": {"$arrayElemAt": ["$fromAddress.city", 0]},
+                        "toState": {"$arrayElemAt": ["$toAddress.state", 0]},
+                        "fromState": {"$arrayElemAt": ["$fromAddress.state", 0]},
                         "createdAt": 1,
                         "updatedAt": 1
                     }
@@ -162,13 +185,21 @@ class FOXMongoConnector:
                     df[field] = df[field].fillna(False).astype(bool)
             
             # GARANTIR CAMPOS DE TEXTO TAMBÉM
-            text_fields = ['grainName', 'buyerName', 'sellerName']
+            text_fields = ['grainName', 'buyerName', 'sellerName', 'toCity', 'fromCity', 'toState', 'fromState']
             for field in text_fields:
                 if field not in df.columns:
                     df[field] = 'Não informado'
                     logger.info(f"Campo de texto {field} adicionado com valor padrão 'Não informado'")
                 else:
                     df[field] = df[field].fillna('Não informado')
+            
+            # GARANTIR CAMPOS DE LOCALIZAÇÃO (COORDENADAS)
+            location_fields = ['toLocation', 'fromLocation']
+            for field in location_fields:
+                if field not in df.columns:
+                    df[field] = None
+                    logger.info(f"Campo de localização {field} adicionado com valor padrão None")
+                # Não fazer fillna aqui pois coordenadas podem ser legitimamente None
             
             # Calcular valor total do contrato
             df['valorTotal'] = df['amount'] * df['bagPrice']
