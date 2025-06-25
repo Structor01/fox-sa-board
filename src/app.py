@@ -2317,7 +2317,7 @@ def gerar_dados_dre(unidade, ano):
     receita_bruta = [round(cg + sl + c, 1) for cg, sl, c in zip(comercializacao_graos, servicos_logisticos, consultoria)]
     
     # Deduções e Impostos
-    icms_vendas = [round(rb * 0.045, 1) for rb in receita_bruta]  # 4.5% ICMS médio
+    icms_vendas = [round(sl * 0.045, 1) for sl in servicos_logisticos]  # 4.5% ICMS apenas sobre frete
     pis_cofins = [round(rb * 0.0365, 1) for rb in receita_bruta]  # 3.65% PIS/COFINS
     iss_servicos = [round((sl + c) * 0.05, 1) for sl, c in zip(servicos_logisticos, consultoria)]  # 5% ISS sobre serviços
     outras_deducoes = [round(rb * 0.015, 1) for rb in receita_bruta]  # 1.5% outras deduções

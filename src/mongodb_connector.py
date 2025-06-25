@@ -426,7 +426,7 @@ def load_consolidated_data(year=None):
     consultoria = df_service['valorTotal'].sum()
     
     # Calcular deduções e impostos
-    icms = comercializacao_graos * 0.045  # ICMS apenas sobre comercialização
+    icms = servicos_logisticos * 0.045  # ICMS apenas sobre frete (isFreight)
     pis_cofins = receita_bruta * 0.0365  # PIS/COFINS sobre toda receita
     iss = (servicos_logisticos + consultoria) * 0.05  # ISS sobre serviços
     outras_deducoes = receita_bruta * 0.015
@@ -449,11 +449,23 @@ def load_consolidated_data(year=None):
     
     lucro_bruto = receita_liquida - custo_total
     
-    # Calcular despesas operacionais (proporcionais à receita líquida)
-    pessoal_beneficios = receita_liquida * 0.08
-    marketing_vendas = receita_liquida * 0.03
-    despesas_admin = receita_liquida * 0.04
-    despesas_operacionais = pessoal_beneficios + marketing_vendas + despesas_admin
+    # Carregar despesas operacionais reais da collection finances
+    despesas_reais = load_expenses_from_finances(year=2025)
+    
+    if despesas_reais['despesas_operacionais'] > 0:
+        # Usar dados reais da collection finances
+        pessoal_beneficios = despesas_reais['pessoal_beneficios']
+        marketing_vendas = despesas_reais['marketing_vendas']
+        despesas_admin = despesas_reais['despesas_admin']
+        outras_operacionais = despesas_reais.get('outras_operacionais', 0)
+        despesas_operacionais = despesas_reais['despesas_operacionais']
+    else:
+        # Fallback para cálculo proporcional se não houver dados reais
+        pessoal_beneficios = receita_liquida * 0.08
+        marketing_vendas = receita_liquida * 0.03
+        despesas_admin = receita_liquida * 0.04
+        outras_operacionais = 0
+        despesas_operacionais = pessoal_beneficios + marketing_vendas + despesas_admin
     
     ebitda = lucro_bruto - despesas_operacionais
     
@@ -594,7 +606,7 @@ def load_dre_data_from_mongo(year=None, unidade='Consolidado'):
             consultoria = 0
         
         # Deduções e impostos
-        icms = comercializacao_graos * 0.045  # ICMS apenas sobre comercialização
+        icms = servicos_logisticos * 0.045  # ICMS apenas sobre frete (isFreight)
         pis_cofins = receita_bruta * 0.0365  # PIS/COFINS sobre toda receita
         iss = (servicos_logisticos + consultoria) * 0.05  # ISS sobre serviços
         outras_deducoes = receita_bruta * 0.015
@@ -609,11 +621,21 @@ def load_dre_data_from_mongo(year=None, unidade='Consolidado'):
         
         lucro_bruto = receita_liquida - cpv_total
         
-        # Despesas operacionais (proporcionais à receita líquida)
-        pessoal_beneficios = receita_liquida * 0.08
-        marketing_vendas = receita_liquida * 0.03
-        despesas_admin = receita_liquida * 0.04
-        despesas_operacionais = pessoal_beneficios + marketing_vendas + despesas_admin
+        # Carregar despesas operacionais reais da collection finances para o mês
+        despesas_reais = load_expenses_from_finances(year=year, month=i)
+        
+        if despesas_reais['despesas_operacionais'] > 0:
+            # Usar dados reais da collection finances
+            pessoal_beneficios = despesas_reais['pessoal_beneficios']
+            marketing_vendas = despesas_reais['marketing_vendas']
+            despesas_admin = despesas_reais['despesas_admin']
+            despesas_operacionais = despesas_reais['despesas_operacionais']
+        else:
+            # Fallback para cálculo proporcional se não houver dados reais
+            pessoal_beneficios = receita_liquida * 0.08
+            marketing_vendas = receita_liquida * 0.03
+            despesas_admin = receita_liquida * 0.04
+            despesas_operacionais = pessoal_beneficios + marketing_vendas + despesas_admin
         
         ebitda = lucro_bruto - despesas_operacionais
         
@@ -765,14 +787,11 @@ def load_units_data_from_mongo(year=None):
     fox_graos_contratos = len(df_fox_graos)
     
     # Calcular custos e margens para Fox Grãos
-    fox_graos_icms = fox_graos_receita_bruta * 0.045
+    fox_graos_icms = 0  # Fox Grãos é isento de ICMS
     fox_graos_pis_cofins = fox_graos_receita_bruta * 0.0365
     fox_graos_receita_liquida = fox_graos_receita_bruta - fox_graos_icms - fox_graos_pis_cofins
     fox_graos_cpv = fox_graos_receita_bruta * 0.88  # 88% do valor bruto
     fox_graos_lucro_bruto = fox_graos_receita_liquida - fox_graos_cpv
-    fox_graos_despesas_op = fox_graos_receita_liquida * 0.12
-    fox_graos_ebitda = fox_graos_lucro_bruto - fox_graos_despesas_op
-    fox_graos_margem_ebitda = (fox_graos_ebitda / fox_graos_receita_liquida * 100) if fox_graos_receita_liquida > 0 else 0
     
     # Calcular métricas para Fox Log
     fox_log_receita_bruta = df_fox_log['valorTotal'].sum()
@@ -780,14 +799,12 @@ def load_units_data_from_mongo(year=None):
     fox_log_contratos = len(df_fox_log)
     
     # Calcular custos e margens para Fox Log
+    fox_log_icms = fox_log_receita_bruta * 0.045  # Fox Log tem ICMS sobre frete
     fox_log_iss = fox_log_receita_bruta * 0.05
     fox_log_pis_cofins = fox_log_receita_bruta * 0.0365
-    fox_log_receita_liquida = fox_log_receita_bruta - fox_log_iss - fox_log_pis_cofins
+    fox_log_receita_liquida = fox_log_receita_bruta - fox_log_icms - fox_log_iss - fox_log_pis_cofins
     fox_log_custos_op = fox_log_receita_bruta * 0.65  # 65% custos operacionais
     fox_log_lucro_bruto = fox_log_receita_liquida - fox_log_custos_op
-    fox_log_despesas_op = fox_log_receita_liquida * 0.08
-    fox_log_ebitda = fox_log_lucro_bruto - fox_log_despesas_op
-    fox_log_margem_ebitda = (fox_log_ebitda / fox_log_receita_liquida * 100) if fox_log_receita_liquida > 0 else 0
     
     # Calcular métricas para Clube FX
     clube_fx_receita_bruta = df_clube_fx['valorTotal'].sum()
@@ -799,7 +816,35 @@ def load_units_data_from_mongo(year=None):
     clube_fx_receita_liquida = clube_fx_receita_bruta - clube_fx_iss - clube_fx_pis_cofins
     clube_fx_custos_op = clube_fx_receita_bruta * 0.45  # 45% custos operacionais
     clube_fx_lucro_bruto = clube_fx_receita_liquida - clube_fx_custos_op
-    clube_fx_despesas_op = clube_fx_receita_liquida * 0.06
+    
+    # Carregar despesas operacionais reais da collection finances
+    despesas_reais = load_expenses_from_finances(year=year)
+    
+    # Distribuir despesas proporcionalmente por unidade baseado na receita
+    receita_total = fox_graos_receita_bruta + fox_log_receita_bruta + clube_fx_receita_bruta
+    
+    if despesas_reais['despesas_operacionais'] > 0 and receita_total > 0:
+        # Usar dados reais distribuídos proporcionalmente
+        fox_graos_prop = fox_graos_receita_bruta / receita_total if receita_total > 0 else 0
+        fox_log_prop = fox_log_receita_bruta / receita_total if receita_total > 0 else 0
+        clube_fx_prop = clube_fx_receita_bruta / receita_total if receita_total > 0 else 0
+        
+        fox_graos_despesas_op = despesas_reais['despesas_operacionais'] * fox_graos_prop
+        fox_log_despesas_op = despesas_reais['despesas_operacionais'] * fox_log_prop
+        clube_fx_despesas_op = despesas_reais['despesas_operacionais'] * clube_fx_prop
+    else:
+        # Fallback para percentuais fixos
+        fox_graos_despesas_op = fox_graos_receita_liquida * 0.12
+        fox_log_despesas_op = fox_log_receita_liquida * 0.08
+        clube_fx_despesas_op = clube_fx_receita_liquida * 0.06
+    
+    # Calcular EBITDA para cada unidade
+    fox_graos_ebitda = fox_graos_lucro_bruto - fox_graos_despesas_op
+    fox_graos_margem_ebitda = (fox_graos_ebitda / fox_graos_receita_liquida * 100) if fox_graos_receita_liquida > 0 else 0
+    
+    fox_log_ebitda = fox_log_lucro_bruto - fox_log_despesas_op
+    fox_log_margem_ebitda = (fox_log_ebitda / fox_log_receita_liquida * 100) if fox_log_receita_liquida > 0 else 0
+    
     clube_fx_ebitda = clube_fx_lucro_bruto - clube_fx_despesas_op
     clube_fx_margem_ebitda = (clube_fx_ebitda / clube_fx_receita_liquida * 100) if clube_fx_receita_liquida > 0 else 0
     
@@ -1211,4 +1256,85 @@ def load_finances_data_from_mongo(year=None):
     except Exception as e:
         logger.error(f"Erro ao carregar dados da collection finances: {str(e)}")
         return {}
+
+
+@st.cache_data(ttl=300)
+def load_expenses_from_finances(year=None, month=None):
+    """Carrega despesas operacionais reais da collection finances"""
+    try:
+        connector = get_mongo_connector()
+        finances_collection = connector.db['finances']
+        
+        # Filtrar por ano e mês se especificado
+        query = {}
+        if year:
+            query['year'] = year
+        if month:
+            query['month'] = month
+        
+        # Buscar documentos da collection finances
+        cursor = finances_collection.find(query).limit(1000)
+        finances_data = list(cursor)
+        
+        if not finances_data:
+            return {
+                'pessoal_beneficios': 0,
+                'marketing_vendas': 0,
+                'despesas_admin': 0,
+                'despesas_operacionais': 0
+            }
+        
+        # Converter para DataFrame
+        df = pd.DataFrame(finances_data)
+        
+        # Verificar se tem as colunas necessárias
+        if 'categoryType' not in df.columns or 'amount' not in df.columns:
+            logger.warning("Colunas 'categoryType' ou 'amount' ausentes na collection finances")
+            return {
+                'pessoal_beneficios': 0,
+                'marketing_vendas': 0,
+                'despesas_admin': 0,
+                'despesas_operacionais': 0
+            }
+        
+        # Filtrar apenas despesas (valores negativos)
+        df_despesas = df[df['amount'] < 0].copy()
+        df_despesas['amount'] = df_despesas['amount'].abs()
+        
+        # Categorizar despesas por tipo
+        pessoal_beneficios = df_despesas[
+            df_despesas['categoryType'] == 'personnel'
+        ]['amount'].sum()
+        
+        marketing_vendas = df_despesas[
+            df_despesas['categoryType'] == 'marketing'
+        ]['amount'].sum()
+        
+        despesas_admin = df_despesas[
+            df_despesas['categoryType'] == 'administrative'
+        ]['amount'].sum()
+        
+        # Outras despesas operacionais
+        outras_operacionais = df_despesas[
+            df_despesas['categoryType'] == 'operational'
+        ]['amount'].sum()
+        
+        despesas_operacionais = pessoal_beneficios + marketing_vendas + despesas_admin + outras_operacionais
+        
+        return {
+            'pessoal_beneficios': pessoal_beneficios,
+            'marketing_vendas': marketing_vendas,
+            'despesas_admin': despesas_admin,
+            'outras_operacionais': outras_operacionais,
+            'despesas_operacionais': despesas_operacionais
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro ao carregar despesas da collection finances: {str(e)}")
+        return {
+            'pessoal_beneficios': 0,
+            'marketing_vendas': 0,
+            'despesas_admin': 0,
+            'despesas_operacionais': 0
+        }
 
