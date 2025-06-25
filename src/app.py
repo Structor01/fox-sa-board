@@ -3058,8 +3058,8 @@ def main():
     
     st.markdown('<div style="margin-bottom: 1rem;"></div>', unsafe_allow_html=True)
     
-    # Controles superiores
-    col1, col2, col3, col4, col5 = st.columns([2, 1.5, 1.5, 1.5, 1])
+    # Controles superiores - removido tema, ajustado layout para 4 colunas
+    col1, col2, col3, col4 = st.columns([2, 1.5, 1.5, 1])
     
     with col1:
         opcoes = [
@@ -3070,7 +3070,7 @@ def main():
             get_text('due_diligence', st.session_state.language)
         ]
         opcao = st.selectbox(
-            get_text('select_view', st.session_state.language),
+            "Menu",  # Alterado de select_view para Menu
             opcoes,
             index=0,  # Sempre inicia na Visão Consolidada
             key="view_select"
@@ -3086,7 +3086,7 @@ def main():
             anos_disponiveis = [2025, 2024, 2023, 2022, 2021, 2020]
         
         ano_selecionado = st.selectbox(
-            get_text('select_year', st.session_state.language),
+            "Ano",  # Alterado de select_year para Ano
             anos_disponiveis,
             index=0,
             key="year_select"
@@ -3109,24 +3109,8 @@ def main():
             st.rerun()
     
     with col4:
-        # Toggle de tema
-        theme_options = {'☀️ Claro': 'light', '🌙 Escuro': 'dark'}
-        theme_display = st.selectbox(
-            "Tema",
-            list(theme_options.keys()),
-            index=0 if st.session_state.theme == 'light' else 1,
-            key="theme_select"
-        )
-        
-        # Atualizar tema se mudou
-        new_theme = theme_options[theme_display]
-        if new_theme != st.session_state.theme:
-            st.session_state.theme = new_theme
-            st.rerun()
-    
-    with col5:
-        pass  # Auto-generated pass
-        if st.button("🔄", help="Atualizar dados", key="refresh_btn"):
+        # Botão de atualizar dados (movido para a última coluna)
+        if st.button("🔄 Atualizar", help="Atualizar dados", key="refresh_btn"):
             st.rerun()
     
     st.markdown('<hr style="margin: 1.5rem 0; border: 1px solid var(--border-color);">', unsafe_allow_html=True)
