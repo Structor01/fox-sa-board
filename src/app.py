@@ -33,6 +33,166 @@ def carregar_dados_financeiros():
     }
 
 # ============================================================================
+# FILTROS GLOBAIS
+# ============================================================================
+
+def criar_filtros_globais():
+    """Criar filtros globais na sidebar que serão aplicados em todas as seções"""
+    
+    # Carregar dados dos contratos para popular os filtros
+    try:
+        from mongodb_connector import load_contracts_data
+        df_contratos = load_contracts_data(limit=1000)
+        
+        if df_contratos.empty:
+            # Fallback com dados vazios se não conseguir carregar
+            df_contratos = pd.DataFrame({
+                'grainName': [],
+                'status': [],
+                'closeDate': [],
+                'isGrain': [],
+                'isFreight': [],
+                'isService': []
+            })
+    except Exception as e:
+        # Fallback com dados vazios em caso de erro
+        df_contratos = pd.DataFrame({
+            'grainName': [],
+            'status': [],
+            'closeDate': [],
+            'isGrain': [],
+            'isFreight': [],
+            'isService': []
+        })
+    
+    st.sidebar.markdown("### Filtros Globais")
+    st.sidebar.markdown("*Aplicados em todas as seções*")
+    
+    # Filtro por produto
+    if not df_contratos.empty:
+        graos_disponiveis = ['Todos'] + sorted([g for g in df_contratos['grainName'].unique() if pd.notna(g) and g != 'Não informado'])
+    else:
+        graos_disponiveis = ['Todos']
+    
+    grao_selecionado = st.sidebar.selectbox(
+        "Produto",
+        graos_disponiveis,
+        key="global_grain_filter"
+    )
+    
+    # Filtro por status
+    if not df_contratos.empty:
+        status_disponiveis = ['Todos'] + sorted([s for s in df_contratos['status'].unique() if pd.notna(s)])
+    else:
+        status_disponiveis = ['Todos']
+    
+    status_selecionado = st.sidebar.selectbox(
+        "Status",
+        status_disponiveis,
+        key="global_status_filter"
+    )
+    
+    # Filtro por tipo de operação
+    tipos_operacao = ['Todos', 'Supply', 'Originação', 'Frete', 'Clube FX']
+    tipo_selecionado = st.sidebar.selectbox(
+        "Operação",
+        tipos_operacao,
+        key="global_operation_filter"
+    )
+    
+    # Filtro por ano
+    if not df_contratos.empty and 'closeDate' in df_contratos.columns:
+        try:
+            anos_validos = df_contratos['closeDate'].dt.year.dropna().unique()
+            anos_contratos = sorted([int(ano) for ano in anos_validos if pd.notna(ano)], reverse=True)
+            anos_opcoes = ['Todos'] + [str(ano) for ano in anos_contratos]
+        except:
+            anos_opcoes = ['Todos', '2025', '2024', '2023']
+    else:
+        anos_opcoes = ['Todos', '2025', '2024', '2023']
+    
+    ano_selecionado = st.sidebar.selectbox(
+        "Ano",
+        anos_opcoes,
+        key="global_year_filter"
+    )
+    
+    # Filtro por vendedor (novo)
+    if not df_contratos.empty and 'sellerName' in df_contratos.columns:
+        vendedores_disponiveis = ['Todos'] + sorted([v for v in df_contratos['sellerName'].unique() if pd.notna(v) and v != 'Não informado'])
+    else:
+        vendedores_disponiveis = ['Todos']
+    
+    vendedor_selecionado = st.sidebar.selectbox(
+        "Vendedor",
+        vendedores_disponiveis,
+        key="global_seller_filter"
+    )
+    
+    # Botão para limpar filtros
+    if st.sidebar.button("Limpar Filtros", key="clear_filters"):
+        # Reset dos filtros para "Todos"
+        st.session_state.global_grain_filter = 'Todos'
+        st.session_state.global_status_filter = 'Todos'
+        st.session_state.global_operation_filter = 'Todos'
+        st.session_state.global_year_filter = 'Todos'
+        st.session_state.global_seller_filter = 'Todos'
+        st.rerun()
+    
+    # Retornar os filtros selecionados
+    return {
+        'grao': grao_selecionado,
+        'status': status_selecionado,
+        'tipo_operacao': tipo_selecionado,
+        'ano': ano_selecionado,
+        'vendedor': vendedor_selecionado
+    }
+
+def aplicar_filtros_globais(df, filtros):
+    """Aplicar os filtros globais a um DataFrame"""
+    if df.empty:
+        return df
+    
+    df_filtrado = df.copy()
+    
+    # Filtro por produto
+    if filtros['grao'] != 'Todos' and 'grainName' in df_filtrado.columns:
+        df_filtrado = df_filtrado[df_filtrado['grainName'] == filtros['grao']]
+    
+    # Filtro por status
+    if filtros['status'] != 'Todos' and 'status' in df_filtrado.columns:
+        df_filtrado = df_filtrado[df_filtrado['status'] == filtros['status']]
+    
+    # Filtro por tipo de operação
+    if filtros['tipo_operacao'] != 'Todos':
+        if filtros['tipo_operacao'] == 'Supply':
+            if 'isBuying' in df_filtrado.columns:
+                df_filtrado = df_filtrado[df_filtrado['isBuying'] == True]
+        elif filtros['tipo_operacao'] == 'Originação':
+            if 'isBuying' in df_filtrado.columns:
+                df_filtrado = df_filtrado[df_filtrado['isBuying'] == False]
+        elif filtros['tipo_operacao'] == 'Frete':
+            if 'isFreight' in df_filtrado.columns:
+                df_filtrado = df_filtrado[df_filtrado['isFreight'] == True]
+        elif filtros['tipo_operacao'] == 'Clube FX':
+            if 'isService' in df_filtrado.columns:
+                df_filtrado = df_filtrado[df_filtrado['isService'] == True]
+    
+    # Filtro por ano
+    if filtros['ano'] != 'Todos' and 'closeDate' in df_filtrado.columns:
+        try:
+            ano_int = int(filtros['ano'])
+            df_filtrado = df_filtrado[df_filtrado['closeDate'].dt.year == ano_int]
+        except:
+            pass
+    
+    # Filtro por vendedor
+    if filtros['vendedor'] != 'Todos' and 'sellerName' in df_filtrado.columns:
+        df_filtrado = df_filtrado[df_filtrado['sellerName'] == filtros['vendedor']]
+    
+    return df_filtrado
+
+# ============================================================================
 # SISTEMA DE IDIOMAS
 # ============================================================================
 
@@ -415,10 +575,16 @@ def tela_boas_vindas(lang='pt'):
 # SEÇÃO DE DUE DILIGENCE
 # ============================================================================
 
-def secao_due_diligence(lang='pt'):
+def secao_due_diligence(lang='pt', filtros_globais=None):
     """Seção de documentos para due diligence e captação"""
     
     st.markdown(f'<h2 style="color: #FFFFFF; border-bottom: 2px solid #FFD700; padding-bottom: 0.5rem;">{get_text("due_diligence_title", lang)}</h2>', unsafe_allow_html=True)
+    
+    # Mostrar filtros aplicados se houver
+    if filtros_globais:
+        filtros_ativos = [k for k, v in filtros_globais.items() if v != 'Todos']
+        if filtros_ativos:
+            st.info(f"Filtros aplicados: {', '.join([f'{k}: {v}' for k, v in filtros_globais.items() if v != 'Todos'])}")
     
     # Demonstrativos Financeiros
     st.markdown(f'<h3 style="color: #FFD700; margin: 2rem 0 1rem 0;">{get_text("financial_statements", lang)}</h3>', unsafe_allow_html=True)
@@ -812,16 +978,26 @@ def criar_grafico_performance_real(dados_performance, tema, lang='pt'):
 # VISÃO CONSOLIDADA (ATUALIZADA COM IDIOMAS)
 # ============================================================================
 
-def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2024):
+def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2024, filtros_globais=None):
     """Dashboard geral consolidado com dados reais do MongoDB"""
     
     st.markdown(f'<h2 style="color: #FFFFFF; border-bottom: 2px solid #C0C0C0; padding-bottom: 0.5rem;">📊 {get_text("consolidated_view", lang)}</h2>', unsafe_allow_html=True)
+    
+    # Mostrar filtros aplicados se houver
+    if filtros_globais:
+        filtros_ativos = [k for k, v in filtros_globais.items() if v != 'Todos']
+        if filtros_ativos:
+            st.info(f"Filtros aplicados: {', '.join([f'{k}: {v}' for k, v in filtros_globais.items() if v != 'Todos'])}")
     
     # Carregar dados reais do MongoDB
     with st.spinner("Carregando dados consolidados..."):
         try:
             from mongodb_connector import load_consolidated_data
             dados_consolidados = load_consolidated_data(year=ano_selecionado)
+            
+            # Aplicar filtros globais aos dados se fornecidos
+            if filtros_globais and 'contratos' in dados_consolidados:
+                dados_consolidados['contratos'] = aplicar_filtros_globais(dados_consolidados['contratos'], filtros_globais)
             
             if not dados_consolidados:
                 usar_dados_reais = False
@@ -1313,10 +1489,16 @@ def aplicar_css_tema(tema='light'):
 # DASHBOARDS POR UNIDADE DE NEGÓCIO
 # ============================================================================
 
-def dashboards_unidades_negocio(lang='pt'):
+def dashboards_unidades_negocio(lang='pt', filtros_globais=None):
     """Dashboards detalhados por unidade usando tabs com dados reais"""
     
     st.markdown(f'<h2 style="color: #000000; border-bottom: 2px solid #DEE2E6; padding-bottom: 0.5rem;">🏢 {get_text("business_units_detailed", lang)}</h2>', unsafe_allow_html=True)
+    
+    # Mostrar filtros aplicados se houver
+    if filtros_globais:
+        filtros_ativos = [k for k, v in filtros_globais.items() if v != 'Todos']
+        if filtros_ativos:
+            st.info(f"Filtros aplicados: {', '.join([f'{k}: {v}' for k, v in filtros_globais.items() if v != 'Todos'])}")
     
     # Carregar dados reais por unidade
     with st.spinner("Carregando dados das unidades..."):
@@ -1962,10 +2144,16 @@ def main():
 # DRE EM TEMPO REAL
 # ============================================================================
 
-def dre_tempo_real(lang='pt', tema='light'):
+def dre_tempo_real(lang='pt', tema='light', filtros_globais=None):
     """DRE em Tempo Real com tabela hierárquica e dados reais do MongoDB"""
     
     st.markdown(f'<h2 style="color: inherit;">📊 {get_text("dre_realtime", lang)}</h2>', unsafe_allow_html=True)
+    
+    # Mostrar filtros aplicados se houver
+    if filtros_globais:
+        filtros_ativos = [k for k, v in filtros_globais.items() if v != 'Todos']
+        if filtros_ativos:
+            st.info(f"Filtros aplicados: {', '.join([f'{k}: {v}' for k, v in filtros_globais.items() if v != 'Todos'])}")
     
     # Filtros
     col1, col2, col3 = st.columns(3)
@@ -2822,7 +3010,7 @@ def main():
         page_title="FOX SA Investment Board",
         page_icon="🌾",
         layout="wide",
-        initial_sidebar_state="collapsed"
+        initial_sidebar_state="expanded"  # Expandir sidebar por padrão para mostrar filtros
     )
     
     # Inicializar session state
@@ -2833,6 +3021,9 @@ def main():
     
     # Aplicar CSS
     aplicar_css_tema(st.session_state.theme)
+    
+    # Criar filtros globais na sidebar
+    filtros_globais = criar_filtros_globais()
     
     # Header principal com logo no canto superior direito
     col1, col2 = st.columns([4, 1])
@@ -2929,20 +3120,20 @@ def main():
     
     # Roteamento de páginas
     if opcao == get_text('consolidated_view', st.session_state.language):
-        visao_consolidada(dados_eda, dados_financeiros, st.session_state.language, ano_selecionado)
+        visao_consolidada(dados_eda, dados_financeiros, st.session_state.language, ano_selecionado, filtros_globais)
     
     elif opcao == "Contratos":
         from contratos_reais import pagina_contratos_reais
-        pagina_contratos_reais(st.session_state.theme)
+        pagina_contratos_reais(st.session_state.theme, filtros_globais)
     
     elif opcao == "Dashboards por Unidade":
-        dashboards_unidades_negocio(st.session_state.language)
+        dashboards_unidades_negocio(st.session_state.language, filtros_globais)
     
     elif opcao == get_text('dre_realtime', st.session_state.language):
-        dre_tempo_real(st.session_state.language, st.session_state.theme)
+        dre_tempo_real(st.session_state.language, st.session_state.theme, filtros_globais)
     
     elif opcao == get_text('due_diligence', st.session_state.language):
-        secao_due_diligence(st.session_state.language)
+        secao_due_diligence(st.session_state.language, filtros_globais)
     
     else:
         st.markdown(f'<h2 style="color: inherit;">🚧 {opcao}</h2>', unsafe_allow_html=True)

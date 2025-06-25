@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 import numpy as np
 from mongodb_connector import load_contracts_data, load_financial_summary, load_monthly_performance
 
-def pagina_contratos_reais(tema='escuro'):
+def pagina_contratos_reais(tema='escuro', filtros_globais=None):
     """Página principal dos contratos reais"""
     
     # Título da página
@@ -27,55 +27,26 @@ def pagina_contratos_reais(tema='escuro'):
             resumo_financeiro = load_financial_summary()
             
             if df_contratos.empty:
-                st.error("❌ Não foi possível carregar os dados dos contratos")
+                st.error("Não foi possível carregar os dados dos contratos")
                 st.info("Verifique a conexão com o MongoDB")
                 return
                 
         except Exception as e:
-            st.error(f"❌ Erro ao carregar dados: {str(e)}")
+            st.error(f"Erro ao carregar dados: {str(e)}")
             return
     
-    # Filtros baseados nos dados reais carregados
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        # Filtro por produto - usando dados reais
-        graos_disponiveis = ['Todos'] + sorted([g for g in df_contratos['grainName'].unique() if pd.notna(g) and g != 'Não informado'])
-        grao_selecionado = st.selectbox("🌾 Produto", graos_disponiveis)
-    
-    with col2:
-        # Filtro por status - usando dados reais
-        status_disponiveis = ['Todos'] + sorted([s for s in df_contratos['status'].unique() if pd.notna(s)])
-        status_selecionado = st.selectbox("📊 Status", status_disponiveis)
-    
-    with col3:
-        # Filtro por tipo de operação - categorias específicas
-        tipos_operacao = ['Todos', 'Supply', 'Originação', 'Frete', 'Clube FX']
-        tipo_selecionado = st.selectbox("🔄 Operação", tipos_operacao)
-    
-    with col4:
-        # Filtro por ano - baseado nos dados reais, garantindo inteiros e filtrando nulos
-        anos_validos = df_contratos['closeDate'].dt.year.dropna().unique()
-        anos_contratos = sorted([int(ano) for ano in anos_validos if pd.notna(ano)], reverse=True)
-        anos_opcoes = ['Todos'] + [str(ano) for ano in anos_contratos]
-        ano_selecionado = st.selectbox("📅 Ano", anos_opcoes)
-    
-    # Debug temporário: mostrar colunas disponíveis
-    if not df_contratos.empty:
-        st.info(f"🔍 Debug: Colunas disponíveis no DataFrame: {list(df_contratos.columns)}")
+    # Aplicar filtros globais se fornecidos
+    if filtros_globais:
+        # Importar função de aplicar filtros globais
+        from app import aplicar_filtros_globais
+        df_filtrado = aplicar_filtros_globais(df_contratos, filtros_globais)
         
-        # Verificar especificamente os campos booleanos
-        boolean_fields = ['isBuying', 'isGrain', 'isFreight', 'isService']
-        missing_fields = [field for field in boolean_fields if field not in df_contratos.columns]
-        if missing_fields:
-            st.warning(f"⚠️ Campos booleanos ausentes: {missing_fields}")
-        else:
-            st.success("✅ Todos os campos booleanos estão presentes")
-    
-    # Aplicar filtros
-    df_filtrado = aplicar_filtros_contratos(df_contratos, grao_selecionado, 
-                                          status_selecionado, tipo_selecionado, 
-                                          ano_selecionado)
+        # Mostrar informações sobre filtros aplicados
+        filtros_ativos = [k for k, v in filtros_globais.items() if v != 'Todos']
+        if filtros_ativos:
+            st.info(f"Filtros aplicados: {', '.join([f'{k}: {v}' for k, v in filtros_globais.items() if v != 'Todos'])}")
+    else:
+        df_filtrado = df_contratos
     
     # KPIs principais
     exibir_kpis_contratos(df_filtrado, tema)
@@ -89,8 +60,12 @@ def pagina_contratos_reais(tema='escuro'):
         # Gráfico de contratos por mês
         criar_grafico_contratos_mensais(df_filtrado, tema)
     
-           # Gráfico de valor por produto
+    with col2:
+        # Gráfico de valor por produto
         fig_valor_grao = criar_grafico_valor_por_grao(df_filtrado, tema)
+        if fig_valor_grao:
+            st.plotly_chart(fig_valor_grao, use_container_width=True)
+    
     # Segunda linha de gráficos
     col1, col2 = st.columns(2)
     
