@@ -2944,7 +2944,7 @@ def main():
         dre_tempo_real(st.session_state.language, st.session_state.theme)
     
     elif opcao == get_text('financial_performance', st.session_state.language):
-        performance_financeira(st.session_state.language, st.session_state.theme, ano_selecionado)
+        performance_financeira(st.session_state.language)
     
     elif opcao == get_text('due_diligence', st.session_state.language):
         secao_due_diligence(st.session_state.language)
@@ -2956,4 +2956,317 @@ def main():
 if __name__ == "__main__":
 
     main()
+
+
+# ============================================================================
+# PERFORMANCE FINANCEIRA
+# ============================================================================
+
+def performance_financeira(lang='pt'):
+    """Seção de Performance Financeira com DFC, KPIs, endividamento e crédito"""
+    
+    st.markdown(f'<h2 style="color: #000000; border-bottom: 2px solid #DEE2E6; padding-bottom: 0.5rem;">💰 Performance Financeira</h2>', unsafe_allow_html=True)
+    
+    # Carregar dados de performance financeira
+    with st.spinner("Carregando dados de performance financeira..."):
+        try:
+            from mongodb_connector import load_financial_performance_data
+            dados_performance = load_financial_performance_data(year=2025)
+            
+            if dados_performance['total_documentos'] > 0:
+                st.success(f"✅ Dados reais carregados ({dados_performance['total_documentos']} documentos processados)")
+                usar_dados_reais = True
+            else:
+                st.warning("⚠️ Usando dados simulados - Collection finances indisponível")
+                dados_performance = gerar_dados_performance_simulados()
+                usar_dados_reais = False
+                
+        except Exception as e:
+            st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
+            dados_performance = gerar_dados_performance_simulados()
+            usar_dados_reais = False
+    
+    # KPIs Principais
+    st.markdown('<h3 style="color: #198754; margin: 2rem 0 1rem 0;">📊 KPIs Financeiros</h3>', unsafe_allow_html=True)
+    
+    kpis = dados_performance['kpis']
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric(
+            label="💵 Fluxo de Caixa Operacional",
+            value=f"R$ {kpis['fluxo_caixa_operacional']/1_000_000:.1f}M",
+            delta=f"{kpis['margem_fluxo_caixa']:.1f}% da receita"
+        )
+    
+    with col2:
+        st.metric(
+            label="📈 Liquidez Corrente",
+            value=f"{kpis['liquidez_corrente']:.2f}",
+            delta="Ideal > 1.5" if kpis['liquidez_corrente'] > 1.5 else "Atenção < 1.5"
+        )
+    
+    with col3:
+        st.metric(
+            label="⚖️ Endividamento Geral",
+            value=f"{kpis['endividamento_geral']:.1f}%",
+            delta="Saudável < 30%" if kpis['endividamento_geral'] < 30 else "Alto > 30%"
+        )
+    
+    with col4:
+        st.metric(
+            label="🛡️ Cobertura de Juros",
+            value=f"{kpis['cobertura_juros']:.1f}x",
+            delta="Seguro > 2.5x" if kpis['cobertura_juros'] > 2.5 else "Risco < 2.5x"
+        )
+    
+    st.markdown("---")
+    
+    # DFC - Demonstração do Fluxo de Caixa
+    st.markdown('<h3 style="color: #198754; margin: 2rem 0 1rem 0;">💸 Demonstração do Fluxo de Caixa (DFC)</h3>', unsafe_allow_html=True)
+    
+    if dados_performance['dfc_monthly']:
+        fig_dfc = criar_grafico_dfc(dados_performance['dfc_monthly'])
+        st.plotly_chart(fig_dfc, use_container_width=True)
+        
+        # Tabela DFC detalhada
+        st.markdown('<h4 style="color: #6C757D; margin: 1.5rem 0 1rem 0;">📋 DFC Detalhado por Mês</h4>', unsafe_allow_html=True)
+        df_dfc = processar_dados_dfc_tabela(dados_performance['dfc_monthly'])
+        st.dataframe(df_dfc, use_container_width=True)
+    else:
+        st.info("📊 DFC será exibido quando houver dados da collection finances")
+    
+    st.markdown("---")
+    
+    # Análise de Endividamento
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown('<h3 style="color: #DC3545; margin: 2rem 0 1rem 0;">📊 Análise de Endividamento</h3>', unsafe_allow_html=True)
+        
+        if dados_performance['debt_analysis']:
+            # Gráfico de endividamento
+            fig_debt = criar_grafico_endividamento(dados_performance['debt_analysis'])
+            st.plotly_chart(fig_debt, use_container_width=True)
+            
+            # Tabela de dívidas
+            st.markdown('<h4 style="color: #6C757D; margin: 1rem 0;">💳 Composição das Dívidas</h4>', unsafe_allow_html=True)
+            df_debt = pd.DataFrame(dados_performance['debt_analysis'])
+            df_debt['total'] = df_debt['total'].apply(lambda x: f"R$ {abs(x):,.2f}")
+            df_debt.columns = ['Tipo de Dívida', 'Valor', 'Qtd Operações']
+            st.dataframe(df_debt, use_container_width=True)
+        else:
+            st.info("💳 Análise de endividamento será exibida quando houver dados de dívidas")
+    
+    with col2:
+        st.markdown('<h3 style="color: #198754; margin: 2rem 0 1rem 0;">🏦 Fontes de Crédito Disponível</h3>', unsafe_allow_html=True)
+        
+        if dados_performance['credit_sources']:
+            # Gráfico de crédito disponível
+            fig_credit = criar_grafico_credito_disponivel(dados_performance['credit_sources'])
+            st.plotly_chart(fig_credit, use_container_width=True)
+            
+            # Tabela de crédito
+            st.markdown('<h4 style="color: #6C757D; margin: 1rem 0;">💰 Linhas de Crédito</h4>', unsafe_allow_html=True)
+            df_credit = pd.DataFrame(dados_performance['credit_sources'])
+            df_credit['total'] = df_credit['total'].apply(lambda x: f"R$ {x:,.2f}")
+            df_credit.columns = ['Fonte de Crédito', 'Valor Disponível', 'Qtd Operações']
+            st.dataframe(df_credit, use_container_width=True)
+        else:
+            st.info("🏦 Fontes de crédito serão exibidas quando houver dados disponíveis")
+    
+    # Resumo Executivo
+    st.markdown("---")
+    st.markdown('<h3 style="color: #6C757D; margin: 2rem 0 1rem 0;">📋 Resumo Executivo Financeiro</h3>', unsafe_allow_html=True)
+    
+    resumo_financeiro = gerar_resumo_financeiro(kpis, usar_dados_reais)
+    st.markdown(resumo_financeiro, unsafe_allow_html=True)
+
+def gerar_dados_performance_simulados():
+    """Gera dados simulados para performance financeira"""
+    import random
+    
+    # DFC simulado
+    meses = ['01', '02', '03', '04', '05', '06']
+    dfc_monthly = {}
+    
+    for mes in meses:
+        dfc_monthly[mes] = {
+            '1.1 Entradas de Caixa Operacional (+)': random.randint(800000, 1200000),
+            '1.2 Saídas de Caixa Operacional (-)': random.randint(-600000, -400000),
+            '2.1 Investimentos (-)': random.randint(-100000, -50000),
+            '3.1 Financiamentos (+)': random.randint(0, 200000),
+            '3.2 Pagamento de Empréstimos (-)': random.randint(-80000, -40000)
+        }
+    
+    # Dívidas simuladas
+    debt_analysis = [
+        {'_id': 'Financiamento Veículos', 'total': -150000, 'count': 3},
+        {'_id': 'Capital de Giro', 'total': -300000, 'count': 2},
+        {'_id': 'Cartão Corporativo', 'total': -45000, 'count': 12}
+    ]
+    
+    # Crédito simulado
+    credit_sources = [
+        {'_id': 'Linha de Crédito Banco A', 'total': 500000, 'count': 1},
+        {'_id': 'Limite Cartão Corporativo', 'total': 100000, 'count': 1},
+        {'_id': 'Antecipação Recebíveis', 'total': 250000, 'count': 1}
+    ]
+    
+    # KPIs simulados
+    total_receitas = 6000000
+    total_despesas = 4500000
+    fluxo_caixa_operacional = total_receitas - total_despesas
+    total_dividas = 495000
+    total_credito_disponivel = 850000
+    
+    kpis = {
+        'total_receitas': total_receitas,
+        'total_despesas': total_despesas,
+        'fluxo_caixa_operacional': fluxo_caixa_operacional,
+        'total_dividas': total_dividas,
+        'total_credito_disponivel': total_credito_disponivel,
+        'liquidez_corrente': total_receitas / total_despesas,
+        'endividamento_geral': (total_dividas / (total_receitas + total_dividas)) * 100,
+        'cobertura_juros': fluxo_caixa_operacional / (total_dividas * 0.12),
+        'margem_fluxo_caixa': (fluxo_caixa_operacional / total_receitas) * 100
+    }
+    
+    return {
+        'dfc_monthly': dfc_monthly,
+        'debt_analysis': debt_analysis,
+        'credit_sources': credit_sources,
+        'kpis': kpis,
+        'total_documentos': 0
+    }
+
+def criar_grafico_dfc(dfc_monthly):
+    """Cria gráfico do DFC mensal"""
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+    
+    meses = sorted(dfc_monthly.keys())
+    categorias = set()
+    for mes_data in dfc_monthly.values():
+        categorias.update(mes_data.keys())
+    
+    fig = make_subplots(
+        rows=1, cols=1,
+        subplot_titles=["Fluxo de Caixa Mensal"]
+    )
+    
+    for categoria in sorted(categorias):
+        valores = [dfc_monthly.get(mes, {}).get(categoria, 0) for mes in meses]
+        
+        fig.add_trace(go.Bar(
+            name=categoria,
+            x=[f"Mês {mes}" for mes in meses],
+            y=valores,
+            text=[f"R$ {v/1000:.0f}K" for v in valores],
+            textposition='auto'
+        ))
+    
+    fig.update_layout(
+        title="Demonstração do Fluxo de Caixa (DFC)",
+        xaxis_title="Período",
+        yaxis_title="Valor (R$)",
+        barmode='group',
+        height=500
+    )
+    
+    return fig
+
+def processar_dados_dfc_tabela(dfc_monthly):
+    """Processa dados do DFC para tabela"""
+    meses = sorted(dfc_monthly.keys())
+    categorias = set()
+    for mes_data in dfc_monthly.values():
+        categorias.update(mes_data.keys())
+    
+    data = []
+    for categoria in sorted(categorias):
+        row = {'Categoria DFC': categoria}
+        for mes in meses:
+            valor = dfc_monthly.get(mes, {}).get(categoria, 0)
+            row[f"Mês {mes}"] = f"R$ {valor:,.2f}"
+        data.append(row)
+    
+    return pd.DataFrame(data)
+
+def criar_grafico_endividamento(debt_analysis):
+    """Cria gráfico de análise de endividamento"""
+    import plotly.express as px
+    
+    df = pd.DataFrame(debt_analysis)
+    df['valor_abs'] = df['total'].abs()
+    
+    fig = px.pie(
+        df, 
+        values='valor_abs', 
+        names='_id',
+        title="Composição do Endividamento"
+    )
+    
+    fig.update_traces(textposition='inside', textinfo='percent+label')
+    fig.update_layout(height=400)
+    
+    return fig
+
+def criar_grafico_credito_disponivel(credit_sources):
+    """Cria gráfico de fontes de crédito disponível"""
+    import plotly.express as px
+    
+    df = pd.DataFrame(credit_sources)
+    
+    fig = px.bar(
+        df,
+        x='_id',
+        y='total',
+        title="Fontes de Crédito Disponível",
+        text='total'
+    )
+    
+    fig.update_traces(texttemplate='R$ %{text:,.0f}', textposition='outside')
+    fig.update_layout(
+        xaxis_title="Fonte de Crédito",
+        yaxis_title="Valor Disponível (R$)",
+        height=400
+    )
+    
+    return fig
+
+def gerar_resumo_financeiro(kpis, usar_dados_reais):
+    """Gera resumo executivo financeiro"""
+    fonte = "dados reais da collection finances" if usar_dados_reais else "dados simulados"
+    
+    # Análise da situação financeira
+    situacao_liquidez = "saudável" if kpis['liquidez_corrente'] > 1.5 else "atenção"
+    situacao_endividamento = "controlado" if kpis['endividamento_geral'] < 30 else "elevado"
+    situacao_cobertura = "adequada" if kpis['cobertura_juros'] > 2.5 else "insuficiente"
+    
+    resumo = f"""
+    <div style="background-color: #F8F9FA; padding: 1.5rem; border-radius: 0.5rem; border-left: 4px solid #198754;">
+        <h4 style="color: #198754; margin-bottom: 1rem;">💡 Análise Financeira</h4>
+        <p><strong>Fonte dos dados:</strong> {fonte}</p>
+        
+        <h5 style="color: #495057; margin: 1rem 0 0.5rem 0;">🎯 Principais Indicadores:</h5>
+        <ul style="color: #6C757D; margin-bottom: 1rem;">
+            <li><strong>Fluxo de Caixa:</strong> R$ {kpis['fluxo_caixa_operacional']/1_000_000:.1f}M ({kpis['margem_fluxo_caixa']:.1f}% da receita)</li>
+            <li><strong>Liquidez:</strong> {kpis['liquidez_corrente']:.2f} - Situação {situacao_liquidez}</li>
+            <li><strong>Endividamento:</strong> {kpis['endividamento_geral']:.1f}% - Nível {situacao_endividamento}</li>
+            <li><strong>Cobertura de Juros:</strong> {kpis['cobertura_juros']:.1f}x - Capacidade {situacao_cobertura}</li>
+        </ul>
+        
+        <h5 style="color: #495057; margin: 1rem 0 0.5rem 0;">📊 Resumo Executivo:</h5>
+        <p style="color: #6C757D;">
+            A empresa apresenta fluxo de caixa operacional {'positivo' if kpis['fluxo_caixa_operacional'] > 0 else 'negativo'} 
+            de R$ {abs(kpis['fluxo_caixa_operacional'])/1_000_000:.1f}M. 
+            Com liquidez corrente de {kpis['liquidez_corrente']:.2f}, a situação de curto prazo está {situacao_liquidez}.
+            O endividamento de {kpis['endividamento_geral']:.1f}% está {situacao_endividamento} e a cobertura de juros 
+            de {kpis['cobertura_juros']:.1f}x indica capacidade {situacao_cobertura} de pagamento.
+        </p>
+    </div>
+    """
+    
+    return resumo
 

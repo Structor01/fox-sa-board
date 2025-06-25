@@ -1364,3 +1364,184 @@ def load_expenses_from_finances(year=None, month=None):
             'total_documentos': 0
         }
 
+
+@st.cache_data(ttl=300)
+def load_financial_performance_data(year=None):
+    """Carrega dados de performance financeira: DFC, KPIs, endividamento e crédito"""
+    try:
+        connector = get_mongo_connector()
+        finances_collection = connector.db['finances']
+        finances_categories_collection = connector.db['finances_categories']
+        
+        # Filtrar por ano se especificado
+        match_stage = {}
+        if year:
+            year_str = str(year)
+            match_stage['date'] = {'$regex': f'^{year_str}'}
+        
+        # Pipeline para DFC (Demonstração do Fluxo de Caixa)
+        dfc_pipeline = [
+            {'$match': match_stage},
+            {
+                '$lookup': {
+                    'from': 'finances_categories',
+                    'localField': 'category',
+                    'foreignField': '_id',
+                    'as': 'category_info'
+                }
+            },
+            {'$unwind': {'path': '$category_info', 'preserveNullAndEmptyArrays': True}},
+            {
+                '$addFields': {
+                    'month': {'$substr': ['$date', 4, 2]},
+                    'dfc_category': '$category_info.dfc'
+                }
+            },
+            {
+                '$group': {
+                    '_id': {
+                        'month': '$month',
+                        'dfc_category': '$dfc_category'
+                    },
+                    'total': {'$sum': '$value'}
+                }
+            }
+        ]
+        
+        # Executar pipeline DFC
+        dfc_cursor = finances_collection.aggregate(dfc_pipeline)
+        dfc_data = list(dfc_cursor)
+        
+        # Processar dados do DFC
+        dfc_monthly = {}
+        for item in dfc_data:
+            month = item['_id']['month']
+            category = item['_id']['dfc_category'] or 'Outros'
+            value = item['total']
+            
+            if month not in dfc_monthly:
+                dfc_monthly[month] = {}
+            dfc_monthly[month][category] = value
+        
+        # Pipeline para análise de endividamento
+        debt_pipeline = [
+            {'$match': match_stage},
+            {
+                '$lookup': {
+                    'from': 'finances_categories',
+                    'localField': 'category',
+                    'foreignField': '_id',
+                    'as': 'category_info'
+                }
+            },
+            {'$unwind': {'path': '$category_info', 'preserveNullAndEmptyArrays': True}},
+            {
+                '$match': {
+                    '$or': [
+                        {'category_info.category': {'$regex': 'EMPRESTIMO|FINANCIAMENTO|DIVIDA', '$options': 'i'}},
+                        {'category_info.item': {'$regex': 'EMPRESTIMO|FINANCIAMENTO|DIVIDA|CREDITO', '$options': 'i'}}
+                    ]
+                }
+            },
+            {
+                '$group': {
+                    '_id': '$category_info.item',
+                    'total': {'$sum': '$value'},
+                    'count': {'$sum': 1}
+                }
+            }
+        ]
+        
+        # Executar pipeline endividamento
+        debt_cursor = finances_collection.aggregate(debt_pipeline)
+        debt_data = list(debt_cursor)
+        
+        # Pipeline para fontes de crédito
+        credit_pipeline = [
+            {'$match': match_stage},
+            {
+                '$lookup': {
+                    'from': 'finances_categories',
+                    'localField': 'category',
+                    'foreignField': '_id',
+                    'as': 'category_info'
+                }
+            },
+            {'$unwind': {'path': '$category_info', 'preserveNullAndEmptyArrays': True}},
+            {
+                '$match': {
+                    '$and': [
+                        {'value': {'$gt': 0}},  # Entradas de caixa
+                        {
+                            '$or': [
+                                {'category_info.category': {'$regex': 'CREDITO|EMPRESTIMO|FINANCIAMENTO', '$options': 'i'}},
+                                {'category_info.item': {'$regex': 'CREDITO|EMPRESTIMO|FINANCIAMENTO|BANCO', '$options': 'i'}}
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                '$group': {
+                    '_id': '$category_info.item',
+                    'total': {'$sum': '$value'},
+                    'count': {'$sum': 1}
+                }
+            }
+        ]
+        
+        # Executar pipeline crédito
+        credit_cursor = finances_collection.aggregate(credit_pipeline)
+        credit_data = list(credit_cursor)
+        
+        # Calcular KPIs financeiros
+        total_receitas = sum([item['total'] for item in dfc_data if item['total'] > 0])
+        total_despesas = sum([abs(item['total']) for item in dfc_data if item['total'] < 0])
+        fluxo_caixa_operacional = total_receitas - total_despesas
+        
+        total_dividas = sum([abs(item['total']) for item in debt_data if item['total'] < 0])
+        total_credito_disponivel = sum([item['total'] for item in credit_data])
+        
+        # Calcular índices financeiros
+        liquidez_corrente = total_receitas / total_despesas if total_despesas > 0 else 0
+        endividamento_geral = total_dividas / (total_receitas + total_dividas) if (total_receitas + total_dividas) > 0 else 0
+        cobertura_juros = fluxo_caixa_operacional / (total_dividas * 0.12) if total_dividas > 0 else 0  # Assumindo 12% a.a.
+        
+        return {
+            'dfc_monthly': dfc_monthly,
+            'debt_analysis': debt_data,
+            'credit_sources': credit_data,
+            'kpis': {
+                'total_receitas': total_receitas,
+                'total_despesas': total_despesas,
+                'fluxo_caixa_operacional': fluxo_caixa_operacional,
+                'total_dividas': total_dividas,
+                'total_credito_disponivel': total_credito_disponivel,
+                'liquidez_corrente': liquidez_corrente,
+                'endividamento_geral': endividamento_geral * 100,  # Em percentual
+                'cobertura_juros': cobertura_juros,
+                'margem_fluxo_caixa': (fluxo_caixa_operacional / total_receitas * 100) if total_receitas > 0 else 0
+            },
+            'total_documentos': len(dfc_data) + len(debt_data) + len(credit_data)
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro ao carregar dados de performance financeira: {str(e)}")
+        return {
+            'dfc_monthly': {},
+            'debt_analysis': [],
+            'credit_sources': [],
+            'kpis': {
+                'total_receitas': 0,
+                'total_despesas': 0,
+                'fluxo_caixa_operacional': 0,
+                'total_dividas': 0,
+                'total_credito_disponivel': 0,
+                'liquidez_corrente': 0,
+                'endividamento_geral': 0,
+                'cobertura_juros': 0,
+                'margem_fluxo_caixa': 0
+            },
+            'total_documentos': 0
+        }
+
