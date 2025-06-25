@@ -1497,45 +1497,157 @@ def dre_tempo_real(lang='pt', tema='light'):
         st.plotly_chart(fig_margem, use_container_width=True)
 
 def gerar_dados_dre(unidade, ano):
-    """Gerar dados simulados de DRE por mês"""
+    """Gerar dados simulados de DRE por mês com estrutura específica do agronegócio"""
     
     meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
     
     # Multiplicadores por unidade
     if unidade == "Fox Grãos":
-        mult = 1.0
+        mult_comercializacao = 1.0
+        mult_logistica = 0.6
+        mult_consultoria = 0.0
     elif unidade == "Fox Log":
-        mult = 0.7
+        mult_comercializacao = 0.0
+        mult_logistica = 1.0
+        mult_consultoria = 0.0
     elif unidade == "Clube FX":
-        mult = 0.15
+        mult_comercializacao = 0.0
+        mult_logistica = 0.0
+        mult_consultoria = 1.0
     else:  # Consolidado
-        mult = 1.85
+        mult_comercializacao = 1.0
+        mult_logistica = 1.6
+        mult_consultoria = 1.0
     
-    # Dados base (em milhões)
-    receita_bruta = [round((18.5 + i * 0.8) * mult, 1) for i in range(12)]
-    deducoes = [round(rb * 0.08, 1) for rb in receita_bruta]
-    receita_liquida = [round(rb - d, 1) for rb, d in zip(receita_bruta, deducoes)]
-    cpv = [round(rl * 0.65, 1) for rl in receita_liquida]
-    lucro_bruto = [round(rl - c, 1) for rl, c in zip(receita_liquida, cpv)]
-    despesas_vendas = [round(rl * 0.08, 1) for rl in receita_liquida]
-    despesas_admin = [round(rl * 0.05, 1) for rl in receita_liquida]
-    ebitda = [round(lb - dv - da, 1) for lb, dv, da in zip(lucro_bruto, despesas_vendas, despesas_admin)]
-    depreciacao = [round(rl * 0.02, 1) for rl in receita_liquida]
-    ebit = [round(e - d, 1) for e, d in zip(ebitda, depreciacao)]
-    resultado_financeiro = [round(rl * -0.01, 1) for rl in receita_liquida]
-    lucro_liquido = [round(e + rf, 1) for e, rf in zip(ebit, resultado_financeiro)]
+    # Receitas por linha de negócio (em milhões)
+    comercializacao_graos = [round((15.2 + i * 0.7) * mult_comercializacao, 1) for i in range(12)]
+    servicos_logisticos = [round((8.5 + i * 0.4) * mult_logistica, 1) for i in range(12)]
+    consultoria = [round((2.8 + i * 0.1) * mult_consultoria, 1) for i in range(12)]
+    
+    # Receita Bruta
+    receita_bruta = [round(cg + sl + c, 1) for cg, sl, c in zip(comercializacao_graos, servicos_logisticos, consultoria)]
+    
+    # Deduções e Impostos
+    icms_vendas = [round(rb * 0.045, 1) for rb in receita_bruta]  # 4.5% ICMS médio
+    pis_cofins = [round(rb * 0.0365, 1) for rb in receita_bruta]  # 3.65% PIS/COFINS
+    iss_servicos = [round((sl + c) * 0.05, 1) for sl, c in zip(servicos_logisticos, consultoria)]  # 5% ISS sobre serviços
+    outras_deducoes = [round(rb * 0.015, 1) for rb in receita_bruta]  # 1.5% outras deduções
+    
+    total_deducoes = [round(icms + pis + iss + outras, 1) 
+                     for icms, pis, iss, outras in zip(icms_vendas, pis_cofins, iss_servicos, outras_deducoes)]
+    
+    # Receita Líquida
+    receita_liquida = [round(rb - td, 1) for rb, td in zip(receita_bruta, total_deducoes)]
+    
+    # Custo de Produtos Vendidos (CPV) - específico para comercialização de grãos
+    compra_graos = [round(cg * 0.82, 1) for cg in comercializacao_graos]  # 82% do valor de comercialização
+    frete_aquisicao = [round(cg * 0.04, 1) for cg in comercializacao_graos]  # 4% frete
+    armazenagem_inicial = [round(cg * 0.02, 1) for cg in comercializacao_graos]  # 2% armazenagem
+    
+    total_cpv = [round(comp + frete + arm, 1) 
+                for comp, frete, arm in zip(compra_graos, frete_aquisicao, armazenagem_inicial)]
+    
+    # Lucro Bruto
+    lucro_bruto = [round(rl - cpv, 1) for rl, cpv in zip(receita_liquida, total_cpv)]
+    
+    # Despesas Operacionais (SG&A)
+    pessoal_beneficios = [round(rl * 0.08, 1) for rl in receita_liquida]  # 8% pessoal
+    marketing_vendas = [round(rl * 0.03, 1) for rl in receita_liquida]  # 3% marketing
+    despesas_admin = [round(rl * 0.04, 1) for rl in receita_liquida]  # 4% administrativas
+    
+    total_sga = [round(pessoal + mkt + admin, 1) 
+                for pessoal, mkt, admin in zip(pessoal_beneficios, marketing_vendas, despesas_admin)]
+    
+    # EBITDA
+    ebitda = [round(lb - sga, 1) for lb, sga in zip(lucro_bruto, total_sga)]
+    
+    # Depreciação & Amortização
+    depreciacao = [round(rl * 0.015, 1) for rl in receita_liquida]  # 1.5% depreciação
+    
+    # Resultado Operacional
+    resultado_operacional = [round(e - d, 1) for e, d in zip(ebitda, depreciacao)]
+    
+    # Resultado Financeiro
+    receitas_financeiras = [round(rl * 0.008, 1) for rl in receita_liquida]  # 0.8% receitas financeiras
+    despesas_financeiras = [round(rl * 0.012, 1) for rl in receita_liquida]  # 1.2% despesas financeiras
+    resultado_financeiro = [round(rf - df, 1) for rf, df in zip(receitas_financeiras, despesas_financeiras)]
+    
+    # Lucro Antes do IR e CSLL
+    lucro_antes_ir = [round(ro + res_fin, 1) for ro, res_fin in zip(resultado_operacional, resultado_financeiro)]
+    
+    # IR e CSLL
+    ir_csll = [round(max(lai * 0.34, 0), 1) for lai in lucro_antes_ir]  # 34% IR+CSLL
+    
+    # Lucro Líquido
+    lucro_liquido = [round(lai - ir, 1) for lai, ir in zip(lucro_antes_ir, ir_csll)]
     
     return {
         'Conta': [
-            'Receita Bruta', 'Deduções', 'Receita Líquida', 'CPV', 'Lucro Bruto',
-            'Despesas de Vendas', 'Despesas Administrativas', 'EBITDA', 
-            'Depreciação', 'EBIT', 'Resultado Financeiro', 'Lucro Líquido'
+            'RECEITA BRUTA',
+            '  Comercialização de Grãos',
+            '  Serviços Logísticos', 
+            '  Consultoria',
+            '(-) DEDUÇÕES E IMPOSTOS',
+            '  ICMS sobre vendas',
+            '  PIS/COFINS',
+            '  ISS (serviços)',
+            '  Outras deduções',
+            '= RECEITA LÍQUIDA',
+            '(-) CPV',
+            '  Compra de grãos',
+            '  Frete de aquisição',
+            '  Armazenagem inicial',
+            '= LUCRO BRUTO',
+            '(-) DESPESAS OPERACIONAIS',
+            '  Pessoal e benefícios',
+            '  Marketing e vendas',
+            '  Despesas administrativas',
+            '= EBITDA',
+            '(-) Depreciação & Amortização',
+            '= RESULTADO OPERACIONAL',
+            '(+/-) RESULTADO FINANCEIRO',
+            '  Receitas financeiras',
+            '  Despesas financeiras',
+            '= LUCRO ANTES IR/CSLL',
+            '(-) IR e CSLL',
+            '= LUCRO LÍQUIDO'
         ],
-        **{mes: [rb, -d, rl, -c, lb, -dv, -da, e, -dep, ebit_val, rf, ll] 
-           for mes, rb, d, rl, c, lb, dv, da, e, dep, ebit_val, rf, ll in 
-           zip(meses, receita_bruta, deducoes, receita_liquida, cpv, lucro_bruto,
-               despesas_vendas, despesas_admin, ebitda, depreciacao, ebit, 
-               resultado_financeiro, lucro_liquido)}
+        **{mes: [
+            rb,  # Receita Bruta
+            cg,  # Comercialização de Grãos
+            sl,  # Serviços Logísticos
+            c,   # Consultoria
+            -td, # Total Deduções (negativo)
+            -icms, # ICMS (negativo)
+            -pis,  # PIS/COFINS (negativo)
+            -iss,  # ISS (negativo)
+            -outras, # Outras deduções (negativo)
+            rl,  # Receita Líquida
+            -cpv, # CPV (negativo)
+            -comp, # Compra de grãos (negativo)
+            -frete, # Frete aquisição (negativo)
+            -arm,  # Armazenagem (negativo)
+            lb,  # Lucro Bruto
+            -sga, # SG&A (negativo)
+            -pessoal, # Pessoal (negativo)
+            -mkt,  # Marketing (negativo)
+            -admin, # Administrativas (negativo)
+            ebit,  # EBITDA
+            -dep,  # Depreciação (negativo)
+            ro,    # Resultado Operacional
+            res_fin, # Resultado Financeiro
+            rf,    # Receitas financeiras
+            -df,   # Despesas financeiras (negativo)
+            lai,   # Lucro Antes IR
+            -ir,   # IR/CSLL (negativo)
+            ll     # Lucro Líquido
+        ] for mes, rb, cg, sl, c, td, icms, pis, iss, outras, rl, cpv, comp, frete, arm, lb, sga, pessoal, mkt, admin, ebit, dep, ro, res_fin, rf, df, lai, ir, ll in 
+           zip(meses, receita_bruta, comercializacao_graos, servicos_logisticos, consultoria, 
+               total_deducoes, icms_vendas, pis_cofins, iss_servicos, outras_deducoes,
+               receita_liquida, total_cpv, compra_graos, frete_aquisicao, armazenagem_inicial,
+               lucro_bruto, total_sga, pessoal_beneficios, marketing_vendas, despesas_admin,
+               ebitda, depreciacao, resultado_operacional, resultado_financeiro, 
+               receitas_financeiras, despesas_financeiras, lucro_antes_ir, ir_csll, lucro_liquido)}
     }
 
 def formatar_valores_dre(dados, formato):
