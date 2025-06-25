@@ -201,7 +201,10 @@ def exibir_kpis_contratos(df, tema):
             "💵 Preço Médio",
             f"R$ {preco_medio:.2f}/unidade",
             delta=f"{var_preco:+.1f}%" if var_preco != 0 else None
-        )riação percentual"""
+        )
+
+def calcular_variacao(atual, anterior):
+    """Calcula variação percentual"""
     if anterior == 0 or pd.isna(anterior):
         return 0
     return ((atual - anterior) / anterior) * 100
