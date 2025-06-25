@@ -2466,17 +2466,21 @@ def main():
     # Aplicar CSS
     aplicar_css_tema(st.session_state.theme)
     
-    # Header principal com logo centralizada
-    col1, col2, col3 = st.columns([1, 1, 1])
+    # Header principal com logo no canto superior direito
+    col1, col2 = st.columns([4, 1])
+    
+    with col1:
+        # Espaço vazio para empurrar a logo para a direita
+        pass
     
     with col2:
         try:
-            st.image("assets/fox_logo.png", width=150)
+            st.image("assets/fox_logo.png", width=120)
         except:
             # Fallback se a imagem não for encontrada
-            st.markdown('<div style="text-align: center; font-size: 2rem;">🌾</div>', unsafe_allow_html=True)
+            st.markdown('<div style="text-align: right; font-size: 1.5rem;">🌾</div>', unsafe_allow_html=True)
     
-    st.markdown('<div style="margin-bottom: 2rem;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="margin-bottom: 1rem;"></div>', unsafe_allow_html=True)
     
     # Controles superiores
     col1, col2, col3, col4, col5, col6 = st.columns([2, 1.5, 1.5, 1.5, 1.5, 1])

@@ -36,9 +36,9 @@ def pagina_contratos_reais(tema='escuro'):
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        # Filtro por grão - usando dados reais
+        # Filtro por produto - usando dados reais
         graos_disponiveis = ['Todos'] + sorted([g for g in df_contratos['grainName'].unique() if pd.notna(g) and g != 'Não informado'])
-        grao_selecionado = st.selectbox("🌾 Grão", graos_disponiveis)
+        grao_selecionado = st.selectbox("🌾 Produto", graos_disponiveis)
     
     with col2:
         # Filtro por status - usando dados reais
@@ -74,10 +74,8 @@ def pagina_contratos_reais(tema='escuro'):
         # Gráfico de contratos por mês
         criar_grafico_contratos_mensais(df_filtrado, tema)
     
-    with col2:
-        # Gráfico de valor por grão
-        criar_grafico_valor_por_grao(df_filtrado, tema)
-    
+           # Gráfico de valor por produto
+        fig_valor_grao = criar_grafico_valor_por_grao(df_filtrado, tema)
     # Segunda linha de gráficos
     col1, col2 = st.columns(2)
     
@@ -102,7 +100,7 @@ def aplicar_filtros_contratos(df, grao, status, tipo_operacao, ano):
     """Aplica filtros aos dados dos contratos"""
     df_filtrado = df.copy()
     
-    # Filtro por grão
+    # Filtro por produto
     if grao != 'Todos':
         df_filtrado = df_filtrado[df_filtrado['grainName'] == grao]
     
@@ -136,7 +134,11 @@ def exibir_kpis_contratos(df, tema):
     # Calcular métricas
     total_contratos = len(df)
     valor_total = df['valorTotal'].sum()
-    volume_total = df['amount'].sum()
+    
+    # Separar volumes por tipo de operação
+    volume_comprado = df[df['isBuying'] == True]['amount'].sum()
+    volume_vendido = df[df['isBuying'] == False]['amount'].sum()
+    
     preco_medio = df['bagPrice'].mean()
     
     # Comparação com período anterior (últimos 30 dias vs 30 dias anteriores)
@@ -150,42 +152,56 @@ def exibir_kpis_contratos(df, tema):
     # Calcular variações
     var_contratos = calcular_variacao(len(df_atual), len(df_anterior))
     var_valor = calcular_variacao(df_atual['valorTotal'].sum(), df_anterior['valorTotal'].sum())
-    var_volume = calcular_variacao(df_atual['amount'].sum(), df_anterior['amount'].sum())
+    
+    # Variações de volume por tipo
+    var_volume_comprado = calcular_variacao(
+        df_atual[df_atual['isBuying'] == True]['amount'].sum(),
+        df_anterior[df_anterior['isBuying'] == True]['amount'].sum()
+    )
+    var_volume_vendido = calcular_variacao(
+        df_atual[df_atual['isBuying'] == False]['amount'].sum(),
+        df_anterior[df_anterior['isBuying'] == False]['amount'].sum()
+    )
+    
     var_preco = calcular_variacao(df_atual['bagPrice'].mean(), df_anterior['bagPrice'].mean())
     
-    # Exibir KPIs
-    col1, col2, col3, col4 = st.columns(4)
+    # Exibir KPIs em 5 colunas
+    col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
         st.metric(
-            label="📋 Total de Contratos",
-            value=f"{total_contratos:,}",
-            delta=f"{var_contratos:+.1f}%"
+            "📋 Total de Contratos",
+            f"{total_contratos:,}",
+            delta=f"{var_contratos:+.1f}%" if var_contratos != 0 else None
         )
     
     with col2:
         st.metric(
-            label="💰 Valor Total",
-            value=f"R$ {valor_total/1_000_000:.1f}M",
-            delta=f"{var_valor:+.1f}%"
+            "💰 Valor Total",
+            f"R$ {valor_total:,.0f}",
+            delta=f"{var_valor:+.1f}%" if var_valor != 0 else None
         )
     
     with col3:
         st.metric(
-            label="📦 Volume Total",
-            value=f"{volume_total:,.0f} sacas",
-            delta=f"{var_volume:+.1f}%"
+            "📈 Volume Comprado",
+            f"{volume_comprado:,.0f} unidade",
+            delta=f"{var_volume_comprado:+.1f}%" if var_volume_comprado != 0 else None
         )
     
     with col4:
         st.metric(
-            label="💵 Preço Médio",
-            value=f"R$ {preco_medio:.2f}/saca",
-            delta=f"{var_preco:+.1f}%"
+            "📉 Volume Vendido", 
+            f"{volume_vendido:,.0f} unidade",
+            delta=f"{var_volume_vendido:+.1f}%" if var_volume_vendido != 0 else None
         )
-
-def calcular_variacao(atual, anterior):
-    """Calcula variação percentual"""
+    
+    with col5:
+        st.metric(
+            "💵 Preço Médio",
+            f"R$ {preco_medio:.2f}/unidade",
+            delta=f"{var_preco:+.1f}%" if var_preco != 0 else None
+        )riação percentual"""
     if anterior == 0 or pd.isna(anterior):
         return 0
     return ((atual - anterior) / anterior) * 100
