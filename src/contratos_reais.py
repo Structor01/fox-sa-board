@@ -57,6 +57,18 @@ def pagina_contratos_reais(tema='escuro'):
         anos_opcoes = ['Todos'] + [str(ano) for ano in anos_contratos]
         ano_selecionado = st.selectbox("📅 Ano", anos_opcoes)
     
+    # Debug temporário: mostrar colunas disponíveis
+    if not df_contratos.empty:
+        st.info(f"🔍 Debug: Colunas disponíveis no DataFrame: {list(df_contratos.columns)}")
+        
+        # Verificar especificamente os campos booleanos
+        boolean_fields = ['isBuying', 'isGrain', 'isFreight', 'isService']
+        missing_fields = [field for field in boolean_fields if field not in df_contratos.columns]
+        if missing_fields:
+            st.warning(f"⚠️ Campos booleanos ausentes: {missing_fields}")
+        else:
+            st.success("✅ Todos os campos booleanos estão presentes")
+    
     # Aplicar filtros
     df_filtrado = aplicar_filtros_contratos(df_contratos, grao_selecionado, 
                                           status_selecionado, tipo_selecionado, 
@@ -112,22 +124,34 @@ def aplicar_filtros_contratos(df, grao, status, tipo_operacao, ano):
     if tipo_operacao != 'Todos':
         if tipo_operacao == 'Supply':
             # Supply: isBuying: false, isGrain: true
-            df_filtrado = df_filtrado[
-                (df_filtrado['isBuying'] == False) & 
-                (df_filtrado['isGrain'] == True)
-            ]
+            if 'isGrain' in df_filtrado.columns and 'isBuying' in df_filtrado.columns:
+                df_filtrado = df_filtrado[
+                    (df_filtrado['isBuying'] == False) & 
+                    (df_filtrado['isGrain'] == True)
+                ]
+            else:
+                st.warning("⚠️ Campos isGrain/isBuying não encontrados. Filtro Supply não aplicado.")
         elif tipo_operacao == 'Originação':
             # Originação: isBuying: true, isGrain: true
-            df_filtrado = df_filtrado[
-                (df_filtrado['isBuying'] == True) & 
-                (df_filtrado['isGrain'] == True)
-            ]
+            if 'isGrain' in df_filtrado.columns and 'isBuying' in df_filtrado.columns:
+                df_filtrado = df_filtrado[
+                    (df_filtrado['isBuying'] == True) & 
+                    (df_filtrado['isGrain'] == True)
+                ]
+            else:
+                st.warning("⚠️ Campos isGrain/isBuying não encontrados. Filtro Originação não aplicado.")
         elif tipo_operacao == 'Frete':
             # Frete: isFreight: true
-            df_filtrado = df_filtrado[df_filtrado['isFreight'] == True]
+            if 'isFreight' in df_filtrado.columns:
+                df_filtrado = df_filtrado[df_filtrado['isFreight'] == True]
+            else:
+                st.warning("⚠️ Campo isFreight não encontrado. Filtro Frete não aplicado.")
         elif tipo_operacao == 'Clube FX':
             # Clube FX: isService: true
-            df_filtrado = df_filtrado[df_filtrado['isService'] == True]
+            if 'isService' in df_filtrado.columns:
+                df_filtrado = df_filtrado[df_filtrado['isService'] == True]
+            else:
+                st.warning("⚠️ Campo isService não encontrado. Filtro Clube FX não aplicado.")
     
     # Filtro por ano
     if ano and ano != 'Todos':
