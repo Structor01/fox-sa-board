@@ -1260,20 +1260,53 @@ def load_finances_data_from_mongo(year=None):
 
 @st.cache_data(ttl=300)
 def load_expenses_from_finances(year=None, month=None):
-    """Carrega despesas operacionais reais da collection finances"""
+    """Carrega despesas operacionais reais da collection finances com lookup em finances_categories"""
     try:
         connector = get_mongo_connector()
         finances_collection = connector.db['finances']
         
         # Filtrar por ano e mês se especificado
-        query = {}
+        match_stage = {}
         if year:
-            query['year'] = year
+            # Converter ano para formato string usado no campo date
+            year_str = str(year)
+            match_stage['date'] = {'$regex': f'^{year_str}'}
         if month:
-            query['month'] = month
+            # Formato YYYYMMDD - filtrar por mês específico
+            month_str = f"{year}{month:02d}" if year else f"2025{month:02d}"
+            match_stage['date'] = {'$regex': f'^{month_str}'}
         
-        # Buscar documentos da collection finances
-        cursor = finances_collection.find(query).limit(1000)
+        # Pipeline de agregação com lookup para finances_categories
+        pipeline = [
+            {'$match': match_stage},
+            {
+                '$lookup': {
+                    'from': 'finances_categories',
+                    'localField': 'category',
+                    'foreignField': '_id',
+                    'as': 'category_info'
+                }
+            },
+            {'$unwind': {'path': '$category_info', 'preserveNullAndEmptyArrays': True}},
+            {
+                '$match': {
+                    'value': {'$lt': 0}  # Apenas despesas (valores negativos)
+                }
+            },
+            {
+                '$project': {
+                    'value': 1,
+                    'date': 1,
+                    'name': 1,
+                    'category_name': '$category_info.category',
+                    'category_item': '$category_info.item',
+                    'category_type': '$category_info.type'
+                }
+            }
+        ]
+        
+        # Executar agregação
+        cursor = finances_collection.aggregate(pipeline)
         finances_data = list(cursor)
         
         if not finances_data:
@@ -1281,52 +1314,47 @@ def load_expenses_from_finances(year=None, month=None):
                 'pessoal_beneficios': 0,
                 'marketing_vendas': 0,
                 'despesas_admin': 0,
-                'despesas_operacionais': 0
+                'outras_operacionais': 0,
+                'despesas_operacionais': 0,
+                'total_documentos': 0
             }
         
         # Converter para DataFrame
         df = pd.DataFrame(finances_data)
+        df['value'] = df['value'].abs()  # Converter para valores positivos
         
-        # Verificar se tem as colunas necessárias
-        if 'categoryType' not in df.columns or 'amount' not in df.columns:
-            logger.warning("Colunas 'categoryType' ou 'amount' ausentes na collection finances")
-            return {
-                'pessoal_beneficios': 0,
-                'marketing_vendas': 0,
-                'despesas_admin': 0,
-                'despesas_operacionais': 0
-            }
+        # Categorizar despesas baseado na category_name e category_item
+        pessoal_beneficios = df[
+            df['category_name'].str.contains('PESSOAL|SALARIO|BENEFICIO', case=False, na=False) |
+            df['category_item'].str.contains('PESSOAL|SALARIO|BENEFICIO|FUNCIONARIO', case=False, na=False)
+        ]['value'].sum()
         
-        # Filtrar apenas despesas (valores negativos)
-        df_despesas = df[df['amount'] < 0].copy()
-        df_despesas['amount'] = df_despesas['amount'].abs()
+        marketing_vendas = df[
+            df['category_name'].str.contains('MARKETING|VENDAS|COMERCIAL', case=False, na=False) |
+            df['category_item'].str.contains('MARKETING|VENDAS|COMERCIAL|PUBLICIDADE', case=False, na=False)
+        ]['value'].sum()
         
-        # Categorizar despesas por tipo
-        pessoal_beneficios = df_despesas[
-            df_despesas['categoryType'] == 'personnel'
-        ]['amount'].sum()
+        despesas_admin = df[
+            (df['category_name'].str.contains('DESPESAS ADMINISTRATIVAS', case=False, na=False)) |
+            (df['category_name'].str.contains('ADMINISTRATIV|ESCRITORIO|ALUGUEL', case=False, na=False)) |
+            (df['category_item'].str.contains('ADMINISTRATIV|ESCRITORIO|ALUGUEL|TELEFONE|INTERNET', case=False, na=False))
+        ]['value'].sum()
         
-        marketing_vendas = df_despesas[
-            df_despesas['categoryType'] == 'marketing'
-        ]['amount'].sum()
-        
-        despesas_admin = df_despesas[
-            df_despesas['categoryType'] == 'administrative'
-        ]['amount'].sum()
-        
-        # Outras despesas operacionais
-        outras_operacionais = df_despesas[
-            df_despesas['categoryType'] == 'operational'
-        ]['amount'].sum()
+        # Outras despesas operacionais (que não se encaixam nas categorias acima)
+        outras_operacionais = df[
+            ~((df['category_name'].str.contains('PESSOAL|SALARIO|BENEFICIO|MARKETING|VENDAS|COMERCIAL|DESPESAS ADMINISTRATIVAS|ADMINISTRATIV|ESCRITORIO|ALUGUEL', case=False, na=False)) |
+              (df['category_item'].str.contains('PESSOAL|SALARIO|BENEFICIO|FUNCIONARIO|MARKETING|VENDAS|COMERCIAL|PUBLICIDADE|ADMINISTRATIV|ESCRITORIO|ALUGUEL|TELEFONE|INTERNET', case=False, na=False)))
+        ]['value'].sum()
         
         despesas_operacionais = pessoal_beneficios + marketing_vendas + despesas_admin + outras_operacionais
         
         return {
-            'pessoal_beneficios': pessoal_beneficios,
-            'marketing_vendas': marketing_vendas,
-            'despesas_admin': despesas_admin,
-            'outras_operacionais': outras_operacionais,
-            'despesas_operacionais': despesas_operacionais
+            'pessoal_beneficios': float(pessoal_beneficios),
+            'marketing_vendas': float(marketing_vendas),
+            'despesas_admin': float(despesas_admin),
+            'outras_operacionais': float(outras_operacionais),
+            'despesas_operacionais': float(despesas_operacionais),
+            'total_documentos': len(finances_data)
         }
         
     except Exception as e:
@@ -1335,6 +1363,8 @@ def load_expenses_from_finances(year=None, month=None):
             'pessoal_beneficios': 0,
             'marketing_vendas': 0,
             'despesas_admin': 0,
-            'despesas_operacionais': 0
+            'outras_operacionais': 0,
+            'despesas_operacionais': 0,
+            'total_documentos': 0
         }
 
