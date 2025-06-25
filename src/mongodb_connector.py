@@ -558,11 +558,13 @@ def load_dre_data_from_mongo(year=None, unidade='Consolidado'):
         df = df[df.get('isService', False) == True]  # Apenas serviços
     # Se 'Consolidado', usa todos os dados
     
-    # Calcular DRE por mês
-    dre_mensal = {}
+    # Preparar estrutura de dados compatível com exibir_tabela_dre_hierarquica
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
     
-    for mes in range(1, 13):
-        df_mes = df[df['closeDate'].dt.month == mes]
+    # Calcular dados por mês
+    dados_mensais = {}
+    for i, mes in enumerate(meses, 1):
+        df_mes = df[df['closeDate'].dt.month == i]
         
         if df_mes.empty:
             receita_bruta = 0
@@ -631,36 +633,72 @@ def load_dre_data_from_mongo(year=None, unidade='Consolidado'):
         
         lucro_liquido = lucro_antes_ir - ir_csll
         
-        # Montar estrutura do DRE
-        dre_mensal[f'M{mes:02d}'] = {
-            'Receita Bruta': receita_bruta,
-            'Comercialização de Grãos': comercializacao_graos,
-            'Serviços Logísticos': servicos_logisticos,
-            'Consultoria': consultoria,
-            'ICMS sobre vendas': -icms,
-            'PIS/COFINS': -pis_cofins,
-            'ISS (serviços)': -iss,
-            'Outras deduções': -outras_deducoes,
-            'Receita Líquida': receita_liquida,
-            'Compra de grãos': -compra_graos,
-            'Frete de aquisição': -frete_aquisicao,
-            'Armazenagem inicial': -armazenagem,
-            'Lucro Bruto': lucro_bruto,
-            'Pessoal e benefícios': -pessoal_beneficios,
-            'Marketing e vendas': -marketing_vendas,
-            'Despesas administrativas': -despesas_admin,
-            'EBITDA': ebitda,
-            'Depreciação & Amortização': -depreciacao,
-            'Resultado Operacional': resultado_operacional,
-            'Receitas financeiras': receitas_financeiras,
-            'Despesas financeiras': -despesas_financeiras,
-            'Lucro Antes IR/CSLL': lucro_antes_ir,
-            'IR e CSLL': -ir_csll,
-            'Lucro Líquido': lucro_liquido
-        }
+        # Armazenar dados do mês na estrutura compatível
+        dados_mensais[mes] = [
+            receita_bruta,  # RECEITA BRUTA
+            comercializacao_graos,  # Comercialização de Grãos
+            servicos_logisticos,  # Serviços Logísticos
+            consultoria,  # Consultoria
+            -(icms + pis_cofins + iss + outras_deducoes),  # (-) DEDUÇÕES E IMPOSTOS
+            -icms,  # ICMS sobre vendas
+            -pis_cofins,  # PIS/COFINS
+            -iss,  # ISS (serviços)
+            -outras_deducoes,  # Outras deduções
+            receita_liquida,  # = RECEITA LÍQUIDA
+            -cpv_total,  # (-) CPV
+            -compra_graos,  # Compra de grãos
+            -frete_aquisicao,  # Frete de aquisição
+            -armazenagem,  # Armazenagem inicial
+            lucro_bruto,  # = LUCRO BRUTO
+            -despesas_operacionais,  # (-) DESPESAS OPERACIONAIS
+            -pessoal_beneficios,  # Pessoal e benefícios
+            -marketing_vendas,  # Marketing e vendas
+            -despesas_admin,  # Despesas administrativas
+            ebitda,  # = EBITDA
+            -depreciacao,  # (-) Depreciação & Amortização
+            resultado_operacional,  # = RESULTADO OPERACIONAL
+            resultado_financeiro,  # (+/-) RESULTADO FINANCEIRO
+            receitas_financeiras,  # Receitas financeiras
+            -despesas_financeiras,  # Despesas financeiras
+            lucro_antes_ir,  # = LUCRO ANTES IR/CSLL
+            -ir_csll,  # (-) IR e CSLL
+            lucro_liquido  # = LUCRO LÍQUIDO
+        ]
     
-    return dre_mensal
-
+    # Retornar estrutura compatível com exibir_tabela_dre_hierarquica
+    return {
+        'Conta': [
+            'RECEITA BRUTA',
+            '  Comercialização de Grãos',
+            '  Serviços Logísticos', 
+            '  Consultoria',
+            '(-) DEDUÇÕES E IMPOSTOS',
+            '  ICMS sobre vendas',
+            '  PIS/COFINS',
+            '  ISS (serviços)',
+            '  Outras deduções',
+            '= RECEITA LÍQUIDA',
+            '(-) CPV',
+            '  Compra de grãos',
+            '  Frete de aquisição',
+            '  Armazenagem inicial',
+            '= LUCRO BRUTO',
+            '(-) DESPESAS OPERACIONAIS',
+            '  Pessoal e benefícios',
+            '  Marketing e vendas',
+            '  Despesas administrativas',
+            '= EBITDA',
+            '(-) Depreciação & Amortização',
+            '= RESULTADO OPERACIONAL',
+            '(+/-) RESULTADO FINANCEIRO',
+            '  Receitas financeiras',
+            '  Despesas financeiras',
+            '= LUCRO ANTES IR/CSLL',
+            '(-) IR e CSLL',
+            '= LUCRO LÍQUIDO'
+        ],
+        **dados_mensais
+    }
 @st.cache_data(ttl=300)
 def load_performance_data_from_mongo(year=None):
     """Carrega dados de performance financeira baseados nos contratos reais"""
@@ -1103,4 +1141,74 @@ def calculate_financial_metrics(year=None):
         }
     
     return monthly_data
+
+
+
+@st.cache_data(ttl=300)
+def load_finances_data_from_mongo(year=None):
+    """Carrega dados da collection finances para Tabela Dinâmica"""
+    try:
+        connector = get_mongo_connector()
+        
+        # Conectar à collection finances
+        finances_collection = connector.db['finances']
+        
+        # Filtrar por ano se especificado
+        query = {}
+        if year:
+            query['year'] = year
+        
+        # Buscar documentos da collection finances
+        cursor = finances_collection.find(query).limit(1000)
+        finances_data = list(cursor)
+        
+        if not finances_data:
+            return {}
+        
+        # Converter para DataFrame
+        df = pd.DataFrame(finances_data)
+        
+        # Verificar se tem as colunas necessárias
+        required_columns = ['month', 'receita', 'cpv', 'sga', 'ebitda', 'lucro_liquido']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        
+        if missing_columns:
+            logger.warning(f"Colunas ausentes na collection finances: {missing_columns}")
+            return {}
+        
+        # Preparar dados para tabela dinâmica
+        meses_map = {
+            1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Abr', 5: 'Mai', 6: 'Jun',
+            7: 'Jul', 8: 'Ago', 9: 'Set', 10: 'Out', 11: 'Nov', 12: 'Dez'
+        }
+        
+        # Agrupar dados por mês
+        dados_mensais = {}
+        for mes_num in range(1, 13):
+            mes_nome = meses_map[mes_num]
+            df_mes = df[df['month'] == mes_num]
+            
+            if df_mes.empty:
+                # Valores zerados se não houver dados
+                dados_mensais[mes_nome] = [0, 0, 0, 0, 0, 0]
+            else:
+                # Somar valores do mês (pode haver múltiplos registros)
+                receita = df_mes['receita'].sum() / 1_000_000  # Converter para milhões
+                cpv = df_mes['cpv'].sum() / 1_000_000
+                sga = df_mes['sga'].sum() / 1_000_000
+                ebitda = df_mes['ebitda'].sum() / 1_000_000
+                lucro_liquido = df_mes['lucro_liquido'].sum() / 1_000_000
+                fluxo_caixa_livre = df_mes.get('fluxo_caixa_livre', lucro_liquido * 1.1).sum() / 1_000_000 if 'fluxo_caixa_livre' in df_mes.columns else lucro_liquido * 1.1
+                
+                dados_mensais[mes_nome] = [receita, cpv, sga, ebitda, lucro_liquido, fluxo_caixa_livre]
+        
+        # Retornar estrutura compatível com a tabela dinâmica
+        return {
+            'Métrica': ['Receita', 'CPV', 'SG&A', 'EBITDA', 'Lucro Líquido', 'Fluxo Caixa Livre'],
+            **dados_mensais
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro ao carregar dados da collection finances: {str(e)}")
+        return {}
 

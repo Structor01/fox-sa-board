@@ -43,7 +43,7 @@ TRANSLATIONS = {
         'initial_date': 'Data Inicial:',
         'final_date': 'Data Final:',
         'business_units': '🏢 Unidades de Negócio',
-        'fox_graos_desc': 'Fox Grãos (Trade & Logística)',
+        'fox_graos_desc': 'Fox Grãos (Trading)',
         'fox_log_desc': 'Fox Log (Transporte & Insumos)',
         'clube_fx_desc': 'Clube FX (Consultoria)',
         'data_status': '🔄 Status dos Dados',
@@ -61,7 +61,7 @@ TRANSLATIONS = {
         
         # Seções do menu
         'consolidated_view': 'Visão Consolidada',
-        'fox_graos_section': 'Fox Grãos - Trade & Logística',
+        'fox_graos_section': 'Fox Grãos (Trading)',
         'fox_log_section': 'Fox Log - Transporte & Insumos',
         'clube_fx_section': 'Clube FX - Consultoria',
         'financial_performance': 'Performance Financeira',
@@ -91,7 +91,7 @@ TRANSLATIONS = {
         'vs_previous': 'vs período anterior',
         
         # Fox Grãos
-        'fox_graos_title': '🌾 Fox Grãos - Trade Triangular & Logística',
+        'fox_graos_title': '🌾 Fox Grãos (Trading)',
         'triangular_trade': '📈 Operação de Trade Triangular',
         'logistics_section': '🚛 Logística',
         'negotiated_volume': 'Volume Negociado',
@@ -1308,26 +1308,45 @@ def aplicar_css_tema(tema='light'):
 # ============================================================================
 
 def dashboards_unidades_negocio(lang='pt'):
-    """Dashboards detalhados por unidade usando tabs"""
+    """Dashboards detalhados por unidade usando tabs com dados reais"""
     
     st.markdown(f'<h2 style="color: #000000; border-bottom: 2px solid #DEE2E6; padding-bottom: 0.5rem;">🏢 {get_text("business_units_detailed", lang)}</h2>', unsafe_allow_html=True)
+    
+    # Carregar dados reais por unidade
+    with st.spinner("Carregando dados das unidades..."):
+        try:
+            from mongodb_connector import load_units_data_from_mongo
+            dados_unidades = load_units_data_from_mongo(year=2025)
+            
+            if dados_unidades:
+                st.success("✅ Dados reais carregados por unidade de negócio")
+                usar_dados_reais = True
+            else:
+                st.warning("⚠️ Usando dados simulados - MongoDB indisponível")
+                dados_unidades = {}
+                usar_dados_reais = False
+                
+        except Exception as e:
+            st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
+            dados_unidades = {}
+            usar_dados_reais = False
     
     # Criar tabs para navegação rápida
     tab1, tab2, tab3 = st.tabs(["🌾 Fox Grãos", "🚛 Fox Log", "💼 Clube FX"])
     
     with tab1:
-        dashboard_fox_graos_detalhado(lang)
+        dashboard_fox_graos_detalhado(lang, dados_unidades.get('fox_graos', {}), usar_dados_reais)
     
     with tab2:
-        dashboard_fox_log_detalhado(lang)
+        dashboard_fox_log_detalhado(lang, dados_unidades.get('fox_log', {}), usar_dados_reais)
     
     with tab3:
-        dashboard_clube_fx_detalhado(lang)
+        dashboard_clube_fx_detalhado(lang, dados_unidades.get('clube_fx', {}), usar_dados_reais)
 
-def dashboard_fox_graos_detalhado(lang='pt'):
-    """Dashboard detalhado da Fox Grãos"""
+def dashboard_fox_graos_detalhado(lang='pt', dados_fox_graos={}, usar_dados_reais=False):
+    """Dashboard detalhado da Fox Grãos com dados reais de contratos isGrain"""
     
-    st.markdown('<h3 style="color: #000000; margin: 1rem 0;">🌾 Fox Grãos - Trade Triangular & Logística</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="color: #000000; margin: 1rem 0;">🌾 Fox Grãos (Trading)</h3>', unsafe_allow_html=True)
     
     # Operação de Trade Triangular
     st.markdown('<h4 style="color: #198754; margin: 1.5rem 0 1rem 0;">📈 Operação de Trade Triangular</h4>', unsafe_allow_html=True)
@@ -1408,8 +1427,8 @@ def dashboard_fox_graos_detalhado(lang='pt'):
     fig_timeline = criar_timeline_contratos_branco()
     st.plotly_chart(fig_timeline, use_container_width=True)
 
-def dashboard_fox_log_detalhado(lang='pt'):
-    """Dashboard detalhado da Fox Log"""
+def dashboard_fox_log_detalhado(lang='pt', dados_fox_log={}, usar_dados_reais=False):
+    """Dashboard detalhado da Fox Log com dados reais de contratos isFreight"""
     
     st.markdown('<h3 style="color: #000000; margin: 1rem 0;">🚛 Fox Log - Transporte & Insumos</h3>', unsafe_allow_html=True)
     
@@ -1477,7 +1496,7 @@ def dashboard_fox_log_detalhado(lang='pt'):
     st.markdown('<h4 style="color: #FD7E14; margin: 2rem 0 1rem 0;">🏭 Parcerias & Infraestrutura</h4>', unsafe_allow_html=True)
     criar_tabela_parcerias()
 
-def dashboard_clube_fx_detalhado(lang='pt'):
+def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=False):
     """Dashboard detalhado do Clube FX - Estratégia de Comercialização"""
     
     st.markdown('<h3 style="color: #000000; margin: 1rem 0;">💼 Clube FX - Estratégia de Comercialização</h3>', unsafe_allow_html=True)
@@ -2154,7 +2173,7 @@ def exibir_tabela_dre_hierarquica(dados_dre, formato, tema):
             st.session_state.dre_expanded_sections['deducoes'] = not st.session_state.dre_expanded_sections['deducoes']
             st.rerun()
     
-    with col5:
+    with col4:
         icon = "🔽" if st.session_state.dre_expanded_sections['cpv'] else "▶️"
         if st.button(f"{icon} CPV"):
             st.session_state.dre_expanded_sections['cpv'] = not st.session_state.dre_expanded_sections['cpv']
@@ -2544,14 +2563,42 @@ def performance_financeira(lang='pt', tema='light', ano_selecionado=2024):
     # Tabela dinâmica pivot
     st.markdown('<h3 style="color: inherit; margin: 2rem 0 1rem 0;">📊 Tabela Dinâmica - Métricas Financeiras</h3>', unsafe_allow_html=True)
     
-    if usar_dados_reais:
-        # Usar dados reais
-        df_pivot = pd.DataFrame(dados_performance_reais)
-        st.info("📊 Exibindo dados reais da collection orderv2")
+    # Carregar dados reais da collection finances
+    with st.spinner("Carregando dados financeiros..."):
+        try:
+            from mongodb_connector import load_finances_data_from_mongo
+            dados_finances = load_finances_data_from_mongo(year=ano_filtro)
+            
+            if dados_finances:
+                st.success("✅ Dados reais carregados da collection finances")
+                df_pivot = pd.DataFrame(dados_finances)
+                usar_dados_finances = True
+            else:
+                st.warning("⚠️ Collection finances indisponível, usando dados de contratos")
+                # Fallback para dados de performance dos contratos
+                if usar_dados_reais:
+                    df_pivot = pd.DataFrame(dados_performance_reais)
+                else:
+                    dados_pivot = gerar_dados_pivot_financeiro()
+                    df_pivot = pd.DataFrame(dados_pivot)
+                usar_dados_finances = False
+                
+        except Exception as e:
+            st.warning(f"⚠️ Erro ao carregar collection finances: {str(e)}")
+            # Fallback para dados simulados
+            if usar_dados_reais:
+                df_pivot = pd.DataFrame(dados_performance_reais)
+            else:
+                dados_pivot = gerar_dados_pivot_financeiro()
+                df_pivot = pd.DataFrame(dados_pivot)
+            usar_dados_finances = False
+    
+    # Exibir fonte dos dados
+    if usar_dados_finances:
+        st.info("📊 Exibindo dados reais da collection finances")
+    elif usar_dados_reais:
+        st.info("📊 Exibindo dados calculados dos contratos (orderv2)")
     else:
-        # Gerar dados simulados
-        dados_pivot = gerar_dados_pivot_financeiro()
-        df_pivot = pd.DataFrame(dados_pivot)
         st.info("🔄 Exibindo dados simulados")
     
     # Estilizar tabela
@@ -2806,7 +2853,7 @@ def main():
     st.markdown('<div style="margin-bottom: 1rem;"></div>', unsafe_allow_html=True)
     
     # Controles superiores
-    col1, col2, col3, col4, col5, col6 = st.columns([2, 1.5, 1.5, 1.5, 1.5, 1])
+    col1, col2, col3, col4, col5 = st.columns([2, 1.5, 1.5, 1.5, 1])
     
     with col1:
         opcoes = [
@@ -2841,19 +2888,6 @@ def main():
         )
     
     with col3:
-        tipos_visualizacao = [
-            get_text('standard', st.session_state.language),
-            get_text('detailed', st.session_state.language),
-            get_text('executive', st.session_state.language)
-        ]
-        tipo_visualizacao = st.selectbox(
-            get_text('view_type', st.session_state.language),
-            tipos_visualizacao,
-            index=0,
-            key="view_type_select"
-        )
-    
-    with col4:
         # Seletor de idioma
         lang_options = {'Português': 'pt', 'English': 'en'}
         lang_display = st.selectbox(
@@ -2869,7 +2903,7 @@ def main():
             st.session_state.language = new_lang
             st.rerun()
     
-    with col5:
+    with col4:
         # Toggle de tema
         theme_options = {'☀️ Claro': 'light', '🌙 Escuro': 'dark'}
         theme_display = st.selectbox(
@@ -2885,7 +2919,7 @@ def main():
             st.session_state.theme = new_theme
             st.rerun()
     
-    with col6:
+    with col5:
         if st.button("🔄", help="Atualizar dados", key="refresh_btn"):
             st.rerun()
     
