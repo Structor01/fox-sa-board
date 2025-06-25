@@ -65,20 +65,42 @@ def criar_filtros_globais():
             'isService': []
         })
     
-    st.sidebar.markdown("### Filtros Globais")
-    st.sidebar.markdown("*Aplicados em todas as seções*")
+    st.sidebar.markdown("### 🎯 Filtros Principais")
+    st.sidebar.markdown("---")
     
-    # Filtro por produto
+    # FILTROS PRINCIPAIS - DESTAQUE
+    
+    # 1. Filtro por TIPO DE OPERAÇÃO (primeiro e principal)
+    st.sidebar.markdown("**🔄 Tipo de Operação**")
+    tipos_operacao = ['Todos', 'Supply', 'Originação', 'Frete', 'Clube FX']
+    tipo_selecionado = st.sidebar.selectbox(
+        "",  # Sem label pois já está no markdown acima
+        tipos_operacao,
+        key="global_operation_filter",
+        help="Filtrar por tipo de operação comercial"
+    )
+    
+    st.sidebar.markdown("")  # Espaçamento
+    
+    # 2. Filtro por PRODUTO (segundo principal)
+    st.sidebar.markdown("**🌾 Produto**")
     if not df_contratos.empty:
         graos_disponiveis = ['Todos'] + sorted([g for g in df_contratos['grainName'].unique() if pd.notna(g) and g != 'Não informado'])
     else:
         graos_disponiveis = ['Todos']
     
     grao_selecionado = st.sidebar.selectbox(
-        "Produto",
+        "",  # Sem label pois já está no markdown acima
         graos_disponiveis,
-        key="global_grain_filter"
+        key="global_grain_filter",
+        help="Filtrar por tipo de grão/produto"
     )
+    
+    # Separador visual
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📊 Filtros Adicionais")
+    
+    # FILTROS SECUNDÁRIOS
     
     # Filtro por status
     if not df_contratos.empty:
@@ -90,14 +112,6 @@ def criar_filtros_globais():
         "Status",
         status_disponiveis,
         key="global_status_filter"
-    )
-    
-    # Filtro por tipo de operação
-    tipos_operacao = ['Todos', 'Supply', 'Originação', 'Frete', 'Clube FX']
-    tipo_selecionado = st.sidebar.selectbox(
-        "Operação",
-        tipos_operacao,
-        key="global_operation_filter"
     )
     
     # Filtro por ano
@@ -117,7 +131,7 @@ def criar_filtros_globais():
         key="global_year_filter"
     )
     
-    # Filtro por vendedor (novo)
+    # Filtro por vendedor
     if not df_contratos.empty and 'sellerName' in df_contratos.columns:
         vendedores_disponiveis = ['Todos'] + sorted([v for v in df_contratos['sellerName'].unique() if pd.notna(v) and v != 'Não informado'])
     else:
@@ -129,8 +143,11 @@ def criar_filtros_globais():
         key="global_seller_filter"
     )
     
-    # Botão para limpar filtros
-    if st.sidebar.button("Limpar Filtros", key="clear_filters"):
+    # Separador e botão de ação
+    st.sidebar.markdown("---")
+    
+    # Botão para limpar filtros com destaque
+    if st.sidebar.button("🔄 Limpar Todos os Filtros", key="clear_filters", type="primary"):
         # Reset dos filtros para "Todos"
         st.session_state.global_grain_filter = 'Todos'
         st.session_state.global_status_filter = 'Todos'
