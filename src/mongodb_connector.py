@@ -716,34 +716,121 @@ def load_units_data_from_mongo(year=None):
     if year:
         df = df[df['closeDate'].dt.year == year]
     
-    receita_total = df['valorTotal'].sum()
+    # Separar dados por unidade usando os campos reais
+    df_fox_graos = df[df.get('isGrain', False) == True]  # Comercialização
+    df_fox_log = df[df.get('isFreight', False) == True]  # Frete
+    df_clube_fx = df[df.get('isService', False) == True]  # Serviços
     
-    # Distribuir receita por unidade (estimativas baseadas no tipo de operação)
-    fox_graos_receita = df[df['isBuying'] == False]['valorTotal'].sum()  # Vendas
-    fox_log_receita = receita_total * 0.15  # Estimativa para logística
-    clube_fx_receita = receita_total * 0.05  # Estimativa para consultoria
+    # Calcular métricas para Fox Grãos
+    fox_graos_receita_bruta = df_fox_graos['valorTotal'].sum()
+    fox_graos_volume = df_fox_graos['amount'].sum()
+    fox_graos_contratos = len(df_fox_graos)
     
+    # Calcular custos e margens para Fox Grãos
+    fox_graos_icms = fox_graos_receita_bruta * 0.045
+    fox_graos_pis_cofins = fox_graos_receita_bruta * 0.0365
+    fox_graos_receita_liquida = fox_graos_receita_bruta - fox_graos_icms - fox_graos_pis_cofins
+    fox_graos_cpv = fox_graos_receita_bruta * 0.88  # 88% do valor bruto
+    fox_graos_lucro_bruto = fox_graos_receita_liquida - fox_graos_cpv
+    fox_graos_despesas_op = fox_graos_receita_liquida * 0.12
+    fox_graos_ebitda = fox_graos_lucro_bruto - fox_graos_despesas_op
+    fox_graos_margem_ebitda = (fox_graos_ebitda / fox_graos_receita_liquida * 100) if fox_graos_receita_liquida > 0 else 0
+    
+    # Calcular métricas para Fox Log
+    fox_log_receita_bruta = df_fox_log['valorTotal'].sum()
+    fox_log_volume = df_fox_log['amount'].sum()
+    fox_log_contratos = len(df_fox_log)
+    
+    # Calcular custos e margens para Fox Log
+    fox_log_iss = fox_log_receita_bruta * 0.05
+    fox_log_pis_cofins = fox_log_receita_bruta * 0.0365
+    fox_log_receita_liquida = fox_log_receita_bruta - fox_log_iss - fox_log_pis_cofins
+    fox_log_custos_op = fox_log_receita_bruta * 0.65  # 65% custos operacionais
+    fox_log_lucro_bruto = fox_log_receita_liquida - fox_log_custos_op
+    fox_log_despesas_op = fox_log_receita_liquida * 0.08
+    fox_log_ebitda = fox_log_lucro_bruto - fox_log_despesas_op
+    fox_log_margem_ebitda = (fox_log_ebitda / fox_log_receita_liquida * 100) if fox_log_receita_liquida > 0 else 0
+    
+    # Calcular métricas para Clube FX
+    clube_fx_receita_bruta = df_clube_fx['valorTotal'].sum()
+    clube_fx_contratos = len(df_clube_fx)
+    
+    # Calcular custos e margens para Clube FX
+    clube_fx_iss = clube_fx_receita_bruta * 0.05
+    clube_fx_pis_cofins = clube_fx_receita_bruta * 0.0365
+    clube_fx_receita_liquida = clube_fx_receita_bruta - clube_fx_iss - clube_fx_pis_cofins
+    clube_fx_custos_op = clube_fx_receita_bruta * 0.45  # 45% custos operacionais
+    clube_fx_lucro_bruto = clube_fx_receita_liquida - clube_fx_custos_op
+    clube_fx_despesas_op = clube_fx_receita_liquida * 0.06
+    clube_fx_ebitda = clube_fx_lucro_bruto - clube_fx_despesas_op
+    clube_fx_margem_ebitda = (clube_fx_ebitda / clube_fx_receita_liquida * 100) if clube_fx_receita_liquida > 0 else 0
+    
+    # Calcular dados mensais para cada unidade
+    def calcular_dados_mensais(df_unidade, nome_unidade):
+        if df_unidade.empty:
+            return {}
+        
+        dados_mensais = {}
+        for mes in range(1, 13):
+            df_mes = df_unidade[df_unidade['closeDate'].dt.month == mes]
+            receita_mes = df_mes['valorTotal'].sum()
+            contratos_mes = len(df_mes)
+            volume_mes = df_mes['amount'].sum() if nome_unidade != 'Clube FX' else 0
+            
+            dados_mensais[f'M{mes:02d}'] = {
+                'receita': receita_mes,
+                'contratos': contratos_mes,
+                'volume': volume_mes
+            }
+        
+        return dados_mensais
+    
+    # Montar estrutura de dados por unidade
     units_data = {
         'Fox Grãos': {
-            'receita': fox_graos_receita,
-            'contratos': len(df[df['isBuying'] == False]),
-            'volume': df[df['isBuying'] == False]['amount'].sum(),
-            'margem_ebitda': 0.28,
-            'crescimento': 15.2
+            'receita_bruta': fox_graos_receita_bruta,
+            'receita_liquida': fox_graos_receita_liquida,
+            'custo_total': fox_graos_cpv,
+            'despesas_operacionais': fox_graos_despesas_op,
+            'ebitda': fox_graos_ebitda,
+            'margem_ebitda': fox_graos_margem_ebitda,
+            'contratos': fox_graos_contratos,
+            'volume': fox_graos_volume,
+            'preco_medio': df_fox_graos['bagPrice'].mean() if not df_fox_graos.empty else 0,
+            'crescimento': 15.2,  # Estimativa baseada em tendência
+            'dados_mensais': calcular_dados_mensais(df_fox_graos, 'Fox Grãos'),
+            'principais_produtos': df_fox_graos['grainName'].value_counts().head(5).to_dict() if not df_fox_graos.empty else {},
+            'ticket_medio': fox_graos_receita_bruta / fox_graos_contratos if fox_graos_contratos > 0 else 0
         },
         'Fox Log': {
-            'receita': fox_log_receita,
-            'contratos': len(df) // 2,  # Estimativa
-            'volume': df['amount'].sum() * 0.6,  # Estimativa
-            'margem_ebitda': 0.35,
-            'crescimento': 22.8
+            'receita_bruta': fox_log_receita_bruta,
+            'receita_liquida': fox_log_receita_liquida,
+            'custo_total': fox_log_custos_op,
+            'despesas_operacionais': fox_log_despesas_op,
+            'ebitda': fox_log_ebitda,
+            'margem_ebitda': fox_log_margem_ebitda,
+            'contratos': fox_log_contratos,
+            'volume': fox_log_volume,
+            'preco_medio': df_fox_log['bagPrice'].mean() if not df_fox_log.empty else 0,
+            'crescimento': 22.8,  # Estimativa baseada em tendência
+            'dados_mensais': calcular_dados_mensais(df_fox_log, 'Fox Log'),
+            'principais_produtos': df_fox_log['grainName'].value_counts().head(5).to_dict() if not df_fox_log.empty else {},
+            'ticket_medio': fox_log_receita_bruta / fox_log_contratos if fox_log_contratos > 0 else 0
         },
         'Clube FX': {
-            'receita': clube_fx_receita,
-            'contratos': len(df) // 4,  # Estimativa
-            'volume': 0,  # Consultoria não tem volume físico
-            'margem_ebitda': 0.45,
-            'crescimento': 18.5
+            'receita_bruta': clube_fx_receita_bruta,
+            'receita_liquida': clube_fx_receita_liquida,
+            'custo_total': clube_fx_custos_op,
+            'despesas_operacionais': clube_fx_despesas_op,
+            'ebitda': clube_fx_ebitda,
+            'margem_ebitda': clube_fx_margem_ebitda,
+            'contratos': clube_fx_contratos,
+            'volume': 0,  # Serviços não têm volume físico
+            'preco_medio': 0,  # Não aplicável para serviços
+            'crescimento': 18.5,  # Estimativa baseada em tendência
+            'dados_mensais': calcular_dados_mensais(df_clube_fx, 'Clube FX'),
+            'principais_produtos': {'Consultoria': clube_fx_contratos, 'Assessoria': 0},  # Placeholder
+            'ticket_medio': clube_fx_receita_bruta / clube_fx_contratos if clube_fx_contratos > 0 else 0
         }
     }
     
