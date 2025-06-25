@@ -4,8 +4,30 @@ import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime, timedelta
 import numpy as np
-from src.gerar_dados_fox import *
-from src.auth import *
+
+# ============================================================================
+# FUNÇÕES DE DADOS
+# ============================================================================
+
+def carregar_dados_eda():
+    """Carregar dados simulados para EDA"""
+    return {
+        'performance_mensal': pd.DataFrame({
+            'mes': ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            'fox_graos': [18.5, 19.2, 21.8, 20.1, 22.3, 24.1],
+            'fox_log': [12.3, 13.1, 14.2, 13.8, 15.1, 16.2],
+            'clube_fx': [2.1, 2.3, 2.8, 2.5, 3.1, 3.4]
+        })
+    }
+
+def carregar_dados_financeiros():
+    """Carregar dados financeiros simulados"""
+    return {
+        'receita_total': 247000000,
+        'ebitda_total': 89000000,
+        'fluxo_caixa': 76000000,
+        'clientes_ativos': 1247
+    }
 
 # ============================================================================
 # SISTEMA DE IDIOMAS
