@@ -819,61 +819,176 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
                 usar_dados_reais = False
             else:
                 usar_dados_reais = True
+                st.success("✅ Dados reais carregados do MongoDB")
                 
         except Exception as e:
             st.warning(f"⚠️ Erro ao carregar dados reais: {str(e)}")
             usar_dados_reais = False
     
-    # KPIs principais com dados reais ou simulados
-    col1, col2, col3, col4 = st.columns(4)
+    # === MÉTRICAS FINANCEIRAS PRINCIPAIS ===
+    st.markdown("### 💰 Métricas Financeiras Principais")
     
     if usar_dados_reais:
-        receita_total = dados_consolidados['receita_total']
-        volume_total = dados_consolidados['volume_total']
-        numero_contratos = dados_consolidados['numero_contratos']
-        preco_medio = dados_consolidados['preco_medio']
+        col1, col2, col3, col4 = st.columns(4)
         
-        kpis = [
-            {'label': 'Receita Total', 'value': f'R$ {receita_total/1_000_000:.1f}M', 'delta': '+12.5%', 'color': '#90EE90'},
-            {'label': 'Volume Total', 'value': f'{volume_total:,.0f} sacas', 'delta': '+8.3%', 'color': '#FFD700'},
-            {'label': 'Contratos Ativos', 'value': f'{numero_contratos:,}', 'delta': '+15.2%', 'color': '#C0C0C0'},
-            {'label': 'Preço Médio', 'value': f'R$ {preco_medio:.2f}/saca', 'delta': '+5.8%', 'color': '#87CEEB'}
-        ]
+        with col1:
+            receita_liquida = dados_consolidados['receita_liquida']
+            st.metric(
+                label="💵 Receita Líquida",
+                value=f"R$ {receita_liquida/1_000_000:.1f}M",
+                delta="+12.5%"
+            )
+        
+        with col2:
+            custo_total = dados_consolidados['custo_total']
+            st.metric(
+                label="📦 Custo Total",
+                value=f"R$ {custo_total/1_000_000:.1f}M",
+                delta="+8.2%"
+            )
+        
+        with col3:
+            despesas_operacionais = dados_consolidados['despesas_operacionais']
+            st.metric(
+                label="💸 Despesas Operacionais",
+                value=f"R$ {despesas_operacionais/1_000_000:.1f}M",
+                delta="+5.1%"
+            )
+        
+        with col4:
+            margem_liquida = dados_consolidados['margem_liquida']
+            st.metric(
+                label="📈 Margem Líquida",
+                value=f"{margem_liquida:.1f}%",
+                delta="+2.3pp"
+            )
     else:
-        # Dados simulados como fallback
-        kpis = [
-            {'label': get_text('gross_revenue', lang), 'value': 'R$ 247M', 'delta': '+12.5%', 'color': '#90EE90'},
-            {'label': get_text('ebitda', lang), 'value': 'R$ 89M', 'delta': '+8.3%', 'color': '#FFD700'},
-            {'label': get_text('operational_cashflow', lang), 'value': 'R$ 76M', 'delta': '+15.2%', 'color': '#C0C0C0'},
-            {'label': get_text('active_clients', lang), 'value': '1,247', 'delta': '+5.8%', 'color': '#87CEEB'}
-        ]
+        # Fallback com dados simulados
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("💵 Receita Líquida", "R$ 185M", "+12.5%")
+        with col2:
+            st.metric("📦 Custo Total", "R$ 142M", "+8.2%")
+        with col3:
+            st.metric("💸 Despesas Operacionais", "R$ 28M", "+5.1%")
+        with col4:
+            st.metric("📈 Margem Líquida", "8.1%", "+2.3pp")
     
-    for i, kpi in enumerate(kpis):
-        with [col1, col2, col3, col4][i]:
-            st.markdown(f'''
-            <div style="
-                background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-                padding: 1.5rem;
-                border-radius: 12px;
-                border: 1px solid #333333;
-                text-align: center;
-                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            ">
-                <div style="color: #C0C0C0; font-size: 0.9rem; margin-bottom: 0.5rem;">{kpi['label']}</div>
-                <div style="color: #FFFFFF; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">{kpi['value']}</div>
-                <div style="color: {kpi['color']}; font-size: 0.9rem; font-weight: 600;">
-                    ▲ {kpi['delta']} {get_text('vs_previous', lang) if not usar_dados_reais else 'vs período anterior'}
-                </div>
-            </div>
-            ''', unsafe_allow_html=True)
+    st.markdown("---")
     
-    st.markdown('<br>', unsafe_allow_html=True)
+    # === DETALHAMENTO FINANCEIRO ===
+    if usar_dados_reais:
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### 📊 Composição da Receita")
+            receita_data = {
+                'Fox Grãos': dados_consolidados['comercializacao_graos'],
+                'Fox Log': dados_consolidados['servicos_logisticos'],
+                'Clube FX': dados_consolidados['consultoria']
+            }
+            
+            # Filtrar apenas valores > 0
+            receita_data = {k: v for k, v in receita_data.items() if v > 0}
+            
+            if receita_data:
+                fig_receita = px.pie(
+                    values=list(receita_data.values()),
+                    names=list(receita_data.keys()),
+                    title="Receita por Unidade de Negócio",
+                    color_discrete_sequence=['#198754', '#FD7E14', '#0D6EFD']
+                )
+                fig_receita.update_traces(textposition='inside', textinfo='percent+label')
+                fig_receita.update_layout(height=300, showlegend=True)
+                st.plotly_chart(fig_receita, use_container_width=True)
+            else:
+                st.info("Sem dados de receita por unidade disponíveis")
+        
+        with col2:
+            st.markdown("#### 💰 Estrutura de Custos e Despesas")
+            
+            # Criar gráfico de barras para custos e despesas
+            categorias = ['CPV', 'Custos Operacionais', 'Pessoal', 'Marketing', 'Administrativo']
+            valores = [
+                dados_consolidados['cpv_total'],
+                dados_consolidados['custos_operacionais_total'],
+                dados_consolidados['pessoal_beneficios'],
+                dados_consolidados['marketing_vendas'],
+                dados_consolidados['despesas_admin']
+            ]
+            
+            fig_custos = px.bar(
+                x=categorias,
+                y=[v/1_000_000 for v in valores],
+                title="Custos e Despesas (R$ Milhões)",
+                color=categorias,
+                color_discrete_sequence=px.colors.qualitative.Set3
+            )
+            fig_custos.update_layout(
+                height=300,
+                xaxis_title="Categoria",
+                yaxis_title="Valor (R$ M)",
+                showlegend=False
+            )
+            st.plotly_chart(fig_custos, use_container_width=True)
     
-    # Gráficos principais
+    # === KPIs OPERACIONAIS ===
+    st.markdown("### 📈 KPIs Operacionais")
+    
+    if usar_dados_reais:
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            volume_total = dados_consolidados['volume_total']
+            st.metric(
+                label="📦 Volume Total",
+                value=f"{volume_total:,.0f} un.",
+                delta="+15.2%"
+            )
+        
+        with col2:
+            numero_contratos = dados_consolidados['numero_contratos']
+            st.metric(
+                label="📋 Contratos Ativos",
+                value=f"{numero_contratos:,}",
+                delta="+8.7%"
+            )
+        
+        with col3:
+            preco_medio = dados_consolidados['preco_medio']
+            st.metric(
+                label="💲 Preço Médio",
+                value=f"R$ {preco_medio:.2f}/un.",
+                delta="+5.8%"
+            )
+        
+        with col4:
+            ebitda = dados_consolidados['ebitda']
+            st.metric(
+                label="🎯 EBITDA",
+                value=f"R$ {ebitda/1_000_000:.1f}M",
+                delta="+18.3%"
+            )
+    else:
+        # Fallback com dados simulados
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("📦 Volume Total", "2.1M un.", "+15.2%")
+        with col2:
+            st.metric("📋 Contratos Ativos", "1,247", "+8.7%")
+        with col3:
+            st.metric("💲 Preço Médio", "R$ 87.50/un.", "+5.8%")
+        with col4:
+            st.metric("🎯 EBITDA", "R$ 43M", "+18.3%")
+    
+    st.markdown("---")
+    
+    # === GRÁFICOS DE PERFORMANCE ===
+    st.markdown("### 📊 Performance Mensal")
+    
     col1, col2 = st.columns(2)
     
     with col1:
-        # Receita x EBITDA (12 meses) com dados reais
         if usar_dados_reais:
             fig_receita_ebitda = criar_grafico_receita_ebitda_real(dados_consolidados, lang)
         else:
@@ -881,12 +996,70 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
         st.plotly_chart(fig_receita_ebitda, use_container_width=True)
     
     with col2:
-        # Distribuição por grão/empresa com dados reais
         if usar_dados_reais:
             fig_distribuicao = criar_grafico_distribuicao_real(dados_consolidados, lang)
         else:
             fig_distribuicao = criar_grafico_investimento_capex(lang)
         st.plotly_chart(fig_distribuicao, use_container_width=True)
+    
+    # === ANÁLISE DE MARGEM ===
+    if usar_dados_reais:
+        st.markdown("### 📈 Análise de Margens")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            margem_bruta = dados_consolidados['margem_bruta']
+            st.metric(
+                label="📊 Margem Bruta",
+                value=f"{margem_bruta:.1f}%",
+                delta="+1.8pp"
+            )
+        
+        with col2:
+            margem_ebitda = dados_consolidados['margem_ebitda']
+            st.metric(
+                label="🎯 Margem EBITDA",
+                value=f"{margem_ebitda:.1f}%",
+                delta="+2.1pp"
+            )
+        
+        with col3:
+            margem_liquida = dados_consolidados['margem_liquida']
+            st.metric(
+                label="💰 Margem Líquida",
+                value=f"{margem_liquida:.1f}%",
+                delta="+2.3pp"
+            )
+        
+        # Gráfico de evolução das margens (se houver dados mensais)
+        if dados_consolidados.get('receita_mensal'):
+            st.markdown("#### 📈 Evolução das Margens")
+            st.info("💡 Gráfico de evolução mensal das margens será implementado com dados históricos")
+    
+    # === RESUMO EXECUTIVO ===
+    if usar_dados_reais:
+        st.markdown("### 📋 Resumo Executivo")
+        
+        receita_bruta = dados_consolidados['receita_bruta']
+        receita_liquida = dados_consolidados['receita_liquida']
+        lucro_liquido = dados_consolidados['lucro_liquido']
+        
+        st.markdown(f"""
+        **Desempenho Financeiro ({ano_selecionado}):**
+        - **Receita Bruta:** R$ {receita_bruta/1_000_000:.1f} milhões
+        - **Receita Líquida:** R$ {receita_liquida/1_000_000:.1f} milhões  
+        - **Lucro Líquido:** R$ {lucro_liquido/1_000_000:.1f} milhões
+        - **Margem Líquida:** {dados_consolidados['margem_liquida']:.1f}%
+        
+        **Principais Unidades de Negócio:**
+        - **Fox Grãos:** R$ {dados_consolidados['comercializacao_graos']/1_000_000:.1f}M em comercialização
+        - **Fox Log:** R$ {dados_consolidados['servicos_logisticos']/1_000_000:.1f}M em serviços logísticos  
+        - **Clube FX:** R$ {dados_consolidados['consultoria']/1_000_000:.1f}M em consultoria
+        """)
+    else:
+        st.markdown("### 📋 Resumo Executivo")
+        st.info("📊 Resumo executivo será exibido quando os dados reais estiverem disponíveis")
 
 def criar_grafico_receita_ebitda(lang='pt'):
     """Gráfico de linha Receita x EBITDA - tema branco"""

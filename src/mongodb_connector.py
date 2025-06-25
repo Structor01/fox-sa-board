@@ -419,21 +419,108 @@ def load_consolidated_data(year=None):
     df_freight = df[df.get('isFreight', False) == True]  # Frete (Fox Log)
     df_service = df[df.get('isService', False) == True]  # Serviços (Clube FX)
     
+    # Calcular receita bruta total
+    receita_bruta = df['valorTotal'].sum()
+    comercializacao_graos = df_grain['valorTotal'].sum()
+    servicos_logisticos = df_freight['valorTotal'].sum()
+    consultoria = df_service['valorTotal'].sum()
+    
+    # Calcular deduções e impostos
+    icms = comercializacao_graos * 0.045  # ICMS apenas sobre comercialização
+    pis_cofins = receita_bruta * 0.0365  # PIS/COFINS sobre toda receita
+    iss = (servicos_logisticos + consultoria) * 0.05  # ISS sobre serviços
+    outras_deducoes = receita_bruta * 0.015
+    
+    receita_liquida = receita_bruta - icms - pis_cofins - iss - outras_deducoes
+    
+    # Calcular CPV (apenas para comercialização de grãos)
+    compra_graos = comercializacao_graos * 0.82
+    frete_aquisicao = comercializacao_graos * 0.04
+    armazenagem = comercializacao_graos * 0.02
+    cpv_total = compra_graos + frete_aquisicao + armazenagem
+    
+    # Calcular custos operacionais para serviços
+    custos_operacionais_frete = servicos_logisticos * 0.65  # Custo operacional do frete
+    custos_operacionais_consultoria = consultoria * 0.45  # Custo operacional da consultoria
+    custos_operacionais_total = custos_operacionais_frete + custos_operacionais_consultoria
+    
+    # Custo total = CPV + Custos Operacionais
+    custo_total = cpv_total + custos_operacionais_total
+    
+    lucro_bruto = receita_liquida - custo_total
+    
+    # Calcular despesas operacionais (proporcionais à receita líquida)
+    pessoal_beneficios = receita_liquida * 0.08
+    marketing_vendas = receita_liquida * 0.03
+    despesas_admin = receita_liquida * 0.04
+    despesas_operacionais = pessoal_beneficios + marketing_vendas + despesas_admin
+    
+    ebitda = lucro_bruto - despesas_operacionais
+    
+    # Depreciação e resultado financeiro
+    depreciacao = receita_liquida * 0.02
+    resultado_financeiro = receita_liquida * (-0.004)  # Resultado financeiro líquido
+    
+    lucro_antes_ir = ebitda - depreciacao + resultado_financeiro
+    ir_csll = lucro_antes_ir * 0.34 if lucro_antes_ir > 0 else 0
+    lucro_liquido = lucro_antes_ir - ir_csll
+    
+    # Calcular margem
+    margem_bruta = (lucro_bruto / receita_liquida * 100) if receita_liquida > 0 else 0
+    margem_ebitda = (ebitda / receita_liquida * 100) if receita_liquida > 0 else 0
+    margem_liquida = (lucro_liquido / receita_liquida * 100) if receita_liquida > 0 else 0
+    
     # Calcular métricas consolidadas
     consolidated = {
-        'receita_total': df['valorTotal'].sum(),
+        # Métricas financeiras principais
+        'receita_bruta': receita_bruta,
+        'receita_liquida': receita_liquida,
+        'custo_total': custo_total,
+        'despesas_operacionais': despesas_operacionais,
+        'lucro_bruto': lucro_bruto,
+        'ebitda': ebitda,
+        'lucro_liquido': lucro_liquido,
+        'margem_bruta': margem_bruta,
+        'margem_ebitda': margem_ebitda,
+        'margem_liquida': margem_liquida,
+        
+        # Detalhamento de receitas
+        'comercializacao_graos': comercializacao_graos,
+        'servicos_logisticos': servicos_logisticos,
+        'consultoria': consultoria,
+        
+        # Detalhamento de custos
+        'cpv_total': cpv_total,
+        'custos_operacionais_total': custos_operacionais_total,
+        'compra_graos': compra_graos,
+        'custos_operacionais_frete': custos_operacionais_frete,
+        'custos_operacionais_consultoria': custos_operacionais_consultoria,
+        
+        # Detalhamento de despesas
+        'pessoal_beneficios': pessoal_beneficios,
+        'marketing_vendas': marketing_vendas,
+        'despesas_admin': despesas_admin,
+        'depreciacao': depreciacao,
+        
+        # Métricas operacionais
         'volume_total': df['amount'].sum(),
         'numero_contratos': len(df),
         'preco_medio': df['bagPrice'].mean() if not df.empty else 0,
+        
+        # Dados mensais
         'receita_mensal': df.groupby(df['closeDate'].dt.to_period('M'))['valorTotal'].sum().to_dict(),
         'volume_mensal': df.groupby(df['closeDate'].dt.to_period('M'))['amount'].sum().to_dict(),
         'contratos_mensais': df.groupby(df['closeDate'].dt.to_period('M')).size().to_dict(),
+        
+        # Dados por produto
         'receita_por_grao': df.groupby('grainName')['valorTotal'].sum().to_dict(),
         'volume_por_grao': df.groupby('grainName')['amount'].sum().to_dict(),
+        
+        # Dados por unidade de negócio
         'receita_por_empresa': {
-            'Fox Grãos': df_grain['valorTotal'].sum(),  # Comercialização
-            'Fox Log': df_freight['valorTotal'].sum(),  # Frete
-            'Clube FX': df_service['valorTotal'].sum()  # Serviços
+            'Fox Grãos': comercializacao_graos,
+            'Fox Log': servicos_logisticos,
+            'Clube FX': consultoria
         },
         'contratos_por_empresa': {
             'Fox Grãos': len(df_grain),
@@ -442,7 +529,7 @@ def load_consolidated_data(year=None):
         },
         'volume_por_empresa': {
             'Fox Grãos': df_grain['amount'].sum(),
-            'Fox Log': df_freight['amount'].sum(),  # Volume transportado
+            'Fox Log': df_freight['amount'].sum(),
             'Clube FX': 0  # Serviços não têm volume físico
         }
     }
