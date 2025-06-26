@@ -1970,7 +1970,7 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
         - Definição de preços
         - Timing de comercialização
         - Gestão de risco
-        """)
+        """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("""
@@ -1979,7 +1979,7 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
         - Tendências de commodities
         - Oportunidades de venda
         - Cenários econômicos
-        """)
+        """, unsafe_allow_html=True)
     
     with col3:
         st.markdown("""
@@ -1988,7 +1988,7 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
         - Relacionamento com compradores
         - Otimização de resultados
         - Acompanhamento pós-venda
-        """)
+        """, unsafe_allow_html=True)
     
     # Resultados e Impacto
     if usar_dados_reais and clube_fx_data.get('receita_bruta', 0) > 0:
