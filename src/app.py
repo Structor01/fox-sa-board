@@ -1174,7 +1174,8 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
         # Fallback com dados simulados
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.metric("📦 Volume Total", "2.1M un.", "+15.2%")
+            volume_total_metric = "2.1M un."
+            st.metric("📦 Volume Total", volume_total_metric, "+15.2%")
         with col2:
             st.metric("📋 Contratos Ativos", "1,247", "+8.7%")
         with col3:
@@ -1767,10 +1768,11 @@ def dashboard_fox_log_detalhado(lang='pt', dados_fox_log={}, usar_dados_reais=Fa
         """, unsafe_allow_html=True)
     
     with col3:
-        st.markdown("""
+        volume_total_value = "89.5k t"
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Volume Total</div>
-            <div class="metric-value">89.5k t</div>
+            <div class="metric-value">{volume_total_value}</div>
             <div class="metric-delta delta-positive">+15.2%</div>
         </div>
         """, unsafe_allow_html=True)
