@@ -1708,10 +1708,11 @@ def dashboard_fox_graos_detalhado(lang='pt', dados_fox_graos={}, usar_dados_reai
         # KPIs Logística
         col_a, col_b = st.columns(2)
         with col_a:
-            st.markdown("""
+            receita_log_value = "R$ 24.5M"
+            st.markdown(f"""
             <div class="metric-card">
                 <div class="metric-label">Receita Logística</div>
-                <div class="metric-value">R$ 24.5M</div>
+                <div class="metric-value">{receita_log_value}</div>
                 <div class="metric-delta delta-positive">+15.2%</div>
             </div>
             """, unsafe_allow_html=True)
@@ -1746,19 +1747,21 @@ def dashboard_fox_log_detalhado(lang='pt', dados_fox_log={}, usar_dados_reais=Fa
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.markdown("""
+        receita_transp_value = "R$ 45.8M"
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Receita Transporte</div>
-            <div class="metric-value">R$ 45.8M</div>
+            <div class="metric-value">{receita_transp_value}</div>
             <div class="metric-delta delta-positive">+12.3%</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("""
+        receita_armaz_value = "R$ 18.2M"
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Receita Armazenagem</div>
-            <div class="metric-value">R$ 18.2M</div>
+            <div class="metric-value">{receita_armaz_value}</div>
             <div class="metric-delta delta-positive">+8.7%</div>
         </div>
         """, unsafe_allow_html=True)
@@ -1864,7 +1867,8 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
         with col1:
             st.metric("👥 Clientes Atendidos", "247", "+18 novos clientes")
         with col2:
-            st.metric("💰 Receita Consultoria", "R$ 12.8M", "+22.5%")
+            receita_consult_value = "R$ 12.8M"
+            st.metric("💰 Receita Consultoria", receita_consult_value, "+22.5%")
         with col3:
             st.metric("📊 NPS Score", "8.7/10", "+0.3 vs trimestre")
         with col4:
@@ -2938,37 +2942,41 @@ def performance_financeira(lang='pt', tema='light', ano_selecionado=2024):
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.markdown("""
+        receita_anual_value = "R$ 289.5M"
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Receita Anual</div>
-            <div class="metric-value">R$ 289.5M</div>
+            <div class="metric-value">{receita_anual_value}</div>
             <div class="metric-delta delta-positive">+18.2% vs ano anterior</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("""
+        ebitda_anual_value = "R$ 89.2M"
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">EBITDA Anual</div>
-            <div class="metric-value">R$ 89.2M</div>
+            <div class="metric-value">{ebitda_anual_value}</div>
             <div class="metric-delta delta-positive">+22.1% vs ano anterior</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
-        st.markdown("""
+        margem_ebitda_value = "30.8%"
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Margem EBITDA</div>
-            <div class="metric-value">30.8%</div>
+            <div class="metric-value">{margem_ebitda_value}</div>
             <div class="metric-delta delta-positive">+1.2 p.p. vs ano anterior</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col4:
-        st.markdown("""
+        fluxo_caixa_value = "R$ 76.3M"
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Fluxo Caixa Livre</div>
-            <div class="metric-value">R$ 76.3M</div>
+            <div class="metric-value">{fluxo_caixa_value}</div>
             <div class="metric-delta delta-positive">+25.8% vs ano anterior</div>
         </div>
         """, unsafe_allow_html=True)
