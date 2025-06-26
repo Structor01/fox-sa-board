@@ -864,7 +864,7 @@ def criar_grafico_receita_ebitda_real(dados_consolidados, lang='pt'):
     for periodo, valor in receita_mensal.items():
         mes_num = periodo.month
         meses.append(meses_map.get(mes_num, str(mes_num)))
-        receitas.append(valor / 1_000_000)  # Converter para milhões
+        receitas.append(valor / 1000000)  # Converter para milhões
     
     # Estimar EBITDA (25% da receita)
     ebitdas = [r * 0.25 for r in receitas]
@@ -911,7 +911,7 @@ def criar_grafico_distribuicao_real(dados_consolidados, lang='pt'):
         return criar_grafico_investimento_capex(lang)  # Fallback
     
     graos = list(receita_por_grao.keys())
-    valores = [v / 1_000_000 for v in receita_por_grao.values()]  # Converter para milhões
+    valores = [v / 1000000 for v in receita_por_grao.values()]  # Converter para milhões
     
     fig = px.pie(
         values=valores,
@@ -945,7 +945,7 @@ def criar_grafico_performance_real(dados_performance, tema, lang='pt'):
     # Adicionar linhas para cada métrica
     fig.add_trace(go.Scatter(
         x=df['Mes'],
-        y=df['Receita Líquida'] / 1_000_000,
+        y=df['Receita Líquida'] / 1000000,
         mode='lines+markers',
         name='Receita Líquida',
         line=dict(color='#198754', width=3),
@@ -954,7 +954,7 @@ def criar_grafico_performance_real(dados_performance, tema, lang='pt'):
     
     fig.add_trace(go.Scatter(
         x=df['Mes'],
-        y=df['EBITDA'] / 1_000_000,
+        y=df['EBITDA'] / 1000000,
         mode='lines+markers',
         name='EBITDA',
         line=dict(color='#FD7E14', width=3),
@@ -963,7 +963,7 @@ def criar_grafico_performance_real(dados_performance, tema, lang='pt'):
     
     fig.add_trace(go.Scatter(
         x=df['Mes'],
-        y=df['Lucro Líquido'] / 1_000_000,
+        y=df['Lucro Líquido'] / 1000000,
         mode='lines+markers',
         name='Lucro Líquido',
         line=dict(color='#0D6EFD', width=3),
@@ -972,7 +972,7 @@ def criar_grafico_performance_real(dados_performance, tema, lang='pt'):
     
     fig.add_trace(go.Scatter(
         x=df['Mes'],
-        y=df['Fluxo Caixa Livre'] / 1_000_000,
+        y=df['Fluxo Caixa Livre'] / 1000000,
         mode='lines+markers',
         name='Fluxo Caixa Livre',
         line=dict(color='#6F42C1', width=3),
@@ -1036,7 +1036,7 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
             receita_liquida = dados_consolidados['receita_liquida']
             st.metric(
                 label="💵 Receita Líquida",
-                value=f"R$ {receita_liquida/1_000_000:.1f}M",
+                value=f"R$ {receita_liquida/1000000:.1f}M",
                 delta="+12.5%"
             )
         
@@ -1044,7 +1044,7 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
             custo_total = dados_consolidados['custo_total']
             st.metric(
                 label="📦 Custo Total",
-                value=f"R$ {custo_total/1_000_000:.1f}M",
+                value=f"R$ {custo_total/1000000:.1f}M",
                 delta="+8.2%"
             )
         
@@ -1052,7 +1052,7 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
             despesas_operacionais = dados_consolidados['despesas_operacionais']
             st.metric(
                 label="💸 Despesas Operacionais",
-                value=f"R$ {despesas_operacionais/1_000_000:.1f}M",
+                value=f"R$ {despesas_operacionais/1000000:.1f}M",
                 delta="+5.1%"
             )
         
@@ -1120,7 +1120,7 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
             
             fig_custos = px.bar(
                 x=categorias,
-                y=[v/1_000_000 for v in valores],
+                y=[v/1000000 for v in valores],
                 title="Custos e Despesas (R$ Milhões)",
                 color=categorias,
                 color_discrete_sequence=px.colors.qualitative.Set3
@@ -1167,7 +1167,7 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
             ebitda = dados_consolidados['ebitda']
             st.metric(
                 label="🎯 EBITDA",
-                value=f"R$ {ebitda/1_000_000:.1f}M",
+                value=f"R$ {ebitda/1000000:.1f}M",
                 delta="+18.3%"
             )
     else:
@@ -1250,15 +1250,15 @@ def visao_consolidada(dados_eda, dados_financeiros, lang='pt', ano_selecionado=2
         
         st.markdown(f"""
         **Desempenho Financeiro ({ano_selecionado}):**
-        - **Receita Bruta:** R$ {receita_bruta/1_000_000:.1f} milhões
-        - **Receita Líquida:** R$ {receita_liquida/1_000_000:.1f} milhões  
-        - **Lucro Líquido:** R$ {lucro_liquido/1_000_000:.1f} milhões
+        - **Receita Bruta:** R$ {receita_bruta/1000000:.1f} milhões
+        - **Receita Líquida:** R$ {receita_liquida/1000000:.1f} milhões  
+        - **Lucro Líquido:** R$ {lucro_liquido/1000000:.1f} milhões
         - **Margem Líquida:** {dados_consolidados['margem_liquida']:.1f}%
         
         **Principais Unidades de Negócio:**
-        - **Fox Grãos:** R$ {dados_consolidados['comercializacao_graos']/1_000_000:.1f}M em comercialização
-        - **Fox Log:** R$ {dados_consolidados['servicos_logisticos']/1_000_000:.1f}M em serviços logísticos  
-        - **Clube FX:** R$ {dados_consolidados['consultoria']/1_000_000:.1f}M em consultoria
+        - **Fox Grãos:** R$ {dados_consolidados['comercializacao_graos']/1000000:.1f}M em comercialização
+        - **Fox Log:** R$ {dados_consolidados['servicos_logisticos']/1000000:.1f}M em serviços logísticos  
+        - **Clube FX:** R$ {dados_consolidados['consultoria']/1000000:.1f}M em consultoria
         """)
     else:
         st.markdown("### 📋 Resumo Executivo")
@@ -1608,11 +1608,16 @@ def aplicar_css_tema(tema='light'):
             color: {text_color} !important;
         }}
         
-        /# ============================================================================
+    </style>
+    """, unsafe_allow_html=True)
+
+# ============================================================================
 # DASHBOARDS POR UNIDADE DE NEGÓCIO
 # ============================================================================
 
-def dashboards_unidades_negocio(lang='pt', filtros_globais=None):px solid #DEE2E6; padding-bottom: 0.5rem;">🏢 {get_text("business_units_detailed", lang)}</h2>', unsafe_allow_html=True)
+def dashboards_unidades_negocio(lang='pt', filtros_globais=None):
+    """Dashboard detalhado por unidade de negócio"""
+    st.markdown(f'<h2 style="color: #000000; border-bottom: 2px solid #DEE2E6; padding-bottom: 0.5rem;">🏢 {get_text("business_units_detailed", lang)}</h2>', unsafe_allow_html=True)
     
     # Mostrar filtros aplicados se houver
     if filtros_globais:
@@ -1847,7 +1852,7 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
             receita_consultoria = clube_fx_data.get('receita_bruta', 0)
             st.metric(
                 label="💰 Receita Consultoria",
-                value=f"R$ {receita_consultoria/1_000_000:.1f}M",
+                value=f"R$ {receita_consultoria/1000000:.1f}M",
                 delta="+22.5%"
             )
         
@@ -1898,7 +1903,7 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
                 for i in range(1, 13):
                     mes_key = f'M{i:02d}'
                     mes_data = dados_mensais.get(mes_key, {})
-                    receitas_mensais.append(mes_data.get('receita', 0) / 1_000_000)
+                    receitas_mensais.append(mes_data.get('receita', 0) / 1000000)
                     contratos_mensais.append(mes_data.get('contratos', 0))
                 
                 fig = go.Figure()
@@ -1941,11 +1946,11 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
             with col_a:
                 st.metric(
                     label="💵 Receita Líquida",
-                    value=f"R$ {receita_liquida/1_000_000:.1f}M"
+                    value=f"R$ {receita_liquida/1000000:.1f}M"
                 )
                 st.metric(
                     label="🎯 EBITDA",
-                    value=f"R$ {ebitda/1_000_000:.1f}M"
+                    value=f"R$ {ebitda/1000000:.1f}M"
                 )
             
             with col_b:
@@ -1955,7 +1960,7 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
                 )
                 st.metric(
                     label="🎫 Ticket Médio",
-                    value=f"R$ {ticket_medio/1_000:.0f}K"
+                    value=f"R$ {ticket_medio/1000:.0f}K"
                 )
     
     # Estratégias e Serviços
@@ -1998,12 +2003,14 @@ def dashboard_clube_fx_detalhado(lang='pt', dados_clube_fx={}, usar_dados_reais=
         
         with col1:
             st.markdown("#### 🎯 Principais Conquistas")
-            st.markdown(f"""
-            - **{clube_fx_data.get('contratos', 0):,} clientes** atendidos com estratégia personalizada
-            - **R$ {clube_fx_data.get('receita_bruta', 0)/1_000_000:.1f} milhões** em receita gerada
-            - **{clube_fx_data.get('margem_ebitda', 0):.1f}%** de margem EBITDA alcançada
-            - **92.3%** de taxa de retenção de clientes
-            """)
+            receita_milhoes = clube_fx_data.get('receita_bruta', 0) / 1000000
+            contratos_count = clube_fx_data.get('contratos', 0)
+            margem_ebitda = clube_fx_data.get('margem_ebitda', 0)
+            
+            st.markdown("- **" + f"{contratos_count:,}" + " clientes** atendidos com estratégia personalizada")
+            st.markdown("- **R$ " + f"{receita_milhoes:.1f}" + " milhões** em receita gerada")
+            st.markdown("- **" + f"{margem_ebitda:.1f}" + "%** de margem EBITDA alcançada")
+            st.markdown("- **92.3%** de taxa de retenção de clientes")
         
         with col2:
             st.markdown("#### 💡 Diferenciais Competitivos")
