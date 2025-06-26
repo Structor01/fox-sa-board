@@ -74,10 +74,11 @@ def criar_filtros_globais():
     st.sidebar.markdown("**🔄 Tipo de Operação**")
     tipos_operacao = ['Todos', 'Supply', 'Originação', 'Frete', 'Clube FX']
     tipo_selecionado = st.sidebar.selectbox(
-        "",  # Sem label pois já está no markdown acima
+        "Tipo de Operação",  # Label visível
         tipos_operacao,
         key="global_operation_filter",
-        help="Filtrar por tipo de operação comercial"
+        help="Filtrar por tipo de operação comercial",
+        label_visibility="collapsed"  # Esconder label mas manter acessibilidade
     )
     
     st.sidebar.markdown("")  # Espaçamento
@@ -90,10 +91,11 @@ def criar_filtros_globais():
         graos_disponiveis = ['Todos']
     
     grao_selecionado = st.sidebar.selectbox(
-        "",  # Sem label pois já está no markdown acima
+        "Produto",  # Label visível
         graos_disponiveis,
         key="global_grain_filter",
-        help="Filtrar por tipo de grão/produto"
+        help="Filtrar por tipo de grão/produto",
+        label_visibility="collapsed"  # Esconder label mas manter acessibilidade
     )
     
     # Separador visual
