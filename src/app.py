@@ -1660,7 +1660,7 @@ def dashboard_fox_graos_detalhado(lang='pt', dados_fox_graos={}, usar_dados_reai
     
     # KPIs Trade
     with col1:
-        st.markdown("""
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Volume Negociado</div>
             <div class="metric-value">125.8k t</div>
@@ -1669,7 +1669,7 @@ def dashboard_fox_graos_detalhado(lang='pt', dados_fox_graos={}, usar_dados_reai
         """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("""
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Receita Trade</div>
             <div class="metric-value">R$ 89.2M</div>
@@ -1678,7 +1678,7 @@ def dashboard_fox_graos_detalhado(lang='pt', dados_fox_graos={}, usar_dados_reai
         """, unsafe_allow_html=True)
     
     with col3:
-        st.markdown("""
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Margem de Trade</div>
             <div class="metric-value">12.8%</div>
@@ -1687,7 +1687,7 @@ def dashboard_fox_graos_detalhado(lang='pt', dados_fox_graos={}, usar_dados_reai
         """, unsafe_allow_html=True)
     
     with col4:
-        st.markdown("""
+        st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Tempo de Ciclo</div>
             <div class="metric-value">18 dias</div>
