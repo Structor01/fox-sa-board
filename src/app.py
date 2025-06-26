@@ -1660,37 +1660,41 @@ def dashboard_fox_graos_detalhado(lang='pt', dados_fox_graos={}, usar_dados_reai
     
     # KPIs Trade
     with col1:
+        volume_value = "125.8k t"
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Volume Negociado</div>
-            <div class="metric-value">125.8k t</div>
+            <div class="metric-value">{volume_value}</div>
             <div class="metric-delta delta-positive">+18.5% vs mês anterior</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
+        receita_value = "R$ 89.2M"
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Receita Trade</div>
-            <div class="metric-value">R$ 89.2M</div>
+            <div class="metric-value">{receita_value}</div>
             <div class="metric-delta delta-positive">+12.3% vs período anterior</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
+        margem_value = "12.8%"
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Margem de Trade</div>
-            <div class="metric-value">12.8%</div>
+            <div class="metric-value">{margem_value}</div>
             <div class="metric-delta delta-positive">+2.1 p.p.</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col4:
+        tempo_value = "18 dias"
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Tempo de Ciclo</div>
-            <div class="metric-value">18 dias</div>
+            <div class="metric-value">{tempo_value}</div>
             <div class="metric-delta delta-positive">-3 dias vs média</div>
         </div>
         """, unsafe_allow_html=True)
