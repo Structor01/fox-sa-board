@@ -1342,37 +1342,36 @@ def criar_grafico_investimento_capex(lang='pt'):
 # ============================================================================
 
 def aplicar_css_tema(tema='light'):
-    """CSS dinâmico baseado no tema selecionado"""
+    """CSS forçado para tema light apenas - corrigido para mobile"""
     
-    if tema == 'light':
-        # Tema Claro
-        bg_color = '#FFFFFF'
-        text_color = '#000000'
-        card_bg = '#F8F9FA'
-        border_color = '#DEE2E6'
-        grid_color = '#E9ECEF'
-        secondary_text = '#6C757D'
-        input_bg = '#F8F9FA'
-        hover_color = '#6C757D'
-    else:
-        # Tema Escuro
-        bg_color = 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)'
-        text_color = '#FFFFFF'
-        card_bg = '#2d2d2d'
-        border_color = '#444444'
-        grid_color = 'rgba(192, 192, 192, 0.1)'
-        secondary_text = '#C0C0C0'
-        input_bg = '#2d2d2d'
-        hover_color = '#C0C0C0'
+    # FORÇAR SEMPRE TEMA LIGHT
+    tema = 'light'  # Força tema light independente do parâmetro
+    
+    # Cores do tema claro
+    bg_color = '#FFFFFF'
+    text_color = '#000000'
+    card_bg = '#F8F9FA'
+    border_color = '#DEE2E6'
+    grid_color = '#E9ECEF'
+    secondary_text = '#6C757D'
+    input_bg = '#F8F9FA'
+    hover_color = '#6C757D'
     
     st.markdown(f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
+        /* FORÇAR TEMA LIGHT EM TODOS OS ELEMENTOS */
         .stApp {{
-            background: {bg_color};
-            color: {text_color};
+            background: {bg_color} !important;
+            color: {text_color} !important;
             font-family: 'Inter', sans-serif;
+        }}
+        
+        /* Forçar fundo branco em todo o app */
+        .main, .block-container, [data-testid="stAppViewContainer"] {{
+            background: {bg_color} !important;
+            color: {text_color} !important;
         }}
         
         /* Esconder sidebar */
@@ -1388,16 +1387,236 @@ def aplicar_css_tema(tema='light'):
             padding-right: 2rem !important;
         }}
         
-        /* Títulos sempre com cor do tema */
-        h1, h2, h3, h4, h5, h6 {{
+        /* FORÇAR TEXTO ESCURO EM TODOS OS ELEMENTOS */
+        h1, h2, h3, h4, h5, h6, p, span, div, label {{
             color: {text_color} !important;
         }}
         
-        /* Estilizar selectboxes */
+        /* Métricas - FORÇAR TEXTO ESCURO */
+        [data-testid="metric-container"] {{
+            background: {card_bg} !important;
+            color: {text_color} !important;
+        }}
+        
+        [data-testid="metric-container"] > div {{
+            color: {text_color} !important;
+        }}
+        
+        [data-testid="metric-container"] label {{
+            color: {secondary_text} !important;
+        }}
+        
+        [data-testid="metric-container"] [data-testid="metric-value"] {{
+            color: {text_color} !important;
+            font-weight: 700 !important;
+        }}
+        
+        /* Selectboxes - FORÇAR TEMA LIGHT */
         .stSelectbox > div > div {{
             background: {input_bg} !important;
             border: 1px solid {border_color} !important;
             border-radius: 8px !important;
+            color: {text_color} !important;
+        }}
+        
+        .stSelectbox > div > div > div {{
+            color: {text_color} !important;
+        }}
+        
+        /* Dropdown options - FORÇAR FUNDO BRANCO */
+        [data-baseweb="popover"] {{
+            background: {bg_color} !important;
+        }}
+        
+        [data-baseweb="menu"] {{
+            background: {bg_color} !important;
+            border: 1px solid {border_color} !important;
+        }}
+        
+        [data-baseweb="menu"] li {{
+            background: {bg_color} !important;
+            color: {text_color} !important;
+        }}
+        
+        [data-baseweb="menu"] li:hover {{
+            background: {card_bg} !important;
+            color: {text_color} !important;
+        }}
+        
+        /* Botões - FORÇAR TEMA LIGHT */
+        .stButton > button {{
+            background: {card_bg} !important;
+            border: 1px solid {border_color} !important;
+            border-radius: 8px !important;
+            color: {text_color} !important;
+            font-weight: 500 !important;
+            transition: all 0.3s ease !important;
+        }}
+        
+        .stButton > button:hover {{
+            border-color: {hover_color} !important;
+            box-shadow: 0 0 10px rgba(108, 117, 125, 0.3) !important;
+        }}
+        
+        /* Checkboxes */
+        .stCheckbox > label {{
+            color: {text_color} !important;
+        }}
+        
+        /* Date inputs */
+        .stDateInput > div > div > input {{
+            background: {input_bg} !important;
+            border: 1px solid {border_color} !important;
+            border-radius: 8px !important;
+            color: {text_color} !important;
+        }}
+        
+        /* DataFrames */
+        .stDataFrame {{
+            background: {bg_color} !important;
+            border: 1px solid {border_color} !important;
+            border-radius: 8px !important;
+        }}
+        
+        /* Tabs */
+        .stTabs [data-baseweb="tab-list"] {{
+            gap: 8px;
+        }}
+        
+        .stTabs [data-baseweb="tab"] {{
+            background: {card_bg} !important;
+            border: 1px solid {border_color} !important;
+            border-radius: 8px 8px 0 0 !important;
+            color: {text_color} !important;
+            font-weight: 500 !important;
+            padding: 12px 24px !important;
+        }}
+        
+        .stTabs [aria-selected="true"] {{
+            background: {bg_color} !important;
+            border-bottom: 1px solid {bg_color} !important;
+            color: {text_color} !important;
+            font-weight: 600 !important;
+        }}
+        
+        /* Cards personalizados */
+        .metric-card {{
+            background: {card_bg} !important;
+            padding: 1.5rem !important;
+            border-radius: 12px !important;
+            border: 1px solid {border_color} !important;
+            text-align: center !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            margin-bottom: 1rem !important;
+        }}
+        
+        .metric-value {{
+            font-size: 2rem !important;
+            font-weight: 700 !important;
+            color: {text_color} !important;
+            margin: 0.5rem 0 !important;
+        }}
+        
+        .metric-label {{
+            font-size: 0.9rem !important;
+            color: {secondary_text} !important;
+            margin-bottom: 0.5rem !important;
+        }}
+        
+        .metric-delta {{
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+        }}
+        
+        .delta-positive {{ color: #198754 !important; }}
+        .delta-negative {{ color: #DC3545 !important; }}
+        .delta-neutral {{ color: {secondary_text} !important; }}
+        
+        /* MOBILE RESPONSIVO */
+        @media (max-width: 768px) {{
+            .main .block-container {{
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+                padding-top: 1rem !important;
+            }}
+            
+            /* Forçar texto visível no mobile */
+            * {{
+                color: {text_color} !important;
+            }}
+            
+            /* Métricas no mobile */
+            [data-testid="metric-container"] {{
+                background: {card_bg} !important;
+                border: 1px solid {border_color} !important;
+                border-radius: 8px !important;
+                padding: 1rem !important;
+                margin: 0.5rem 0 !important;
+            }}
+            
+            [data-testid="metric-container"] [data-testid="metric-value"] {{
+                color: {text_color} !important;
+                font-size: 1.5rem !important;
+                font-weight: 700 !important;
+            }}
+            
+            [data-testid="metric-container"] label {{
+                color: {secondary_text} !important;
+                font-size: 0.8rem !important;
+            }}
+            
+            /* Selectboxes no mobile */
+            .stSelectbox {{
+                margin-bottom: 1rem !important;
+            }}
+            
+            .stSelectbox > div > div {{
+                background: {input_bg} !important;
+                color: {text_color} !important;
+                border: 2px solid {border_color} !important;
+                font-size: 1rem !important;
+                padding: 0.75rem !important;
+            }}
+            
+            /* Dropdown no mobile */
+            [data-baseweb="popover"] {{
+                background: {bg_color} !important;
+                border: 2px solid {border_color} !important;
+            }}
+            
+            [data-baseweb="menu"] li {{
+                background: {bg_color} !important;
+                color: {text_color} !important;
+                padding: 1rem !important;
+                font-size: 1rem !important;
+            }}
+        }}
+        
+        /* FORÇAR TEMA LIGHT NO STREAMLIT */
+        .stApp > header {{
+            background: transparent !important;
+        }}
+        
+        .stApp > header [data-testid="stHeader"] {{
+            background: transparent !important;
+        }}
+        
+        /* Remover qualquer tema escuro */
+        [data-theme="dark"], [data-theme="auto"] {{
+            background: {bg_color} !important;
+            color: {text_color} !important;
+        }}
+        
+        /* Plotly charts - forçar fundo branco */
+        .js-plotly-plot {{
+            background: {bg_color} !important;
+        }}
+        
+        .plotly {{
+            background: {bg_color} !important;
+        }}
+    </style>
+    """, unsafe_allow_html=True)
             color: {text_color} !important;
         }}
         
@@ -2133,7 +2352,7 @@ def main():
         st.session_state.theme = 'light'
     
     # Aplicar tema
-    aplicar_css_tema(st.session_state.theme)
+    aplicar_css_tema("light")
     
     # Mostrar tela de boas-vindas ou dashboard principal
     if st.session_state.show_welcome:
@@ -2972,7 +3191,7 @@ def main():
         st.session_state.theme = 'light'
     
     # Aplicar tema
-    aplicar_css_tema(st.session_state.theme)
+    aplicar_css_tema("light")
     
     # Mostrar tela de boas-vindas ou dashboard principal
     if st.session_state.show_welcome:
@@ -3213,7 +3432,7 @@ def main():
         st.session_state.theme = 'light'
     
     # Aplicar CSS
-    aplicar_css_tema(st.session_state.theme)
+    aplicar_css_tema("light")
     
     # Criar filtros globais na sidebar
     filtros_globais = criar_filtros_globais()
