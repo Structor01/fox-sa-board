@@ -3019,6 +3019,180 @@ def main():
                 key="view_select"
             )
         
+# ============================================================================
+# SEÇÃO DE BALANÇO PATRIMONIAL
+# ============================================================================
+
+def secao_balanco_patrimonial(lang='pt', ano=2025, filtros_globais=None):
+    """Seção de balanço patrimonial com dados reais do MongoDB"""
+    
+    st.markdown(f'<h2 style="color: inherit;">📊 Balanço Patrimonial</h2>', unsafe_allow_html=True)
+    
+    # Mostrar filtros aplicados se houver
+    if filtros_globais:
+        filtros_ativos = [k for k, v in filtros_globais.items() if v != 'Todos']
+        if filtros_ativos:
+            st.info(f"Filtros aplicados: {', '.join([f'{k}: {v}' for k, v in filtros_globais.items() if v != 'Todos'])}")
+    
+    # Carregar dados do balanço patrimonial
+    with st.spinner("Carregando dados do balanço patrimonial..."):
+        try:
+            from mongodb_connector import get_balance_sheet_summary, get_balance_sheet_detailed_breakdown, insert_sample_balance_sheet_data
+            
+            # Inserir dados de exemplo se necessário (apenas uma vez)
+            if st.button("🔄 Inserir/Atualizar Dados de Exemplo", help="Clique para inserir ou atualizar os dados de exemplo do balanço patrimonial"):
+                if insert_sample_balance_sheet_data():
+                    st.success("Dados do balanço patrimonial inseridos/atualizados com sucesso!")
+                    st.rerun()
+                else:
+                    st.error("Erro ao inserir dados do balanço patrimonial")
+            
+            # Carregar resumo
+            resumo = get_balance_sheet_summary(ano)
+            detalhamento = get_balance_sheet_detailed_breakdown(ano)
+            
+            if not resumo or resumo['total_ativo'] == 0:
+                st.warning("Nenhum dado de balanço patrimonial encontrado para este período. Clique no botão acima para inserir dados de exemplo.")
+                return
+            
+            # Métricas principais
+            st.markdown(f'<h3 style="color: #FFD700; margin: 2rem 0 1rem 0;">💰 Indicadores Principais</h3>', unsafe_allow_html=True)
+            
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric(
+                    "💼 Total do Ativo",
+                    f"R$ {resumo['total_ativo']:,.0f}".replace(',', '.'),
+                    help="Soma do Ativo Circulante + Ativo Não Circulante"
+                )
+            
+            with col2:
+                st.metric(
+                    "🏛️ Patrimônio Líquido", 
+                    f"R$ {resumo['patrimonio_liquido']:,.0f}".replace(',', '.'),
+                    help="Recursos próprios da empresa"
+                )
+            
+            with col3:
+                st.metric(
+                    "💧 Liquidez Corrente",
+                    f"{resumo['liquidez_corrente']:.2f}",
+                    help="Ativo Circulante ÷ Passivo Circulante"
+                )
+            
+            with col4:
+                st.metric(
+                    "📊 Endividamento",
+                    f"{resumo['endividamento_total']:.1f}%",
+                    help="(Passivo Circulante + Passivo Não Circulante) ÷ Total do Ativo"
+                )
+            
+            # Gráficos de composição
+            st.markdown(f'<h3 style="color: #FFD700; margin: 2rem 0 1rem 0;">📈 Composição Patrimonial</h3>', unsafe_allow_html=True)
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Gráfico do Ativo
+                st.markdown("**🔵 Composição do Ativo**")
+                
+                ativo_data = {
+                    'Ativo Circulante': resumo['ativo_circulante'],
+                    'Ativo Não Circulante': resumo['ativo_nao_circulante']
+                }
+                
+                import plotly.express as px
+                fig_ativo = px.pie(
+                    values=list(ativo_data.values()),
+                    names=list(ativo_data.keys()),
+                    title="Distribuição do Ativo",
+                    color_discrete_sequence=['#2E8B57', '#90EE90']
+                )
+                fig_ativo.update_traces(textposition='inside', textinfo='percent+label')
+                fig_ativo.update_layout(height=400)
+                st.plotly_chart(fig_ativo, use_container_width=True)
+            
+            with col2:
+                # Gráfico do Passivo + PL
+                st.markdown("**🔴 Composição do Passivo + PL**")
+                
+                passivo_data = {
+                    'Passivo Circulante': resumo['passivo_circulante'],
+                    'Passivo Não Circulante': resumo['passivo_nao_circulante'],
+                    'Patrimônio Líquido': resumo['patrimonio_liquido']
+                }
+                
+                fig_passivo = px.pie(
+                    values=list(passivo_data.values()),
+                    names=list(passivo_data.keys()),
+                    title="Distribuição do Passivo + PL",
+                    color_discrete_sequence=['#FF6B6B', '#FFB347', '#87CEEB']
+                )
+                fig_passivo.update_traces(textposition='inside', textinfo='percent+label')
+                fig_passivo.update_layout(height=400)
+                st.plotly_chart(fig_passivo, use_container_width=True)
+            
+            # Detalhamento por categoria
+            if detalhamento:
+                st.markdown(f'<h3 style="color: #FFD700; margin: 2rem 0 1rem 0;">📋 Detalhamento por Categoria</h3>', unsafe_allow_html=True)
+                
+                # Criar tabs para cada categoria
+                tab1, tab2, tab3, tab4, tab5 = st.tabs([
+                    "💰 Ativo Circulante", 
+                    "🏢 Ativo Não Circulante", 
+                    "💳 Passivo Circulante", 
+                    "🏛️ Passivo Não Circulante", 
+                    "💎 Patrimônio Líquido"
+                ])
+                
+                with tab1:
+                    if detalhamento.get('ativo_circulante'):
+                        df_ativo_circ = pd.DataFrame(list(detalhamento['ativo_circulante'].items()), 
+                                                   columns=['Item', 'Valor'])
+                        df_ativo_circ = df_ativo_circ[df_ativo_circ['Valor'] > 0]  # Mostrar apenas valores > 0
+                        df_ativo_circ['Valor Formatado'] = df_ativo_circ['Valor'].apply(lambda x: f"R$ {x:,.2f}".replace(',', '.'))
+                        st.dataframe(df_ativo_circ[['Item', 'Valor Formatado']], use_container_width=True, hide_index=True)
+                
+                with tab2:
+                    if detalhamento.get('ativo_nao_circulante'):
+                        df_ativo_nao_circ = pd.DataFrame(list(detalhamento['ativo_nao_circulante'].items()), 
+                                                       columns=['Item', 'Valor'])
+                        df_ativo_nao_circ = df_ativo_nao_circ[df_ativo_nao_circ['Valor'] > 0]
+                        df_ativo_nao_circ['Valor Formatado'] = df_ativo_nao_circ['Valor'].apply(lambda x: f"R$ {x:,.2f}".replace(',', '.'))
+                        st.dataframe(df_ativo_nao_circ[['Item', 'Valor Formatado']], use_container_width=True, hide_index=True)
+                
+                with tab3:
+                    if detalhamento.get('passivo_circulante'):
+                        df_passivo_circ = pd.DataFrame(list(detalhamento['passivo_circulante'].items()), 
+                                                     columns=['Item', 'Valor'])
+                        df_passivo_circ = df_passivo_circ[df_passivo_circ['Valor'] > 0]
+                        df_passivo_circ['Valor Formatado'] = df_passivo_circ['Valor'].apply(lambda x: f"R$ {x:,.2f}".replace(',', '.'))
+                        st.dataframe(df_passivo_circ[['Item', 'Valor Formatado']], use_container_width=True, hide_index=True)
+                
+                with tab4:
+                    if detalhamento.get('passivo_nao_circulante'):
+                        df_passivo_nao_circ = pd.DataFrame(list(detalhamento['passivo_nao_circulante'].items()), 
+                                                         columns=['Item', 'Valor'])
+                        df_passivo_nao_circ = df_passivo_nao_circ[df_passivo_nao_circ['Valor'] > 0]
+                        df_passivo_nao_circ['Valor Formatado'] = df_passivo_nao_circ['Valor'].apply(lambda x: f"R$ {x:,.2f}".replace(',', '.'))
+                        st.dataframe(df_passivo_nao_circ[['Item', 'Valor Formatado']], use_container_width=True, hide_index=True)
+                
+                with tab5:
+                    if detalhamento.get('patrimonio_liquido'):
+                        df_pl = pd.DataFrame(list(detalhamento['patrimonio_liquido'].items()), 
+                                           columns=['Item', 'Valor'])
+                        df_pl['Valor Formatado'] = df_pl['Valor'].apply(lambda x: f"R$ {x:,.2f}".replace(',', '.'))
+                        st.dataframe(df_pl[['Item', 'Valor Formatado']], use_container_width=True, hide_index=True)
+            
+            # Informações adicionais
+            if resumo.get('data_referencia'):
+                st.markdown(f"**📅 Data de Referência:** {resumo['data_referencia'].strftime('%d/%m/%Y') if resumo['data_referencia'] else 'N/A'}")
+            
+        except Exception as e:
+            st.error(f"Erro ao carregar dados do balanço patrimonial: {str(e)}")
+            st.info("Verifique se os dados estão disponíveis no MongoDB ou clique no botão para inserir dados de exemplo.")
+
 def main():
     """Função principal da aplicação"""
     
@@ -3067,6 +3241,7 @@ def main():
             "Contratos",
             "Dashboards por Unidade",
             get_text('dre_realtime', st.session_state.language),
+            "Balanço Patrimonial",
             get_text('due_diligence', st.session_state.language)
         ]
         opcao = st.selectbox(
@@ -3132,6 +3307,9 @@ def main():
     
     elif opcao == get_text('dre_realtime', st.session_state.language):
         dre_tempo_real(st.session_state.language, st.session_state.theme, filtros_globais)
+    
+    elif opcao == "Balanço Patrimonial":
+        secao_balanco_patrimonial(st.session_state.language, ano_selecionado, filtros_globais)
     
     elif opcao == get_text('due_diligence', st.session_state.language):
         secao_due_diligence(st.session_state.language, filtros_globais)

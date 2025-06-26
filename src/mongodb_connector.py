@@ -1382,3 +1382,395 @@ def load_expenses_from_finances(year=None, month=None):
             'despesas_operacionais': 0,
             'total_documentos': 0
         }
+
+# ============================================================================
+# FUNÇÕES PARA BALANÇO PATRIMONIAL
+# ============================================================================
+
+def insert_sample_balance_sheet_data():
+    """Inserir dados de exemplo do balanço patrimonial na collection"""
+    try:
+        connector = FOXMongoConnector()
+        connector.connect()
+        
+        # Dados de exemplo baseados na imagem fornecida
+        sample_data = {
+            "year": 2025,
+            "month": 1,
+            "date": datetime(2025, 1, 1),
+            "ativo_circulante": {
+                "total": 60018197.79,
+                "saldos_bancarios": 1167875.27,
+                "estoque_fisico": 0,
+                "recebimento_graos_provisionado": {
+                    "valor": 46341743.48,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "recebimento_frete_provisionado": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "LOG"
+                },
+                "recebimento_clube_fx_provisionado": {
+                    "valor": 1000000.00,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Clube FX"
+                },
+                "opcoes_bolsa": {
+                    "valor": 633690.00,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "contratos_execucao": [
+                    {
+                        "tipo": "Grão",
+                        "valor": 1231049.90,
+                        "relatorio_origem": "PAG/REC FUTUROS",
+                        "origem": "Grão"
+                    },
+                    {
+                        "tipo": "LOG",
+                        "valor": 50000.00,
+                        "relatorio_origem": "PAG/REC FUTUROS",
+                        "origem": "LOG"
+                    }
+                ],
+                "contratos_compra_aberto_preco_atualizado": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "contratos_venda_aberto": {
+                    "valor": 9593839.14,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "ps_cofins_graos_provisionado": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "ps_cofins": {
+                    "valor": 0,
+                    "relatorio_origem": "SALDO CONTABILIDADE"
+                }
+            },
+            "ativo_nao_circulante": {
+                "total": 117666.78,
+                "capital_social_sicredi": 109050.24,
+                "capital_social_sicoob": 8616.54
+            },
+            "passivo_circulante": {
+                "total": 55967012.22,
+                "funrural_provisionado": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "fundeinfra_provisionado": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "pis_cofins_graos_provisionado": {
+                    "valor": 2032705.89,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "impostos_log_provisionado": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "LOG"
+                },
+                "pagamento_graos_provisionado": {
+                    "valor": 39693234.38,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "pagamento_frete_provisionado": {
+                    "valor": 4544792.47,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "LOG"
+                },
+                "assessor_provisionado": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "pr_provisionado": {
+                    "valor": 27000.00,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "LOG"
+                },
+                "contratos_execucao": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "repasse_fox_norte_op_frete_provisionado": {
+                    "valor": 958785.04,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "contratos_execucao_passivo": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "contratos_venda_aberto_preco_atualizado": {
+                    "valor": 8710504.44,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "contratos_compra_aberto": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "Grão"
+                },
+                "despesas_futuras": [
+                    {
+                        "tipo": "Geral",
+                        "valor": 0,
+                        "relatorio_origem": "PAG/REC FUTUROS",
+                        "origem": "RATEIO"
+                    },
+                    {
+                        "tipo": "Financeiro",
+                        "valor": 0,
+                        "relatorio_origem": "PAG/REC FUTUROS",
+                        "origem": "GRÃO"
+                    }
+                ],
+                "financeiro_provisionado": {
+                    "valor": 0,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "GRÃO"
+                }
+            },
+            "passivo_nao_circulante": {
+                "total": 2000000.00,
+                "pagamento_emprestimos_provisionado": {
+                    "valor": 2000000.00,
+                    "relatorio_origem": "PAG/REC FUTUROS",
+                    "origem": "RATEIO"
+                },
+                "ir_csll": {
+                    "valor": 0,
+                    "origem": "DRE"
+                },
+                "ir_pj": {
+                    "valor": 0,
+                    "origem": "DRE"
+                },
+                "dividendos": {
+                    "valor": 0,
+                    "origem": "DRE"
+                }
+            },
+            "patrimonio_liquido": {
+                "total": 2168852.35
+            },
+            "created_at": datetime.now(),
+            "updated_at": datetime.now()
+        }
+        
+        # Inserir na collection balancopatrimonial
+        collection = connector.db.balancopatrimonial
+        
+        # Verificar se já existe um documento para este ano/mês
+        existing = collection.find_one({"year": 2025, "month": 1})
+        
+        if existing:
+            # Atualizar documento existente
+            collection.update_one(
+                {"year": 2025, "month": 1},
+                {"$set": {**sample_data, "updated_at": datetime.now()}}
+            )
+            logger.info("Dados do balanço patrimonial atualizados com sucesso")
+        else:
+            # Inserir novo documento
+            result = collection.insert_one(sample_data)
+            logger.info(f"Dados do balanço patrimonial inseridos com sucesso. ID: {result.inserted_id}")
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"Erro ao inserir dados do balanço patrimonial: {str(e)}")
+        return False
+    finally:
+        if connector and connector.client:
+            connector.client.close()
+
+def load_balance_sheet_data(year: int = 2025, month: int = None) -> Dict:
+    """Carregar dados do balanço patrimonial do MongoDB"""
+    try:
+        connector = FOXMongoConnector()
+        connector.connect()
+        
+        collection = connector.db.balancopatrimonial
+        
+        # Construir query
+        query = {"year": year}
+        if month:
+            query["month"] = month
+        
+        # Buscar dados mais recentes
+        balance_data = collection.find_one(
+            query,
+            sort=[("date", -1)]
+        )
+        
+        if not balance_data:
+            logger.warning(f"Nenhum dado de balanço patrimonial encontrado para {year}")
+            return {}
+        
+        # Converter ObjectId para string
+        if '_id' in balance_data:
+            balance_data['_id'] = str(balance_data['_id'])
+        
+        return balance_data
+        
+    except Exception as e:
+        logger.error(f"Erro ao carregar dados do balanço patrimonial: {str(e)}")
+        return {}
+    finally:
+        if connector and connector.client:
+            connector.client.close()
+
+def get_balance_sheet_summary(year: int = 2025) -> Dict:
+    """Obter resumo do balanço patrimonial com indicadores principais"""
+    try:
+        balance_data = load_balance_sheet_data(year)
+        
+        if not balance_data:
+            return {
+                'total_ativo': 0,
+                'total_passivo': 0,
+                'patrimonio_liquido': 0,
+                'ativo_circulante': 0,
+                'ativo_nao_circulante': 0,
+                'passivo_circulante': 0,
+                'passivo_nao_circulante': 0,
+                'liquidez_corrente': 0,
+                'endividamento_total': 0,
+                'data_referencia': None
+            }
+        
+        # Extrair valores principais
+        ativo_circulante = balance_data.get('ativo_circulante', {}).get('total', 0)
+        ativo_nao_circulante = balance_data.get('ativo_nao_circulante', {}).get('total', 0)
+        passivo_circulante = balance_data.get('passivo_circulante', {}).get('total', 0)
+        passivo_nao_circulante = balance_data.get('passivo_nao_circulante', {}).get('total', 0)
+        patrimonio_liquido = balance_data.get('patrimonio_liquido', {}).get('total', 0)
+        
+        total_ativo = ativo_circulante + ativo_nao_circulante
+        total_passivo = passivo_circulante + passivo_nao_circulante + patrimonio_liquido
+        
+        # Calcular indicadores
+        liquidez_corrente = ativo_circulante / passivo_circulante if passivo_circulante > 0 else 0
+        endividamento_total = (passivo_circulante + passivo_nao_circulante) / total_ativo if total_ativo > 0 else 0
+        
+        return {
+            'total_ativo': float(total_ativo),
+            'total_passivo': float(total_passivo),
+            'patrimonio_liquido': float(patrimonio_liquido),
+            'ativo_circulante': float(ativo_circulante),
+            'ativo_nao_circulante': float(ativo_nao_circulante),
+            'passivo_circulante': float(passivo_circulante),
+            'passivo_nao_circulante': float(passivo_nao_circulante),
+            'liquidez_corrente': float(liquidez_corrente),
+            'endividamento_total': float(endividamento_total * 100),  # Em percentual
+            'data_referencia': balance_data.get('date')
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro ao calcular resumo do balanço patrimonial: {str(e)}")
+        return {
+            'total_ativo': 0,
+            'total_passivo': 0,
+            'patrimonio_liquido': 0,
+            'ativo_circulante': 0,
+            'ativo_nao_circulante': 0,
+            'passivo_circulante': 0,
+            'passivo_nao_circulante': 0,
+            'liquidez_corrente': 0,
+            'endividamento_total': 0,
+            'data_referencia': None
+        }
+
+def get_balance_sheet_detailed_breakdown(year: int = 2025) -> Dict:
+    """Obter detalhamento completo do balanço patrimonial por categoria"""
+    try:
+        balance_data = load_balance_sheet_data(year)
+        
+        if not balance_data:
+            return {}
+        
+        # Estruturar dados detalhados
+        detailed_data = {
+            'ativo_circulante': {},
+            'ativo_nao_circulante': {},
+            'passivo_circulante': {},
+            'passivo_nao_circulante': {},
+            'patrimonio_liquido': {}
+        }
+        
+        # Ativo Circulante
+        ativo_circ = balance_data.get('ativo_circulante', {})
+        detailed_data['ativo_circulante'] = {
+            'Saldos Bancários': ativo_circ.get('saldos_bancarios', 0),
+            'Estoque Físico': ativo_circ.get('estoque_fisico', 0),
+            'Recebimento Grãos Provisionado': ativo_circ.get('recebimento_graos_provisionado', {}).get('valor', 0),
+            'Recebimento Frete Provisionado': ativo_circ.get('recebimento_frete_provisionado', {}).get('valor', 0),
+            'Recebimento Clube FX Provisionado': ativo_circ.get('recebimento_clube_fx_provisionado', {}).get('valor', 0),
+            'Opções Bolsa': ativo_circ.get('opcoes_bolsa', {}).get('valor', 0),
+            'Contratos em Execução': sum([c.get('valor', 0) for c in ativo_circ.get('contratos_execucao', [])]),
+            'Contratos de Venda em Aberto': ativo_circ.get('contratos_venda_aberto', {}).get('valor', 0),
+            'PIS/COFINS Grãos Provisionado': ativo_circ.get('ps_cofins_graos_provisionado', {}).get('valor', 0)
+        }
+        
+        # Ativo Não Circulante
+        ativo_nao_circ = balance_data.get('ativo_nao_circulante', {})
+        detailed_data['ativo_nao_circulante'] = {
+            'Capital Social SICREDI': ativo_nao_circ.get('capital_social_sicredi', 0),
+            'Capital Social SICOOB': ativo_nao_circ.get('capital_social_sicoob', 0)
+        }
+        
+        # Passivo Circulante
+        passivo_circ = balance_data.get('passivo_circulante', {})
+        detailed_data['passivo_circulante'] = {
+            'FUNRURAL Provisionado': passivo_circ.get('funrural_provisionado', {}).get('valor', 0),
+            'FUNDEINFRA Provisionado': passivo_circ.get('fundeinfra_provisionado', {}).get('valor', 0),
+            'PIS/COFINS Grãos Provisionado': passivo_circ.get('pis_cofins_graos_provisionado', {}).get('valor', 0),
+            'Impostos LOG Provisionado': passivo_circ.get('impostos_log_provisionado', {}).get('valor', 0),
+            'Pagamento Grãos Provisionado': passivo_circ.get('pagamento_graos_provisionado', {}).get('valor', 0),
+            'Pagamento Frete Provisionado': passivo_circ.get('pagamento_frete_provisionado', {}).get('valor', 0),
+            'Assessor Provisionado': passivo_circ.get('assessor_provisionado', {}).get('valor', 0),
+            'PR Provisionado': passivo_circ.get('pr_provisionado', {}).get('valor', 0),
+            'Repasse Fox Norte OP. Frete': passivo_circ.get('repasse_fox_norte_op_frete_provisionado', {}).get('valor', 0),
+            'Contratos de Venda Aberto': passivo_circ.get('contratos_venda_aberto_preco_atualizado', {}).get('valor', 0),
+            'Despesas Futuras': sum([d.get('valor', 0) for d in passivo_circ.get('despesas_futuras', [])]),
+            'Financeiro Provisionado': passivo_circ.get('financeiro_provisionado', {}).get('valor', 0)
+        }
+        
+        # Passivo Não Circulante
+        passivo_nao_circ = balance_data.get('passivo_nao_circulante', {})
+        detailed_data['passivo_nao_circulante'] = {
+            'Pagamento Empréstimos Provisionado': passivo_nao_circ.get('pagamento_emprestimos_provisionado', {}).get('valor', 0),
+            'IR + CSLL': passivo_nao_circ.get('ir_csll', {}).get('valor', 0),
+            'IR PJ': passivo_nao_circ.get('ir_pj', {}).get('valor', 0),
+            'Dividendos': passivo_nao_circ.get('dividendos', {}).get('valor', 0)
+        }
+        
+        # Patrimônio Líquido
+        detailed_data['patrimonio_liquido'] = {
+            'Total': balance_data.get('patrimonio_liquido', {}).get('total', 0)
+        }
+        
+        return detailed_data
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter detalhamento do balanço patrimonial: {str(e)}")
+        return {}
+
