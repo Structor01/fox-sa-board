@@ -9,7 +9,16 @@ import json
 import psycopg2
 from pymongo import MongoClient
 from psycopg2.extras import execute_values
-from bson import ObjectId
+
+# Importação robusta do BSON para compatibilidade com diferentes versões
+try:
+    from bson import ObjectId
+except ImportError:
+    try:
+        from bson.objectid import ObjectId
+    except ImportError:
+        from pymongo.objectid import ObjectId
+
 from datetime import datetime, timezone, timedelta
 import streamlit as st
 

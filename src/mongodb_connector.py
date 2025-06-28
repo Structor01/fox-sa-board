@@ -17,7 +17,19 @@ from datetime import datetime, timedelta
 import streamlit as st
 from typing import Dict, List, Optional
 import logging
-from bson import ObjectId
+
+# Importação robusta do BSON para compatibilidade com diferentes versões
+try:
+    from bson import ObjectId
+    from bson import SON
+except ImportError:
+    try:
+        from bson.objectid import ObjectId
+        from bson.son import SON
+    except ImportError:
+        # Fallback para versões muito antigas
+        from pymongo.objectid import ObjectId
+        SON = dict  # Usar dict como fallback para SON
 
 # Configuração de logging
 logging.basicConfig(level=logging.INFO)
