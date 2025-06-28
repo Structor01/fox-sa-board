@@ -3157,18 +3157,58 @@ def secao_balanco_patrimonial(lang='pt', ano=2025, filtros_globais=None):
         if filtros_ativos:
             st.info(f"Filtros aplicados: {', '.join([f'{k}: {v}' for k, v in filtros_globais.items() if v != 'Todos'])}")
     
+    # Botões de ação
+    col_btn1, col_btn2, col_btn3 = st.columns([2, 2, 4])
+    
+    with col_btn1:
+        # Inserir dados de exemplo se necessário (apenas uma vez)
+        if st.button("🔄 Inserir/Atualizar Dados de Exemplo", help="Clique para inserir ou atualizar os dados de exemplo do balanço patrimonial"):
+            with st.spinner("Inserindo dados de exemplo..."):
+                try:
+                    from mongodb_connector import insert_sample_balance_sheet_data
+                    if insert_sample_balance_sheet_data():
+                        st.success("Dados do balanço patrimonial inseridos/atualizados com sucesso!")
+                        st.rerun()
+                    else:
+                        st.error("Erro ao inserir dados do balanço patrimonial")
+                except Exception as e:
+                    st.error(f"Erro ao inserir dados: {str(e)}")
+    
+    with col_btn2:
+        # Botão de sincronização financeira
+        if st.button("🔄 Sincronizar Dados Financeiros", help="Sincroniza dados financeiros do MongoDB para PostgreSQL"):
+            with st.spinner("Executando sincronização financeira..."):
+                try:
+                    from sync_financials import executar_sincronizacao_financeira
+                    resultado = executar_sincronizacao_financeira()
+                    
+                    if resultado["status"] == "success":
+                        st.success(f"✅ Sincronização concluída com sucesso! ({resultado['total_logs']} operações)")
+                        
+                        # Mostrar logs em um expander
+                        with st.expander("📋 Ver logs detalhados da sincronização"):
+                            for log in resultado["logs"]:
+                                if "[error]" in log:
+                                    st.error(log)
+                                elif "[info]" in log or "[step]" in log:
+                                    st.info(log)
+                                else:
+                                    st.text(log)
+                    else:
+                        st.error("❌ Erro durante a sincronização!")
+                        for log in resultado["logs"]:
+                            if "[error]" in log:
+                                st.error(log)
+                            else:
+                                st.text(log)
+                                
+                except Exception as e:
+                    st.error(f"Erro ao executar sincronização: {str(e)}")
+    
     # Carregar dados do balanço patrimonial
     with st.spinner("Carregando dados do balanço patrimonial..."):
         try:
-            from mongodb_connector import get_balance_sheet_summary, get_balance_sheet_detailed_breakdown, insert_sample_balance_sheet_data
-            
-            # Inserir dados de exemplo se necessário (apenas uma vez)
-            if st.button("🔄 Inserir/Atualizar Dados de Exemplo", help="Clique para inserir ou atualizar os dados de exemplo do balanço patrimonial"):
-                if insert_sample_balance_sheet_data():
-                    st.success("Dados do balanço patrimonial inseridos/atualizados com sucesso!")
-                    st.rerun()
-                else:
-                    st.error("Erro ao inserir dados do balanço patrimonial")
+            from mongodb_connector import get_balance_sheet_summary, get_balance_sheet_detailed_breakdown
             
             # Carregar resumo
             resumo = get_balance_sheet_summary(ano)
