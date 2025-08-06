@@ -1,0 +1,353 @@
+{
+  "collection": "balancopatrimonial",
+  "structure": {
+    "_id": "ObjectId",
+    "year": "Number",
+    "month": "Number", 
+    "date": "Date",
+    "ativo_circulante": {
+      "total": "Number",
+      "saldos_bancarios": "Number",
+      "estoque_fisico": "Number",
+      "recebimento_graos_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "recebimento_frete_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "recebimento_clube_fx_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "opcoes_bolsa": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "contratos_execucao": [
+        {
+          "tipo": "String",
+          "valor": "Number",
+          "relatorio_origem": "String",
+          "origem": "String"
+        }
+      ],
+      "contratos_compra_aberto_preco_atualizado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "contratos_venda_aberto": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "ps_cofins_graos_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "ps_cofins": {
+        "valor": "Number",
+        "relatorio_origem": "String"
+      }
+    },
+    "ativo_nao_circulante": {
+      "total": "Number",
+      "capital_social_sicredi": "Number",
+      "capital_social_sicoob": "Number"
+    },
+    "passivo_circulante": {
+      "total": "Number",
+      "funrural_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "fundeinfra_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "pis_cofins_graos_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "impostos_log_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "pagamento_graos_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "pagamento_frete_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "assessor_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "pr_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "contratos_execucao": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "repasse_fox_norte_op_frete_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "contratos_execucao_passivo": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "contratos_venda_aberto_preco_atualizado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "contratos_compra_aberto": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "despesas_futuras": [
+        {
+          "tipo": "String",
+          "valor": "Number",
+          "relatorio_origem": "String",
+          "origem": "String"
+        }
+      ],
+      "financeiro_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      }
+    },
+    "passivo_nao_circulante": {
+      "total": "Number",
+      "pagamento_emprestimos_provisionado": {
+        "valor": "Number",
+        "relatorio_origem": "String",
+        "origem": "String"
+      },
+      "ir_csll": {
+        "valor": "Number",
+        "origem": "String"
+      },
+      "ir_pj": {
+        "valor": "Number",
+        "origem": "String"
+      },
+      "dividendos": {
+        "valor": "Number",
+        "origem": "String"
+      }
+    },
+    "patrimonio_liquido": {
+      "total": "Number"
+    },
+    "created_at": "Date",
+    "updated_at": "Date"
+  },
+  "sample_data": {
+    "year": 2025,
+    "month": 1,
+    "date": "2025-01-01T00:00:00Z",
+    "ativo_circulante": {
+      "total": 60018197.79,
+      "saldos_bancarios": 1167875.27,
+      "estoque_fisico": 0,
+      "recebimento_graos_provisionado": {
+        "valor": 46341743.48,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "recebimento_frete_provisionado": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "LOG"
+      },
+      "recebimento_clube_fx_provisionado": {
+        "valor": 1000000.00,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Clube FX"
+      },
+      "opcoes_bolsa": {
+        "valor": 633690.00,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "contratos_execucao": [
+        {
+          "tipo": "Grão",
+          "valor": 1231049.90,
+          "relatorio_origem": "PAG/REC FUTUROS",
+          "origem": "Grão"
+        },
+        {
+          "tipo": "LOG",
+          "valor": 50000.00,
+          "relatorio_origem": "PAG/REC FUTUROS",
+          "origem": "LOG"
+        }
+      ],
+      "contratos_compra_aberto_preco_atualizado": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "contratos_venda_aberto": {
+        "valor": 9593839.14,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "ps_cofins_graos_provisionado": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "ps_cofins": {
+        "valor": 0,
+        "relatorio_origem": "SALDO CONTABILIDADE"
+      }
+    },
+    "ativo_nao_circulante": {
+      "total": 117666.78,
+      "capital_social_sicredi": 109050.24,
+      "capital_social_sicoob": 8616.54
+    },
+    "passivo_circulante": {
+      "total": 55967012.22,
+      "funrural_provisionado": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "fundeinfra_provisionado": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "pis_cofins_graos_provisionado": {
+        "valor": 2032705.89,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "impostos_log_provisionado": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "LOG"
+      },
+      "pagamento_graos_provisionado": {
+        "valor": 39693234.38,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "pagamento_frete_provisionado": {
+        "valor": 4544792.47,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "LOG"
+      },
+      "assessor_provisionado": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "pr_provisionado": {
+        "valor": 27000.00,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "LOG"
+      },
+      "contratos_execucao": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "repasse_fox_norte_op_frete_provisionado": {
+        "valor": 958785.04,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "contratos_execucao_passivo": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "contratos_venda_aberto_preco_atualizado": {
+        "valor": 8710504.44,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "contratos_compra_aberto": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "Grão"
+      },
+      "despesas_futuras": [
+        {
+          "tipo": "Geral",
+          "valor": 0,
+          "relatorio_origem": "PAG/REC FUTUROS",
+          "origem": "RATEIO"
+        },
+        {
+          "tipo": "Financeiro",
+          "valor": 0,
+          "relatorio_origem": "PAG/REC FUTUROS",
+          "origem": "GRÃO"
+        }
+      ],
+      "financeiro_provisionado": {
+        "valor": 0,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "GRÃO"
+      }
+    },
+    "passivo_nao_circulante": {
+      "total": 2000000.00,
+      "pagamento_emprestimos_provisionado": {
+        "valor": 2000000.00,
+        "relatorio_origem": "PAG/REC FUTUROS",
+        "origem": "RATEIO"
+      },
+      "ir_csll": {
+        "valor": 0,
+        "origem": "DRE"
+      },
+      "ir_pj": {
+        "valor": 0,
+        "origem": "DRE"
+      },
+      "dividendos": {
+        "valor": 0,
+        "origem": "DRE"
+      }
+    },
+    "patrimonio_liquido": {
+      "total": 2168852.35
+    },
+    "created_at": "2025-01-01T00:00:00Z",
+    "updated_at": "2025-01-01T00:00:00Z"
+  }
+}
+
